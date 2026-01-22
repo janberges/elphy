@@ -11,7 +11,7 @@ double **matrix(const int n);
 double *eigenvalues(const int n, double **a);
 
 int main(int argc, char **argv) {
-    double **a, *w;
+    double **h, *e;
     int n, i, j;
 
     /* get matrix size from command-line argument */
@@ -20,36 +20,36 @@ int main(int argc, char **argv) {
 
     /* emulate 2D variable-length array (to avoid C99 feature) */
 
-    a = matrix(n);
+    h = matrix(n);
 
     /* populate matrix using example of 1D tight-binding Hamiltonian */
 
     for (i = 0; i < n; i++) {
         j = (i + 1) % n;
-        a[i][j] = a[j][i] = -1.0;
+        h[i][j] = h[j][i] = -1.0;
     }
 
     /* diagonalize matrix */
 
-    w = eigenvalues(n, a);
+    e = eigenvalues(n, h);
 
     /* print eigenvalues */
 
     for (i = 0; i < n; i++)
-        printf("% .9f\n", w[i]);
+        printf("% .9f\n", e[i]);
 
     return 0;
 }
 
 double **matrix(const int n) {
     double **a, *data;
-    int i;
+    int row;
 
     a = malloc(n * sizeof data);
     data = calloc(n * n, sizeof *data);
 
-    for (i = 0; i < n; i++)
-        a[i] = data + i * n;
+    for (row = 0; row < n; row++)
+        a[row] = data + row * n;
 
     return a;
 }
@@ -57,12 +57,12 @@ double **matrix(const int n) {
 double *eigenvalues(const int n, double **a) {
     const char jobz = 'N', uplo = 'U';
     double *w, *work, lworkopt;
-    int lwork, info, i;
+    int lwork, info, step;
 
     w = malloc(n * sizeof *w);
 
-    for (i = 0; i < 2; i++) {
-        if (i) { /* workspace allocation */
+    for (step = 0; step < 2; step++) {
+        if (step) { /* workspace allocation */
             lwork = (int) lworkopt;
             work = malloc(lwork * sizeof *work);
         } else { /* workspace query */
