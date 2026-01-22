@@ -9,20 +9,19 @@ extern void dsyev_(const char *jobz, const char *uplo, const int *n, double *a,
 int main(int argc, char **argv) {
     const char jobz = 'N', uplo = 'U';
     double **a, *data, *w, *work, lworkopt;
-    int n, lda, lwork, info, i, j;
+    int n, lwork, info, i, j;
 
     /* get matrix size from command-line argument */
 
     n = argc > 1 ? atoi(argv[1]) : 12;
-    lda = argc > 2 ? atoi(argv[2]) : n;
 
     /* emulate 2D variable-length array (to avoid C99 feature) */
 
     a = malloc(n * sizeof data);
-    data = calloc(n * lda, sizeof *data);
+    data = calloc(n * n, sizeof *data);
 
     for (i = 0; i < n; i++)
-        a[i] = data + i * lda;
+        a[i] = data + i * n;
 
     /* populate matrix using example of 1D tight-binding Hamiltonian */
 
@@ -44,7 +43,7 @@ int main(int argc, char **argv) {
             work = &lworkopt;
         }
 
-        dsyev_(&jobz, &uplo, &n, *a, &lda, w, work, &lwork, &info);
+        dsyev_(&jobz, &uplo, &n, *a, &n, w, work, &lwork, &info);
     }
 
     /* print eigenvalues */
