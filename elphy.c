@@ -10,23 +10,62 @@ double **matrix(const int n);
 
 double *eigenvalues(const int n, double **a);
 
+struct point {
+    int x, y, z;
+};
+
+struct element {
+    int r, a, b;
+    double c;
+};
+
+struct model {
+    int nr, nb, nt;
+    struct point *r;
+    struct element *t;
+};
+
+void get_model(const char *filename, struct model *m);
+void put_model(const char *filename, struct model *m);
+
 int main(int argc, char **argv) {
     double **h, *e;
-    int n, i, j;
+    struct model m;
+    struct element *t;
+    int n, nc, c1, c2, i, j, k, l;
 
-    /* get matrix size from command-line argument */
+    /* read (and write) tight-binding model */
 
-    n = argc > 1 ? atoi(argv[1]) : 12;
+    get_model("el.dat", &m);
+    put_model("el_copy.dat", &m);
+
+    /* get supercell size from command-line argument */
+
+    nc = argc > 1 ? atoi(argv[1]) : 12;
+    n = m.nb * nc * nc;
 
     /* emulate 2D variable-length array (to avoid C99 feature) */
 
     h = matrix(n);
 
-    /* populate matrix using example of 1D tight-binding Hamiltonian */
+    /* populate matrix using example of supercell tight-binding Hamiltonian */
 
-    for (i = 0; i < n; i++) {
-        j = (i + 1) % n;
-        h[i][j] = h[j][i] = -1.0;
+    for (i = 0; i < nc; i++) {
+        for (j = 0; j < nc; j++) {
+            c1 = m.nb * (i * nc + j);
+
+            for (t = m.t; t - m.t < m.nt; t++) {
+                k = (i + m.r[t->r].x) % nc;
+                l = (j + m.r[t->r].y) % nc;
+
+                if (k < 0) k += nc;
+                if (l < 0) l += nc;
+
+                c2 = m.nb * (k * nc + l);
+
+                h[c1 + t->a][c2 + t->b] = t->c;
+            }
+        }
     }
 
     /* diagonalize matrix */
@@ -74,4 +113,43 @@ double *eigenvalues(const int n, double **a) {
     }
 
     return w;
+}
+
+void get_model(const char *filename, struct model *m) {
+    FILE *fp;
+    struct point *r;
+    struct element *t;
+
+    fp = fopen(filename, "r");
+
+    fscanf(fp, "%d %d %d", &m->nr, &m->nb, &m->nt);
+
+    m->r = malloc(m->nr * sizeof *r);
+    m->t = malloc(m->nt * sizeof *t);
+
+    for (r = m->r; r - m->r < m->nr; r++)
+        fscanf(fp, "%d %d %d", &r->x, &r->y, &r->z);
+
+    for (t = m->t; t - m->t < m->nt; t++)
+        fscanf(fp, "%d %d %d %lf", &t->r, &t->a, &t->b, &t->c);
+
+    fclose(fp);
+}
+
+void put_model(const char *filename, struct model *m) {
+    FILE *fp;
+    struct point *r;
+    struct element *t;
+
+    fp = fopen(filename, "w");
+
+    fprintf(fp, "%d %d %d\n", m->nr, m->nb, m->nt);
+
+    for (r = m->r; r - m->r < m->nr; r++)
+        fprintf(fp, "% d % d % d\n", r->x, r->y, r->z);
+
+    for (t = m->t; t - m->t < m->nt; t++)
+        fprintf(fp, "%d %d %d % g\n", t->r, t->a, t->b, t->c);
+
+    fclose(fp);
 }
