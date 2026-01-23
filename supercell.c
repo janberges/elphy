@@ -57,7 +57,7 @@ void perturbation(double **h, struct coupling m, double *u, int nc) {
     }
 }
 
-/* calculate Jacobian via Hellmann–Feynman theorem */
+/* calculate Jacobian via Hellmann-Feynman theorem */
 
 double *jacobian(double **h, struct coupling m, double *occ, int nc) {
     struct vertex *g;
