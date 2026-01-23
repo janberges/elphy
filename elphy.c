@@ -2,8 +2,6 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-/* declare interface to LAPACK subroutine */
-
 extern void dsyev_(const char *jobz, const char *uplo, const int *n, double *a,
     const int *lda, double *w, double *work, const int *lwork, int *info);
 
@@ -42,40 +40,28 @@ int main(int argc, char **argv) {
     struct model m;
     int n, nc;
 
-    /* read (and write) tight-binding model */
-
     get_model("el.dat", &m);
 
     /* put_model("el_copy.dat", &m); */
-
-    /* get supercell size from command-line argument */
 
     nc = argc > 1 ? atoi(argv[1]) : 12;
     n = m.nb * nc * nc;
     nel *= n;
 
-    /* emulate 2D variable-length array (to avoid C99 feature) */
-
     h = matrix(n);
-
-    /* populate matrix using example of supercell tight-binding Hamiltonian */
 
     supercell(h, m, nc);
 
-    /* diagonalize matrix */
-
     e = eigenvalues(n, h);
 
-    /* determine chemical potential */
-
     mu = fermi_level(n, nel, e, kt, mu);
-
-    /* determine free energy */
 
     printf("%.9f\n", 2.0 * free_energy(n, nel, e, kt, mu));
 
     return 0;
 }
+
+/* emulate 2D variable-length array (to avoid C99 feature) */
 
 double **matrix(const int n) {
     double **a, *data;
@@ -89,6 +75,8 @@ double **matrix(const int n) {
 
     return a;
 }
+
+/* diagonalize matrix using LAPACK subroutine */
 
 double *eigenvalues(const int n, double **a) {
     const char jobz = 'N', uplo = 'U';
@@ -111,6 +99,8 @@ double *eigenvalues(const int n, double **a) {
 
     return w;
 }
+
+/* read tight-binding model */
 
 void get_model(const char *filename, struct model *m) {
     FILE *fp;
@@ -138,6 +128,8 @@ void get_model(const char *filename, struct model *m) {
     fclose(fp);
 }
 
+/* write tight-binding model */
+
 void put_model(const char *filename, struct model *m) {
     FILE *fp;
     int (*r)[3];
@@ -155,6 +147,8 @@ void put_model(const char *filename, struct model *m) {
 
     fclose(fp);
 }
+
+/* populate matrix using example of supercell tight-binding Hamiltonian */
 
 void supercell(double **h, struct model m, int nc) {
     struct element *t;
