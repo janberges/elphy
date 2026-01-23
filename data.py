@@ -8,7 +8,7 @@ eps = 1e-10
 
 el, ph, elph, elel = elphmod.models.graphene.create(rydberg=True)
 
-def datafile(filename, model):
+def put_model(filename, model):
     elements = []
 
     for r in range(len(model.R)):
@@ -27,4 +27,4 @@ def datafile(filename, model):
         for t in sorted(elements):
             dat.write('%d %d %d % .9f\n' % t)
 
-datafile('el.dat', el)
+put_model('el.dat', el)

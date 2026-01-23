@@ -143,7 +143,7 @@ void put_model(const char *filename, struct model *m) {
         fprintf(fp, "% d % d % d\n", **r, *(*r + 1), *(*r + 2));
 
     for (t = m->t; t - m->t < m->nt; t++)
-        fprintf(fp, "%d %d %d % g\n", t->r, t->a, t->b, t->c);
+        fprintf(fp, "%d %d %d % .9f\n", t->r, t->a, t->b, t->c);
 
     fclose(fp);
 }
