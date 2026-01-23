@@ -6,7 +6,8 @@ elphmod.misc.verbosity = 0
 
 eps = 1e-10
 
-el, ph, elph, elel = elphmod.models.graphene.create(rydberg=True)
+el, ph, elph, elel = elphmod.models.graphene.create(rydberg=True,
+    divide_mass=False)
 
 def put_model(filename, model):
     elements = []
@@ -28,3 +29,4 @@ def put_model(filename, model):
             dat.write('%d %d %d % .9f\n' % t)
 
 put_model('el.dat', el)
+put_model('ph.dat', ph)

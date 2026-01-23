@@ -22,6 +22,7 @@ struct model {
 
 void get_model(const char *filename, struct model *m);
 void put_model(const char *filename, struct model *m);
+void get_displ(const char *filename, const int nx, double *u);
 
 void supercell(double **h, struct model m, int nc);
 
@@ -36,27 +37,40 @@ double free_energy(const int ne, const double n,
 
 int main(int argc, char **argv) {
     const double kt = 0.0019;
-    double **h, *e, nel = 0.25, mu = 0.0;
-    struct model m;
-    int n, nc;
+    double **h, **c, *e, *u, energy, nel = 0.25, mu = 0.0;
+    struct model el, ph;
+    int n, nx, nc, i, j;
 
-    get_model("el.dat", &m);
+    get_model("el.dat", &el);
+    get_model("ph.dat", &ph);
 
-    /* put_model("el_copy.dat", &m); */
+    /* put_model("el_copy.dat", &el); */
 
     nc = argc > 1 ? atoi(argv[1]) : 12;
-    n = m.nb * nc * nc;
+    nx = ph.nb * nc * nc;
+    n = el.nb * nc * nc;
     nel *= n;
 
     h = matrix(n);
+    c = matrix(nx);
 
-    supercell(h, m, nc);
+    supercell(h, el, nc);
+    supercell(c, ph, nc);
+
+    u = malloc(nx * sizeof *u);
+    get_displ("u.dat", nx, u);
 
     e = eigenvalues(n, h);
 
     mu = fermi_level(n, nel, e, kt, mu);
 
-    printf("%.9f\n", 2.0 * free_energy(n, nel, e, kt, mu));
+    energy = 2.0 * free_energy(n, nel, e, kt, mu);
+
+    for (i = 0; i < nx; i++)
+        for (j = 0; j < nx; j++)
+            energy += 0.5 * u[i] * c[i][j] * u[j];
+
+    printf("%.9f\n", energy);
 
     return 0;
 }
@@ -100,7 +114,7 @@ double *eigenvalues(const int n, double **a) {
     return w;
 }
 
-/* read tight-binding model */
+/* read tight-binding or mass-spring model */
 
 void get_model(const char *filename, struct model *m) {
     FILE *fp;
@@ -128,7 +142,7 @@ void get_model(const char *filename, struct model *m) {
     fclose(fp);
 }
 
-/* write tight-binding model */
+/* write tight-binding or mass-spring model */
 
 void put_model(const char *filename, struct model *m) {
     FILE *fp;
@@ -144,6 +158,25 @@ void put_model(const char *filename, struct model *m) {
 
     for (t = m->t; t - m->t < m->nt; t++)
         fprintf(fp, "%d %d %d % .9f\n", t->r, t->a, t->b, t->c);
+
+    fclose(fp);
+}
+
+/* read atomic displacements */
+
+void get_displ(const char *filename, const int nx, double *u) {
+    FILE *fp;
+    int i;
+
+    fp = fopen(filename, "r");
+
+    if (fp == NULL) {
+        fprintf(stderr, "Cannot open %s. Run test.py first.\n", filename);
+        exit(1);
+    }
+
+    for (i = 0; i < nx; i++)
+        fscanf(fp, "%lf", u++);
 
     fclose(fp);
 }
