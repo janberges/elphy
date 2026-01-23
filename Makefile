@@ -7,7 +7,7 @@ LDLIBS = -llapack -lblas -lm
 elphy: elphy.o io.o matrix.o supercell.o temperature.o
 	${CC} ${CFLAGS} -o $@ $^ ${LDLIBS}
 
-%.o: %.c
+%.o: %.c elphy.h
 	$(CC) $(CFLAGS) -o $@ -c $<
 
 el.dat ph.dat elph.dat: data.py
