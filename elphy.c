@@ -40,6 +40,8 @@ void supercell(double **h, struct model m, int nc);
 
 void perturbation(double **h, struct coupling m, double *u, int nc);
 
+double *jacobian(double **h, struct coupling m, double *occ, int nc);
+
 double fermi(double x);
 double dirac(double x);
 
@@ -51,7 +53,7 @@ double free_energy(const int ne, const double n,
 
 int main(int argc, char **argv) {
     const double kt = 0.0019;
-    double **h, **c, *e, *u, energy, nel = 0.25, mu = 0.0;
+    double **h, **c, *e, *u, energy, *forces, *occ, nel = 0.25, mu = 0.0;
     struct model el, ph;
     struct coupling elph;
     int n, nx, nc, i, j;
@@ -90,6 +92,20 @@ int main(int argc, char **argv) {
 
     printf("%.9f\n", energy);
 
+    occ = malloc(n * sizeof *occ);
+
+    for (i = 0; i < n; i++)
+        occ[i] = 2.0 * fermi((e[i] - mu) / kt);
+
+    forces = jacobian(h, elph, occ, nc);
+
+    for (i = 0; i < nx; i++)
+        for (j = 0; j < nx; j++)
+            forces[i] += c[i][j] * u[j];
+
+    for (i = 0; i < nx; i++)
+        printf("% .9f\n", forces[i]);
+
     return 0;
 }
 
@@ -111,7 +127,7 @@ double **matrix(const int n) {
 /* diagonalize matrix using LAPACK subroutine */
 
 double *eigenvalues(const int n, double **a) {
-    const char jobz = 'N', uplo = 'U';
+    const char jobz = 'V', uplo = 'U';
     double *w, *work, lworkopt;
     int lwork, info, step;
 
@@ -283,6 +299,45 @@ void perturbation(double **h, struct coupling m, double *u, int nc) {
             }
         }
     }
+}
+
+/* calculate Jacobian via Hellmann–Feynman theorem */
+
+double *jacobian(double **h, struct coupling m, double *occ, int nc) {
+    struct vertex *g;
+    int c0, crel, crph, i, j, k, l, p, q, n;
+    double *f;
+
+    f = calloc(m.nph * nc * nc, sizeof *f);
+
+    for (i = 0; i < nc; i++) {
+        for (j = 0; j < nc; j++) {
+            c0 = m.nel * (i * nc + j);
+
+            for (g = m.g; g - m.g < m.ng; g++) {
+                k = (i + m.r[g->rel][0]) % nc;
+                l = (j + m.r[g->rel][1]) % nc;
+
+                p = (i + m.r[g->rph][0]) % nc;
+                q = (j + m.r[g->rph][1]) % nc;
+
+                if (k < 0) k += nc;
+                if (l < 0) l += nc;
+
+                if (p < 0) p += nc;
+                if (q < 0) q += nc;
+
+                crel = m.nel * (k * nc + l);
+                crph = m.nph * (p * nc + q);
+
+                for (n = 0; n < m.nel * nc * nc; n++)
+                    f[crph + g->x] += g->c
+                        * h[n][c0 + g->a] * occ[n] * h[n][crel + g->b];
+            }
+        }
+    }
+
+    return f;
 }
 
 double fermi(double x) {

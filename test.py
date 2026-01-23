@@ -19,8 +19,12 @@ with open('u.dat', 'w') as dat:
     for u in driver.u:
         dat.write('% .9f\n' % u)
 
-res = float(subprocess.check_output(['./elphy', str(nc)]))
+res = np.array(list(map(float, subprocess.check_output(['./elphy', str(nc)],
+    universal_newlines=True).split())))
 
-ref = driver.free_energy(show=False)
+energy = driver.free_energy(show=False)
+forces = driver.jacobian(show=False)
+
+ref = np.insert(forces, 0, energy)
 
 assert np.allclose(res, ref)
