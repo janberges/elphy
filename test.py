@@ -6,17 +6,15 @@ import subprocess
 
 elphmod.misc.verbosity = 0
 
-kT = 0.025 / elphmod.misc.Ry
 nc = 12
-n = nc * nc
 
-el, ph, elph, elel = elphmod.models.graphene.create(rydberg=True)
+elph = elphmod.models.graphene.create(rydberg=True, divide_mass=False)[2]
 
-e = np.linalg.eigvalsh(el.supercell(nc, nc).H())
-mu = elphmod.occupations.find_Fermi_level(n, e, kT)
+driver = elphmod.md.Driver(elph, kT=0.025 / elphmod.misc.Ry, f='fd',
+    n=0.5 * elph.el.size, supercell=(nc, nc), unscreen=False)
 
 res = float(subprocess.check_output(['./elphy', str(nc)]))
 
-ref = elphmod.diagrams.grand_potential(e - mu, kT) + mu * n
+ref = driver.free_energy(show=False)
 
 assert np.allclose(res, ref)
