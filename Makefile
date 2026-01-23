@@ -14,4 +14,4 @@ test: elphy
 	python3 test.py
 
 clean:
-	rm -f elphy *.o
+	rm -f elphy *.o *.dat
