@@ -10,7 +10,10 @@ elphy: elphy.o io.o matrix.o supercell.o temperature.o
 %.o: %.c
 	$(CC) $(CFLAGS) -o $@ -c $<
 
-test: elphy
+el.dat ph.dat elph.dat: data.py
+	python3 $<
+
+test: elphy el.dat ph.dat elph.dat
 	python3 test.py
 
 clean:
