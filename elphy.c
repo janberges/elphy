@@ -20,11 +20,25 @@ struct model {
     struct element *t;
 };
 
+struct vertex {
+    int rph, x, rel, a, b;
+    double c;
+};
+
+struct coupling {
+    int nr, nel, nph, ng;
+    int (*r)[3];
+    struct vertex *g;
+};
+
 void get_model(const char *filename, struct model *m);
 void put_model(const char *filename, struct model *m);
+void get_coupl(const char *filename, struct coupling *m);
 void get_displ(const char *filename, const int nx, double *u);
 
 void supercell(double **h, struct model m, int nc);
+
+void perturbation(double **h, struct coupling m, double *u, int nc);
 
 double fermi(double x);
 double dirac(double x);
@@ -39,10 +53,12 @@ int main(int argc, char **argv) {
     const double kt = 0.0019;
     double **h, **c, *e, *u, energy, nel = 0.25, mu = 0.0;
     struct model el, ph;
+    struct coupling elph;
     int n, nx, nc, i, j;
 
     get_model("el.dat", &el);
     get_model("ph.dat", &ph);
+    get_coupl("elph.dat", &elph);
 
     /* put_model("el_copy.dat", &el); */
 
@@ -59,6 +75,8 @@ int main(int argc, char **argv) {
 
     u = malloc(nx * sizeof *u);
     get_displ("u.dat", nx, u);
+
+    perturbation(h, elph, u, nc);
 
     e = eigenvalues(n, h);
 
@@ -162,6 +180,35 @@ void put_model(const char *filename, struct model *m) {
     fclose(fp);
 }
 
+/* read coupling model */
+
+void get_coupl(const char *filename, struct coupling *m) {
+    FILE *fp;
+    int (*r)[3];
+    struct vertex *g;
+
+    fp = fopen(filename, "r");
+
+    if (fp == NULL) {
+        fprintf(stderr, "Cannot open %s. Run data.py first.\n", filename);
+        exit(1);
+    }
+
+    fscanf(fp, "%d %d %d %d", &m->nph, &m->nel, &m->nr, &m->ng);
+
+    m->r = malloc(m->nr * sizeof *r);
+    m->g = malloc(m->ng * sizeof *g);
+
+    for (r = m->r; r - m->r < m->nr; r++)
+        fscanf(fp, "%d %d %d", *r, *r + 1, *r + 2);
+
+    for (g = m->g; g - m->g < m->ng; g++)
+        fscanf(fp, "%d %d %d %d %d %lf",
+            &g->rph, &g->x, &g->rel, &g->a, &g->b, &g->c);
+
+    fclose(fp);
+}
+
 /* read atomic displacements */
 
 void get_displ(const char *filename, const int nx, double *u) {
@@ -201,6 +248,38 @@ void supercell(double **h, struct model m, int nc) {
                 cr = m.nb * (k * nc + l);
 
                 h[c0 + t->a][cr + t->b] = t->c;
+            }
+        }
+    }
+}
+
+/* add linear electron-lattice coupling to supercell Hamiltonian */
+
+void perturbation(double **h, struct coupling m, double *u, int nc) {
+    struct vertex *g;
+    int c0, crel, crph, i, j, k, l, p, q;
+
+    for (i = 0; i < nc; i++) {
+        for (j = 0; j < nc; j++) {
+            c0 = m.nel * (i * nc + j);
+
+            for (g = m.g; g - m.g < m.ng; g++) {
+                k = (i + m.r[g->rel][0]) % nc;
+                l = (j + m.r[g->rel][1]) % nc;
+
+                p = (i + m.r[g->rph][0]) % nc;
+                q = (j + m.r[g->rph][1]) % nc;
+
+                if (k < 0) k += nc;
+                if (l < 0) l += nc;
+
+                if (p < 0) p += nc;
+                if (q < 0) q += nc;
+
+                crel = m.nel * (k * nc + l);
+                crph = m.nph * (p * nc + q);
+
+                h[c0 + g->a][crel + g->b] += u[crph + g->x] * g->c;
             }
         }
     }
