@@ -1,0 +1,30 @@
+#!/usr/bin/env python3
+
+import elphmod.models.graphene
+
+elphmod.misc.verbosity = 0
+
+eps = 1e-10
+
+el, ph, elph, elel = elphmod.models.graphene.create(rydberg=True)
+
+def datafile(filename, model):
+    elements = []
+
+    for r in range(len(model.R)):
+        for a in range(model.size):
+            for b in range(model.size):
+                c = model.data[r, a, b].real
+                if abs(c) > eps:
+                    elements.append((r, a, b, c))
+
+    with open(filename, 'w') as dat:
+        dat.write('%d %d %d\n' % (len(model.R), model.size, len(elements)))
+
+        for r in model.R:
+            dat.write('% d % d % d\n' % tuple(r))
+
+        for t in sorted(elements):
+            dat.write('%d %d %d % .9f\n' % t)
+
+datafile('el.dat', el)
