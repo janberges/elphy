@@ -20,7 +20,7 @@ def put_model(filename, model):
                     elements.append((r, a, b, c))
 
     with open(filename, 'w') as dat:
-        dat.write('%d %d %d\n' % (len(model.R), model.size, len(elements)))
+        dat.write('%d %d %d\n' % (model.size, len(model.R), len(elements)))
 
         for r in model.R:
             dat.write('% d % d % d\n' % tuple(r))

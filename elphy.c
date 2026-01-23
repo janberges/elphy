@@ -128,7 +128,7 @@ void get_model(const char *filename, struct model *m) {
         exit(1);
     }
 
-    fscanf(fp, "%d %d %d", &m->nr, &m->nb, &m->nt);
+    fscanf(fp, "%d %d %d", &m->nb, &m->nr, &m->nt);
 
     m->r = malloc(m->nr * sizeof *r);
     m->t = malloc(m->nt * sizeof *t);
@@ -151,7 +151,7 @@ void put_model(const char *filename, struct model *m) {
 
     fp = fopen(filename, "w");
 
-    fprintf(fp, "%d %d %d\n", m->nr, m->nb, m->nt);
+    fprintf(fp, "%d %d %d\n", m->nb, m->nr, m->nt);
 
     for (r = m->r; r - m->r < m->nr; r++)
         fprintf(fp, "% d % d % d\n", **r, *(*r + 1), *(*r + 2));
