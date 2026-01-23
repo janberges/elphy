@@ -8,7 +8,7 @@ elphy: elphy.o io.o matrix.o supercell.o temperature.o
 	${CC} ${CFLAGS} -o $@ $^ ${LDLIBS}
 
 %.o: %.c
-	$(CC) $(CFLAGS) -c $< -o $@
+	$(CC) $(CFLAGS) -o $@ -c $<
 
 test: elphy
 	python3 test.py
