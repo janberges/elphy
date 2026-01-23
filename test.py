@@ -10,8 +10,8 @@ nc = 12
 
 elph = elphmod.models.graphene.create(rydberg=True, divide_mass=False)[2]
 
-driver = elphmod.md.Driver(elph, kT=0.025 / elphmod.misc.Ry, f='fd',
-    n=0.5 * elph.el.size, supercell=(nc, nc), unscreen=False)
+driver = elphmod.md.Driver(elph, kT=0.0019, f='fd', n=0.5 * elph.el.size,
+    supercell=(nc, nc), unscreen=False)
 
 res = float(subprocess.check_output(['./elphy', str(nc)]))
 
