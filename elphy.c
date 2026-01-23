@@ -185,11 +185,11 @@ void get_displ(const char *filename, const int nx, double *u) {
 
 void supercell(double **h, struct model m, int nc) {
     struct element *t;
-    int c1, c2, i, j, k, l;
+    int c0, cr, i, j, k, l;
 
     for (i = 0; i < nc; i++) {
         for (j = 0; j < nc; j++) {
-            c1 = m.nb * (i * nc + j);
+            c0 = m.nb * (i * nc + j);
 
             for (t = m.t; t - m.t < m.nt; t++) {
                 k = (i + m.r[t->r][0]) % nc;
@@ -198,9 +198,9 @@ void supercell(double **h, struct model m, int nc) {
                 if (k < 0) k += nc;
                 if (l < 0) l += nc;
 
-                c2 = m.nb * (k * nc + l);
+                cr = m.nb * (k * nc + l);
 
-                h[c1 + t->a][c2 + t->b] = t->c;
+                h[c0 + t->a][cr + t->b] = t->c;
             }
         }
     }
