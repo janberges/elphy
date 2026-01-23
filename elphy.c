@@ -46,7 +46,8 @@ int main(int argc, char **argv) {
     /* read (and write) tight-binding model */
 
     get_model("el.dat", &m);
-    put_model("el_copy.dat", &m);
+
+    /* put_model("el_copy.dat", &m); */
 
     /* get supercell size from command-line argument */
 
