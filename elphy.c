@@ -37,7 +37,8 @@ double free_energy(const int ne, const double n,
     const double *e, const double kt, const double mu);
 
 int main(int argc, char **argv) {
-    const double kt = 0.025;
+    const double ry = 13.605693122990; /* 2022 CODATA */
+    const double kt = 0.025 / ry;
     double **h, *e, nel = 0.25, mu = 0.0;
     struct model m;
     int n, nc;
