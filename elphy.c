@@ -10,10 +10,6 @@ double **matrix(const int n);
 
 double *eigenvalues(const int n, double **a);
 
-struct point {
-    int x, y, z;
-};
-
 struct element {
     int r, a, b;
     double c;
@@ -21,7 +17,7 @@ struct element {
 
 struct model {
     int nr, nb, nt;
-    struct point *r;
+    int (*r)[3];
     struct element *t;
 };
 
@@ -55,8 +51,8 @@ int main(int argc, char **argv) {
             c1 = m.nb * (i * nc + j);
 
             for (t = m.t; t - m.t < m.nt; t++) {
-                k = (i + m.r[t->r].x) % nc;
-                l = (j + m.r[t->r].y) % nc;
+                k = (i + m.r[t->r][0]) % nc;
+                l = (j + m.r[t->r][1]) % nc;
 
                 if (k < 0) k += nc;
                 if (l < 0) l += nc;
@@ -117,7 +113,7 @@ double *eigenvalues(const int n, double **a) {
 
 void get_model(const char *filename, struct model *m) {
     FILE *fp;
-    struct point *r;
+    int (*r)[3];
     struct element *t;
 
     fp = fopen(filename, "r");
@@ -128,7 +124,7 @@ void get_model(const char *filename, struct model *m) {
     m->t = malloc(m->nt * sizeof *t);
 
     for (r = m->r; r - m->r < m->nr; r++)
-        fscanf(fp, "%d %d %d", &r->x, &r->y, &r->z);
+        fscanf(fp, "%d %d %d", *r, *r + 1, *r + 2);
 
     for (t = m->t; t - m->t < m->nt; t++)
         fscanf(fp, "%d %d %d %lf", &t->r, &t->a, &t->b, &t->c);
@@ -138,7 +134,7 @@ void get_model(const char *filename, struct model *m) {
 
 void put_model(const char *filename, struct model *m) {
     FILE *fp;
-    struct point *r;
+    int (*r)[3];
     struct element *t;
 
     fp = fopen(filename, "w");
@@ -146,7 +142,7 @@ void put_model(const char *filename, struct model *m) {
     fprintf(fp, "%d %d %d\n", m->nr, m->nb, m->nt);
 
     for (r = m->r; r - m->r < m->nr; r++)
-        fprintf(fp, "% d % d % d\n", r->x, r->y, r->z);
+        fprintf(fp, "% d % d % d\n", **r, *(*r + 1), *(*r + 2));
 
     for (t = m->t; t - m->t < m->nt; t++)
         fprintf(fp, "%d %d %d % g\n", t->r, t->a, t->b, t->c);
