@@ -10,9 +10,9 @@ nc = 12
 
 el, ph, elph, elel = elphmod.models.graphene.create()
 
-res = np.array(list(map(float, subprocess.check_output(['./elphy', str(nc)],
-    universal_newlines=True).split())))
+res = float(subprocess.check_output(['./elphy', str(nc)]))
 
-ref = np.linalg.eigvalsh(el.supercell(nc, nc).H())
+ref = elphmod.occupations.find_Fermi_level(nc * nc,
+    np.linalg.eigvalsh(el.supercell(nc, nc).H()))
 
 assert np.allclose(res, ref)

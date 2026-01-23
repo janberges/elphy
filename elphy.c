@@ -1,3 +1,4 @@
+#include <math.h>
 #include <stdio.h>
 #include <stdlib.h>
 
@@ -24,8 +25,15 @@ struct model {
 void get_model(const char *filename, struct model *m);
 void put_model(const char *filename, struct model *m);
 
+double fermi(double x);
+double dirac(double x);
+
+double fermi_level(const int ne, const double n,
+    const double *e, const double kt, double mu);
+
 int main(int argc, char **argv) {
-    double **h, *e;
+    const double kt = 0.025;
+    double **h, *e, nel = 0.25, mu = 0.0;
     struct model m;
     struct element *t;
     int n, nc, c1, c2, i, j, k, l;
@@ -39,6 +47,7 @@ int main(int argc, char **argv) {
 
     nc = argc > 1 ? atoi(argv[1]) : 12;
     n = m.nb * nc * nc;
+    nel *= n;
 
     /* emulate 2D variable-length array (to avoid C99 feature) */
 
@@ -68,10 +77,9 @@ int main(int argc, char **argv) {
 
     e = eigenvalues(n, h);
 
-    /* print eigenvalues */
+    /* determine chemical potential */
 
-    for (i = 0; i < n; i++)
-        printf("% .9f\n", e[i]);
+    printf("%.9f\n", fermi_level(n, nel, e, kt, mu));
 
     return 0;
 }
@@ -148,4 +156,42 @@ void put_model(const char *filename, struct model *m) {
         fprintf(fp, "%d %d %d % g\n", t->r, t->a, t->b, t->c);
 
     fclose(fp);
+}
+
+double fermi(double x) {
+    return 0.5 - 0.5 * tanh(0.5 * x);
+}
+
+double dirac(double x) {
+    return 1.0 / (2.0 * cosh(x) + 2.0);
+}
+
+double fermi_level(const int ne, const double n,
+    const double *e, const double kt, double mu) {
+
+    const double eps = 1e-10, tol = 1e-5;
+    const double f0 = fermi(0.0);
+    const double d0 = dirac(0.0) / kt;
+    double x, f, w, sum_f, sum_w, sum_e_w;
+    int i;
+
+    for (;;) {
+        sum_f = sum_w = sum_e_w = 0.0;
+
+        for (i = 0; i < ne; i++) {
+            x = e[i] - mu;
+            f = fermi(x / kt);
+
+            w = fabs(x) > eps ? (f0 - f) / x : d0;
+
+            sum_f += f;
+            sum_w += w;
+            sum_e_w += e[i] * w;
+        }
+
+        if (fabs(sum_f- n) < tol)
+            return mu;
+
+        mu = (n - ne * f0 + sum_e_w) / sum_w;
+    }
 }
