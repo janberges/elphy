@@ -25,6 +25,8 @@ struct model {
 void get_model(const char *filename, struct model *m);
 void put_model(const char *filename, struct model *m);
 
+void supercell(double **h, struct model m, int nc);
+
 double fermi(double x);
 double dirac(double x);
 
@@ -38,8 +40,7 @@ int main(int argc, char **argv) {
     const double kt = 0.025;
     double **h, *e, nel = 0.25, mu = 0.0;
     struct model m;
-    struct element *t;
-    int n, nc, c1, c2, i, j, k, l;
+    int n, nc;
 
     /* read (and write) tight-binding model */
 
@@ -58,23 +59,7 @@ int main(int argc, char **argv) {
 
     /* populate matrix using example of supercell tight-binding Hamiltonian */
 
-    for (i = 0; i < nc; i++) {
-        for (j = 0; j < nc; j++) {
-            c1 = m.nb * (i * nc + j);
-
-            for (t = m.t; t - m.t < m.nt; t++) {
-                k = (i + m.r[t->r][0]) % nc;
-                l = (j + m.r[t->r][1]) % nc;
-
-                if (k < 0) k += nc;
-                if (l < 0) l += nc;
-
-                c2 = m.nb * (k * nc + l);
-
-                h[c1 + t->a][c2 + t->b] = t->c;
-            }
-        }
-    }
+    supercell(h, m, nc);
 
     /* diagonalize matrix */
 
@@ -163,6 +148,29 @@ void put_model(const char *filename, struct model *m) {
         fprintf(fp, "%d %d %d % g\n", t->r, t->a, t->b, t->c);
 
     fclose(fp);
+}
+
+void supercell(double **h, struct model m, int nc) {
+    struct element *t;
+    int c1, c2, i, j, k, l;
+
+    for (i = 0; i < nc; i++) {
+        for (j = 0; j < nc; j++) {
+            c1 = m.nb * (i * nc + j);
+
+            for (t = m.t; t - m.t < m.nt; t++) {
+                k = (i + m.r[t->r][0]) % nc;
+                l = (j + m.r[t->r][1]) % nc;
+
+                if (k < 0) k += nc;
+                if (l < 0) l += nc;
+
+                c2 = m.nb * (k * nc + l);
+
+                h[c1 + t->a][c2 + t->b] = t->c;
+            }
+        }
+    }
 }
 
 double fermi(double x) {
