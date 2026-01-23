@@ -31,6 +31,9 @@ double dirac(double x);
 double fermi_level(const int ne, const double n,
     const double *e, const double kt, double mu);
 
+double free_energy(const int ne, const double n,
+    const double *e, const double kt, const double mu);
+
 int main(int argc, char **argv) {
     const double kt = 0.025;
     double **h, *e, nel = 0.25, mu = 0.0;
@@ -79,7 +82,11 @@ int main(int argc, char **argv) {
 
     /* determine chemical potential */
 
-    printf("%.9f\n", fermi_level(n, nel, e, kt, mu));
+    mu = fermi_level(n, nel, e, kt, mu);
+
+    /* determine free energy */
+
+    printf("%.9f\n", 2.0 * free_energy(n, nel, e, kt, mu));
 
     return 0;
 }
@@ -194,4 +201,18 @@ double fermi_level(const int ne, const double n,
 
         mu = (n - ne * f0 + sum_e_w) / sum_w;
     }
+}
+
+double free_energy(const int ne, const double n,
+    const double *e, const double kt, const double mu) {
+
+    double grand = 0.0;
+    int i;
+
+    for (i = 0; i < ne; i++)
+        grand -= log(exp((mu - e[i]) / kt) + 1.0);
+
+    grand *= kt;
+
+    return grand + n * mu;
 }
