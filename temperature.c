@@ -41,11 +41,13 @@ double fermi_level(const int ne, const double n,
 double free_energy(const int ne, const double n,
     const double *e, const double kt, const double mu) {
 
-    double grand = 0.0;
+    double grand = 0.0, x;
     int i;
 
-    for (i = 0; i < ne; i++)
-        grand -= log(exp((mu - e[i]) / kt) + 1.0);
+    for (i = 0; i < ne; i++) {
+        x = (mu - e[i]) / kt;
+        grand -= x > 709.0 ? x : log(exp(x) + 1.0);
+    }
 
     grand *= kt;
 
