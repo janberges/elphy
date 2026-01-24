@@ -38,15 +38,15 @@ void put_model(const char *filename, const struct model *m);
 void get_coupl(const char *filename, struct coupling *m);
 void get_displ(const char *filename, const int nx, double *u);
 
-int **map(const int nc, const int nr, const int (*points)[3]);
+int **map(const int nc, const int nr, int (*points)[3]);
 
-void supercell(double **h, const struct model m, const int nc, const int **cr);
+void supercell(double **h, const struct model m, const int nc, int **cr);
 
 void perturbation(double **h, const struct coupling m, const double *u,
-    const int nc, const int **cr);
+    const int nc, int **cr);
 
-double *jacobian(const double **h, const struct coupling m, const double *occ,
-    const int nc, const int **cr);
+double *jacobian(double **h, const struct coupling m, const double *occ,
+    const int nc, int **cr);
 
 double fermi(const double x);
 double dirac(const double x);

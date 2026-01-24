@@ -21,17 +21,17 @@ int main(int argc, char **argv) {
     h = matrix(n);
     c = matrix(nx);
 
-    crel = map(nc, el.nr, (const int (*)[3]) el.r);
-    crph = map(nc, ph.nr, (const int (*)[3]) ph.r);
-    crelph = map(nc, elph.nr, (const int (*)[3]) elph.r);
+    crel = map(nc, el.nr, el.r);
+    crph = map(nc, ph.nr, ph.r);
+    crelph = map(nc, elph.nr, elph.r);
 
-    supercell(h, el, nc, (const int **) crel);
-    supercell(c, ph, nc, (const int **) crph);
+    supercell(h, el, nc, crel);
+    supercell(c, ph, nc, crph);
 
     u = malloc(nx * sizeof *u);
     get_displ("u.dat", nx, u);
 
-    perturbation(h, elph, u, nc, (const int **) crelph);
+    perturbation(h, elph, u, nc, crelph);
 
     e = eigenvalues(n, h);
 
@@ -50,7 +50,7 @@ int main(int argc, char **argv) {
     for (i = 0; i < n; i++)
         occ[i] = 2.0 * fermi((e[i] - mu) / kt);
 
-    forces = jacobian((const double**) h, elph, occ, nc, (const int **) crelph);
+    forces = jacobian(h, elph, occ, nc, crelph);
 
     for (i = 0; i < nx; i++)
         for (j = 0; j < nx; j++)
