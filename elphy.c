@@ -5,7 +5,7 @@ int main(int argc, char **argv) {
     double **h, **c, *e, *u, energy, *forces, *occ, nel = 0.25, mu = 0.0;
     struct model el, ph;
     struct coupling elph;
-    int n, nx, nc, i, j;
+    int n, nx, nc, i, j, **crel, **crph, **crelph;
 
     get_model("el.dat", &el);
     get_model("ph.dat", &ph);
@@ -21,13 +21,17 @@ int main(int argc, char **argv) {
     h = matrix(n);
     c = matrix(nx);
 
-    supercell(h, el, nc);
-    supercell(c, ph, nc);
+    crel = map(nc, el.nr, (const int (*)[3]) el.r);
+    crph = map(nc, ph.nr, (const int (*)[3]) ph.r);
+    crelph = map(nc, elph.nr, (const int (*)[3]) elph.r);
+
+    supercell(h, el, nc, (const int **) crel);
+    supercell(c, ph, nc, (const int **) crph);
 
     u = malloc(nx * sizeof *u);
     get_displ("u.dat", nx, u);
 
-    perturbation(h, elph, u, nc);
+    perturbation(h, elph, u, nc, (const int **) crelph);
 
     e = eigenvalues(n, h);
 
@@ -46,7 +50,7 @@ int main(int argc, char **argv) {
     for (i = 0; i < n; i++)
         occ[i] = 2.0 * fermi((e[i] - mu) / kt);
 
-    forces = jacobian((const double**) h, elph, occ, nc);
+    forces = jacobian((const double**) h, elph, occ, nc, (const int **) crelph);
 
     for (i = 0; i < nx; i++)
         for (j = 0; j < nx; j++)

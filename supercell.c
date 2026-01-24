@@ -1,101 +1,76 @@
 #include "elphy.h"
 
-/* populate matrix using example of supercell tight-binding Hamiltonian */
+/* map lattice vectors from unit cells to supercell */
 
-void supercell(double **h, const struct model m, const int nc) {
-    struct element *t;
-    int c0, cr, i, j, k, l;
+int **map(const int nc, const int nr, const int (*points)[3]) {
+    int **cr, c, r, i, j, k, l;
+
+    cr = array_2d(nc * nc, nr);
 
     for (i = 0; i < nc; i++) {
         for (j = 0; j < nc; j++) {
-            c0 = m.nb * (i * nc + j);
+            c = i * nc + j;
 
-            for (t = m.t; t - m.t < m.nt; t++) {
-                k = (i + m.r[t->r][0]) % nc;
-                l = (j + m.r[t->r][1]) % nc;
+            for (r = 0; r < nr; r++) {
+                k = (i + points[r][0]) % nc;
+                l = (j + points[r][1]) % nc;
 
                 if (k < 0) k += nc;
                 if (l < 0) l += nc;
 
-                cr = m.nb * (k * nc + l);
-
-                h[c0 + t->a][cr + t->b] = t->c;
+                cr[c][r] = k * nc + l;
             }
         }
     }
+
+    return cr;
+}
+
+/* populate matrix using example of supercell tight-binding Hamiltonian */
+
+void supercell(double **h, const struct model m, const int nc, const int **cr) {
+    struct element *t;
+    int c;
+
+    for (c = 0; c < nc * nc; c++)
+        for (t = m.t; t - m.t < m.nt; t++)
+            h[m.nb * c + t->a][m.nb * cr[c][t->r] + t->b] = t->c;
 }
 
 /* add linear electron-lattice coupling to supercell Hamiltonian */
 
 void perturbation(double **h, const struct coupling m, const double *u,
-    const int nc) {
+    const int nc, const int **cr) {
 
     struct vertex *g;
-    int c0, crel, crph, i, j, k, l, p, q;
+    int c;
 
-    for (i = 0; i < nc; i++) {
-        for (j = 0; j < nc; j++) {
-            c0 = m.nel * (i * nc + j);
-
-            for (g = m.g; g - m.g < m.ng; g++) {
-                k = (i + m.r[g->rel][0]) % nc;
-                l = (j + m.r[g->rel][1]) % nc;
-
-                p = (i + m.r[g->rph][0]) % nc;
-                q = (j + m.r[g->rph][1]) % nc;
-
-                if (k < 0) k += nc;
-                if (l < 0) l += nc;
-
-                if (p < 0) p += nc;
-                if (q < 0) q += nc;
-
-                crel = m.nel * (k * nc + l);
-                crph = m.nph * (p * nc + q);
-
-                h[c0 + g->a][crel + g->b] += u[crph + g->x] * g->c;
-            }
-        }
-    }
+    for (c = 0; c < nc * nc; c++)
+        for (g = m.g; g - m.g < m.ng; g++)
+            h[m.nel * c + g->a][m.nel * cr[c][g->rel] + g->b]
+                += u[m.nph * cr[c][g->rph] + g->x] * g->c;
 }
 
 /* calculate Jacobian via Hellmann-Feynman theorem */
 
 double *jacobian(const double **h, const struct coupling m, const double *occ,
-    const int nc) {
+    const int nc, const int **cr) {
 
     struct vertex *g;
-    int c0, crel, crph, i, j, k, l, p, q, n;
+    int c, n, i0, iel, iph;
     double *f;
 
     f = calloc(m.nph * nc * nc, sizeof *f);
 
-    for (i = 0; i < nc; i++) {
-        for (j = 0; j < nc; j++) {
-            c0 = m.nel * (i * nc + j);
+    for (c = 0; c < nc * nc; c++)
+        for (g = m.g; g - m.g < m.ng; g++) {
+            i0 = m.nel * c + g->a;
+            iel = m.nel * cr[c][g->rel] + g->b;
+            iph = m.nph * cr[c][g->rph] + g->x;
 
-            for (g = m.g; g - m.g < m.ng; g++) {
-                k = (i + m.r[g->rel][0]) % nc;
-                l = (j + m.r[g->rel][1]) % nc;
-
-                p = (i + m.r[g->rph][0]) % nc;
-                q = (j + m.r[g->rph][1]) % nc;
-
-                if (k < 0) k += nc;
-                if (l < 0) l += nc;
-
-                if (p < 0) p += nc;
-                if (q < 0) q += nc;
-
-                crel = m.nel * (k * nc + l);
-                crph = m.nph * (p * nc + q);
-
-                for (n = 0; n < m.nel * nc * nc; n++)
-                    f[crph + g->x] += g->c
-                        * h[n][c0 + g->a] * occ[n] * h[n][crel + g->b];
-            }
+            for (n = 0; n < m.nel * nc * nc; n++)
+                f[iph] += g->c * h[n][i0] * occ[n] * h[n][iel];
         }
-    }
 
     return f;
 }

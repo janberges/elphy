@@ -7,6 +7,8 @@ extern void dsyev_(const char *jobz, const char *uplo, const int *n, double *a,
 
 double **matrix(const int n);
 
+int **array_2d(const int rows, const int cols);
+
 double *eigenvalues(const int n, double **a);
 
 struct element {
@@ -36,13 +38,15 @@ void put_model(const char *filename, const struct model *m);
 void get_coupl(const char *filename, struct coupling *m);
 void get_displ(const char *filename, const int nx, double *u);
 
-void supercell(double **h, const struct model m, const int nc);
+int **map(const int nc, const int nr, const int (*points)[3]);
+
+void supercell(double **h, const struct model m, const int nc, const int **cr);
 
 void perturbation(double **h, const struct coupling m, const double *u,
-    const int nc);
+    const int nc, const int **cr);
 
 double *jacobian(const double **h, const struct coupling m, const double *occ,
-    const int nc);
+    const int nc, const int **cr);
 
 double fermi(const double x);
 double dirac(const double x);

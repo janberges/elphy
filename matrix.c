@@ -15,6 +15,21 @@ double **matrix(const int n) {
     return a;
 }
 
+/* alternative version for non-square integer arrays */
+
+int **array_2d(const int rows, const int cols) {
+    int **a, *data;
+    int row;
+
+    a = malloc(rows * sizeof data);
+    data = calloc(rows * cols, sizeof *data);
+
+    for (row = 0; row < rows; row++)
+        a[row] = data + row * cols;
+
+    return a;
+}
+
 /* diagonalize matrix using LAPACK subroutine */
 
 double *eigenvalues(const int n, double **a) {
