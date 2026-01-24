@@ -46,7 +46,7 @@ int main(int argc, char **argv) {
     for (i = 0; i < n; i++)
         occ[i] = 2.0 * fermi((e[i] - mu) / kt);
 
-    forces = jacobian(h, elph, occ, nc);
+    forces = jacobian((const double**) h, elph, occ, nc);
 
     for (i = 0; i < nx; i++)
         for (j = 0; j < nx; j++)

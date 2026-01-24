@@ -32,18 +32,20 @@ struct coupling {
 };
 
 void get_model(const char *filename, struct model *m);
-void put_model(const char *filename, struct model *m);
+void put_model(const char *filename, const struct model *m);
 void get_coupl(const char *filename, struct coupling *m);
 void get_displ(const char *filename, const int nx, double *u);
 
-void supercell(double **h, struct model m, int nc);
+void supercell(double **h, const struct model m, const int nc);
 
-void perturbation(double **h, struct coupling m, double *u, int nc);
+void perturbation(double **h, const struct coupling m, const double *u,
+    const int nc);
 
-double *jacobian(double **h, struct coupling m, double *occ, int nc);
+double *jacobian(const double **h, const struct coupling m, const double *occ,
+    const int nc);
 
-double fermi(double x);
-double dirac(double x);
+double fermi(const double x);
+double dirac(const double x);
 
 double fermi_level(const int ne, const double n,
     const double *e, const double kt, double mu);

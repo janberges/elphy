@@ -30,7 +30,7 @@ void get_model(const char *filename, struct model *m) {
 
 /* write tight-binding or mass-spring model */
 
-void put_model(const char *filename, struct model *m) {
+void put_model(const char *filename, const struct model *m) {
     FILE *fp;
     int (*r)[3];
     struct element *t;

@@ -2,7 +2,7 @@
 
 /* populate matrix using example of supercell tight-binding Hamiltonian */
 
-void supercell(double **h, struct model m, int nc) {
+void supercell(double **h, const struct model m, const int nc) {
     struct element *t;
     int c0, cr, i, j, k, l;
 
@@ -27,7 +27,9 @@ void supercell(double **h, struct model m, int nc) {
 
 /* add linear electron-lattice coupling to supercell Hamiltonian */
 
-void perturbation(double **h, struct coupling m, double *u, int nc) {
+void perturbation(double **h, const struct coupling m, const double *u,
+    const int nc) {
+
     struct vertex *g;
     int c0, crel, crph, i, j, k, l, p, q;
 
@@ -59,7 +61,9 @@ void perturbation(double **h, struct coupling m, double *u, int nc) {
 
 /* calculate Jacobian via Hellmann-Feynman theorem */
 
-double *jacobian(double **h, struct coupling m, double *occ, int nc) {
+double *jacobian(const double **h, const struct coupling m, const double *occ,
+    const int nc) {
+
     struct vertex *g;
     int c0, crel, crph, i, j, k, l, p, q, n;
     double *f;
