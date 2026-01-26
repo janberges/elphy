@@ -11,8 +11,6 @@ int main(int argc, char **argv) {
     get_model("ph.dat", &ph);
     get_coupl("elph.dat", &elph);
 
-    /* put_model("el_copy.dat", &el); */
-
     nc = argc > 1 ? atoi(argv[1]) : 12;
     nx = ph.nb * nc * nc;
     n = el.nb * nc * nc;

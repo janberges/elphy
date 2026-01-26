@@ -34,7 +34,6 @@ struct coupling {
 };
 
 void get_model(const char *filename, struct model *m);
-void put_model(const char *filename, const struct model *m);
 void get_coupl(const char *filename, struct coupling *m);
 void get_displ(const char *filename, const int nx, double *u);
 

@@ -28,26 +28,6 @@ void get_model(const char *filename, struct model *m) {
     fclose(fp);
 }
 
-/* write tight-binding or mass-spring model */
-
-void put_model(const char *filename, const struct model *m) {
-    FILE *fp;
-    int (*r)[3];
-    struct element *t;
-
-    fp = fopen(filename, "w");
-
-    fprintf(fp, "%d %d %d\n", m->nb, m->nr, m->nt);
-
-    for (r = m->r; r - m->r < m->nr; r++)
-        fprintf(fp, "% d % d % d\n", **r, *(*r + 1), *(*r + 2));
-
-    for (t = m->t; t - m->t < m->nt; t++)
-        fprintf(fp, "%d %d %d % .9f\n", t->r, t->a, t->b, t->c);
-
-    fclose(fp);
-}
-
 /* read coupling model */
 
 void get_coupl(const char *filename, struct coupling *m) {
