@@ -27,7 +27,9 @@ x, y, z over the three Cartesian displacement directions for all atoms.
     [temperature kT]
     [number of electrons per unit cell]
     [number of orbitals per unit cell]
-    [supercell size]
+    [A₀₀] [A₀₁] [A₀₂]
+    [A₁₀] [A₁₁] [A₁₂] ← supercell vectors in units of primitive vectors
+    [A₂₀] [A₂₁] [A₂₂]
     [number of directions per unit cell]
     [number of lattice vectors]
     [R₀₀] [R₀₁] [R₀₂]

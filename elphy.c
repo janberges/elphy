@@ -3,26 +3,26 @@
 int main(int argc, char **argv) {
     double **h, **c, *e, *u, energy, *forces, *occ, nel, mu = 0.0;
     struct model m;
-    int n, nx, i, j, **cr;
+    int nc, n, nx, i, j, **cr;
 
     get_model(argc > 1 ? argv[1] : "model.dat", &m);
 
-    nx = m.nph * m.nc * m.nc;
-    n = m.nel * m.nc * m.nc;
-    nel = 0.5 * m.n * m.nc * m.nc;
+    nc = map(m, &cr);
+
+    nx = m.nph * nc;
+    n = m.nel * nc;
+    nel = 0.5 * m.n * nc;
 
     h = matrix(n);
     c = matrix(nx);
 
-    cr = map(m.nc, m.nr, m.r);
-
-    supercell(h, m.nel, m.nt, m.t, m.nc, cr);
-    supercell(c, m.nph, m.nk, m.k, m.nc, cr);
+    supercell(h, m.nel, m.nt, m.t, nc, cr);
+    supercell(c, m.nph, m.nk, m.k, nc, cr);
 
     u = malloc(nx * sizeof *u);
     get_displ("u.dat", nx, u);
 
-    perturbation(h, m, u, cr);
+    perturbation(h, m, u, nc, cr);
 
     e = eigenvalues(n, h);
 
@@ -41,7 +41,7 @@ int main(int argc, char **argv) {
     for (i = 0; i < n; i++)
         occ[i] = 2.0 * fermi((e[i] - mu) / m.kt);
 
-    forces = jacobian(h, m, occ, cr);
+    forces = jacobian(h, m, occ, nc, cr);
 
     for (i = 0; i < nx; i++)
         for (j = 0; j < nx; j++)

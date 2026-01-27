@@ -4,7 +4,7 @@
 
 void get_model(const char *filename, struct model *m) {
     FILE *fp;
-    int (*r)[3];
+    int (*r)[3], i, j;
     struct element *t, *k;
     struct vertex *g;
 
@@ -18,7 +18,11 @@ void get_model(const char *filename, struct model *m) {
     fscanf(fp, "%lf", &m->kt);
     fscanf(fp, "%lf", &m->n);
     fscanf(fp, "%d", &m->nel);
-    fscanf(fp, "%d", &m->nc);
+
+    for (i = 0; i < 3; i++)
+        for (j = 0; j < 3; j++)
+            fscanf(fp, "%d", &m->sc[i][j]);
+
     fscanf(fp, "%d", &m->nph);
 
     fscanf(fp, "%d", &m->nr);

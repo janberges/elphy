@@ -1,29 +1,108 @@
 #include "elphy.h"
 
+int dot(const int a[3], const int b[3]) {
+    return a[0] * b[0] + a[1] * b[1] + a[2] * b[2];
+}
+
+int *cross(const int a[3], const int b[3]) {
+    int *c = malloc(3 * sizeof *c);
+
+    c[0] = a[1] * b[2] - a[2] * b[1];
+    c[1] = a[2] * b[0] - a[0] * b[2];
+    c[2] = a[0] * b[1] - a[1] * b[0];
+
+    return c;
+}
+
 /* map lattice vectors from unit cells to supercell */
 
-int **map(const int nc, const int nr, int (*points)[3]) {
-    int **cr, c, r, i, j, k, l;
+int map(const struct model m, int ***cr) {
+    int *b[3], **cells, cell[3], n[3], nc, i, j, c, r, tmp;
+    int lower[3] = {0, 0, 0};
+    int upper[3] = {0, 0, 0};
 
-    cr = array_2d(nc * nc, nr);
+    nc = dot(m.sc[0], cross(m.sc[1], m.sc[2]));
 
-    for (i = 0; i < nc; i++) {
-        for (j = 0; j < nc; j++) {
-            c = i * nc + j;
+    b[0] = cross(m.sc[1], m.sc[2]);
+    b[1] = cross(m.sc[2], m.sc[0]);
+    b[2] = cross(m.sc[0], m.sc[1]);
 
-            for (r = 0; r < nr; r++) {
-                k = (i + points[r][0]) % nc;
-                l = (j + points[r][1]) % nc;
+    if (nc < 0) {
+        nc *= -1;
+        for (i = 0; i < 3; i++)
+            for (j = 0; j < 3; j++)
+                b[i][j] *= -1;
+    }
 
-                if (k < 0) k += nc;
-                if (l < 0) l += nc;
+    for (n[0] = 0; n[0] < 2; n[0]++)
+        for (n[1] = 0; n[1] < 2; n[1]++)
+            for (n[2] = 0; n[2] < 2; n[2]++)
+                for (j = 0; j < 3; j++) {
+                    tmp = 0;
+                    for (i = 0; i < 3; i++)
+                        tmp += n[i] * m.sc[i][j];
+                    if (tmp < lower[j])
+                        lower[j] = tmp;
+                    if (tmp > upper[j])
+                        upper[j] = tmp;
+                }
 
-                cr[c][r] = k * nc + l;
+    cells = array_2d(nc, 3);
+
+    c = 0;
+    for (n[0] = lower[0]; n[0] < upper[0]; n[0]++)
+        for (n[1] = lower[1]; n[1] < upper[1]; n[1]++)
+            for (n[2] = lower[2]; n[2] < upper[2]; n[2]++) {
+                for (i = 0; i < 3; i++)
+                    if ((tmp = dot(n, b[i])) < 0 || tmp >= nc)
+                        break;
+
+                if (i == 3) {
+                    for (j = 0; j < 3; j++)
+                        cells[c][j] = n[j];
+                    c++;
+                }
+            }
+
+    if (c != nc) {
+        fprintf(stderr, "Problem with supercell.\n");
+        exit(1);
+    }
+
+    *cr = array_2d(nc, m.nr);
+
+    for (c = 0; c < nc; c++) {
+        for (r = 0; r < m.nr; r++) {
+            for (j = 0; j < 3; j++)
+                cell[j] = cells[c][j] + m.r[r][j];
+
+            for (i = 0; i < 3; i++) {
+                n[i] = dot(cell, b[i]) % nc;
+                if (n[i] < 0)
+                    n[i] += nc;
+            }
+
+            for (j = 0; j < 3; j++) {
+                cell[j] = 0;
+                for (i = 0; i < 3; i++)
+                    cell[j] += n[i] * m.sc[i][j];
+                cell[j] /= nc;
+            }
+
+            for (tmp = 0; tmp < nc; tmp++) {
+                for (j = 0; j < 3; j++)
+                    if (cell[j] != cells[tmp][j])
+                        break;
+
+                if (j == 3) {
+                    (*cr)[c][r] = tmp;
+                    break;
+                }
             }
         }
     }
 
-    return cr;
+    return nc;
 }
 
 /* populate matrix using example of supercell tight-binding Hamiltonian */
@@ -34,7 +113,7 @@ void supercell(double **a, const int nb, const int nl, const struct element *l,
     const struct element *m;
     int c;
 
-    for (c = 0; c < nc * nc; c++)
+    for (c = 0; c < nc; c++)
         for (m = l; m - l < nl; m++)
             a[nb * c + m->a][nb * cr[c][m->r] + m->b] = m->c;
 }
@@ -42,12 +121,12 @@ void supercell(double **a, const int nb, const int nl, const struct element *l,
 /* add linear electron-lattice coupling to supercell Hamiltonian */
 
 void perturbation(double **h, const struct model m, const double *u,
-    int **cr) {
+    const int nc, int **cr) {
 
     struct vertex *g;
     int c;
 
-    for (c = 0; c < m.nc * m.nc; c++)
+    for (c = 0; c < nc; c++)
         for (g = m.g; g - m.g < m.ng; g++)
             h[m.nel * c + g->a][m.nel * cr[c][g->rel] + g->b]
                 += u[m.nph * cr[c][g->rph] + g->x] * g->c;
@@ -56,21 +135,21 @@ void perturbation(double **h, const struct model m, const double *u,
 /* calculate Jacobian via Hellmann-Feynman theorem */
 
 double *jacobian(double **h, const struct model m, const double *occ,
-    int **cr) {
+    const int nc, int **cr) {
 
     struct vertex *g;
     int c, n, i0, iel, iph;
     double *f;
 
-    f = calloc(m.nph * m.nc * m.nc, sizeof *f);
+    f = calloc(m.nph * nc, sizeof *f);
 
-    for (c = 0; c < m.nc * m.nc; c++)
+    for (c = 0; c < nc; c++)
         for (g = m.g; g - m.g < m.ng; g++) {
             i0 = m.nel * c + g->a;
             iel = m.nel * cr[c][g->rel] + g->b;
             iph = m.nph * cr[c][g->rph] + g->x;
 
-            for (n = 0; n < m.nel * m.nc * m.nc; n++)
+            for (n = 0; n < m.nel * nc; n++)
                 f[iph] += g->c * h[n][i0] * occ[n] * h[n][iel];
         }
 

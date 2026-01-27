@@ -23,7 +23,7 @@ struct vertex {
 
 struct model {
     double kt, n;
-    int nc;
+    int sc[3][3];
     int nel, nph, nr, nt, nk, ng;
     int (*r)[3];
     struct element *t;
@@ -34,16 +34,19 @@ struct model {
 void get_model(const char *filename, struct model *m);
 void get_displ(const char *filename, const int nx, double *u);
 
-int **map(const int nc, const int nr, int (*points)[3]);
+int dot(const int a[3], const int b[3]);
+int *cross(const int a[3], const int b[3]);
+
+int map(const struct model m, int ***cr);
 
 void supercell(double **a, const int nb, const int nl, const struct element *l,
     const int nc, int **cr);
 
 void perturbation(double **h, const struct model m, const double *u,
-    int **cr);
+    const int nc, int **cr);
 
 double *jacobian(double **h, const struct model m, const double *occ,
-    int **cr);
+    const int nc, int **cr);
 
 double fermi(const double x);
 double dirac(const double x);

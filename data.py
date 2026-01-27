@@ -6,7 +6,7 @@ elphmod.misc.verbosity = 0
 
 kT = 0.0019
 n = 1.0
-nc = 12
+A = elphmod.bravais.supercell(12, 12)[1]
 eps = 1e-10
 
 el, ph, elph, elel = elphmod.models.graphene.create(rydberg=True,
@@ -56,7 +56,10 @@ with open('model.dat', 'w') as dat:
     dat.write(f'{kT}\n')
     dat.write(f'{n}\n')
     dat.write(f'{elph.el.size}\n')
-    dat.write(f'{nc}\n')
+
+    for i in range(3):
+        dat.write('%2d %2d %2d\n' % tuple(A[i]))
+
     dat.write(f'{elph.ph.size}\n')
 
     dat.write(f'{len(R)}\n')
