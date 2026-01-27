@@ -30,7 +30,14 @@ x, y, z over the three Cartesian displacement directions for all atoms.
     [A₀₀] [A₀₁] [A₀₂]
     [A₁₀] [A₁₁] [A₁₂] ← supercell vectors in units of primitive vectors
     [A₂₀] [A₂₁] [A₂₂]
-    [number of directions per unit cell]
+    [a₀₀] [a₀₁] [a₀₂]
+    [a₁₀] [a₁₁] [a₁₂] ← primitive vectors in Cartesian coordinates
+    [a₂₀] [a₂₁] [a₂₂]
+    [number of atoms per unit cell]
+    [r₀₀] [r₀₁] [r₀₂]
+    [r₁₀] [r₁₁] [r₁₂] ← atomic positions in Cartesian coordinates
+    [r₂₀] [r₂₁] [r₂₂]
+    ⋮
     [number of lattice vectors]
     [R₀₀] [R₀₁] [R₀₂]
     [R₁₀] [R₁₁] [R₁₂] ← lattice vectors in units of primitive vectors

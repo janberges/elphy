@@ -60,7 +60,13 @@ with open('model.dat', 'w') as dat:
     for i in range(3):
         dat.write('%2d %2d %2d\n' % tuple(A[i]))
 
-    dat.write(f'{elph.ph.size}\n')
+    for i in range(3):
+        dat.write('%12.9f %12.9f %12.9f\n' % tuple(elph.ph.a[i]))
+
+    dat.write(f'{elph.ph.nat}\n')
+
+    for i in range(elph.ph.nat):
+        dat.write('%12.9f %12.9f %12.9f\n' % tuple(elph.ph.r[i]))
 
     dat.write(f'{len(R)}\n')
 
