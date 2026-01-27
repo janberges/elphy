@@ -15,7 +15,10 @@ void get_model(const char *filename, struct model *m) {
         exit(1);
     }
 
+    fscanf(fp, "%lf", &m->kt);
+    fscanf(fp, "%lf", &m->n);
     fscanf(fp, "%d", &m->nel);
+    fscanf(fp, "%d", &m->nc);
     fscanf(fp, "%d", &m->nph);
 
     fscanf(fp, "%d", &m->nr);

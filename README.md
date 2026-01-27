@@ -19,10 +19,15 @@ LAPACK and BLAS are required.
 
 ## Input file
 
+The program `elphy` accepts a single argument with the path to an input file
+with the following content, where `[…]` are placeholders for numerical values.
 The indices i, j, k, l run over lattice vectors, α, β, γ, δ over orbitals, and
 x, y, z over the three Cartesian displacement directions for all atoms.
 
+    [temperature kT]
+    [number of electrons per unit cell]
     [number of orbitals per unit cell]
+    [supercell size]
     [number of directions per unit cell]
     [number of lattice vectors]
     [R₀₀] [R₀₁] [R₀₂]

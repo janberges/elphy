@@ -22,6 +22,8 @@ struct vertex {
 };
 
 struct model {
+    double kt, n;
+    int nc;
     int nel, nph, nr, nt, nk, ng;
     int (*r)[3];
     struct element *t;
@@ -38,10 +40,10 @@ void supercell(double **a, const int nb, const int nl, const struct element *l,
     const int nc, int **cr);
 
 void perturbation(double **h, const struct model m, const double *u,
-    const int nc, int **cr);
+    int **cr);
 
 double *jacobian(double **h, const struct model m, const double *occ,
-    const int nc, int **cr);
+    int **cr);
 
 double fermi(const double x);
 double dirac(const double x);

@@ -42,12 +42,12 @@ void supercell(double **a, const int nb, const int nl, const struct element *l,
 /* add linear electron-lattice coupling to supercell Hamiltonian */
 
 void perturbation(double **h, const struct model m, const double *u,
-    const int nc, int **cr) {
+    int **cr) {
 
     struct vertex *g;
     int c;
 
-    for (c = 0; c < nc * nc; c++)
+    for (c = 0; c < m.nc * m.nc; c++)
         for (g = m.g; g - m.g < m.ng; g++)
             h[m.nel * c + g->a][m.nel * cr[c][g->rel] + g->b]
                 += u[m.nph * cr[c][g->rph] + g->x] * g->c;
@@ -56,21 +56,21 @@ void perturbation(double **h, const struct model m, const double *u,
 /* calculate Jacobian via Hellmann-Feynman theorem */
 
 double *jacobian(double **h, const struct model m, const double *occ,
-    const int nc, int **cr) {
+    int **cr) {
 
     struct vertex *g;
     int c, n, i0, iel, iph;
     double *f;
 
-    f = calloc(m.nph * nc * nc, sizeof *f);
+    f = calloc(m.nph * m.nc * m.nc, sizeof *f);
 
-    for (c = 0; c < nc * nc; c++)
+    for (c = 0; c < m.nc * m.nc; c++)
         for (g = m.g; g - m.g < m.ng; g++) {
             i0 = m.nel * c + g->a;
             iel = m.nel * cr[c][g->rel] + g->b;
             iph = m.nph * cr[c][g->rph] + g->x;
 
-            for (n = 0; n < m.nel * nc * nc; n++)
+            for (n = 0; n < m.nel * m.nc * m.nc; n++)
                 f[iph] += g->c * h[n][i0] * occ[n] * h[n][iel];
         }
 

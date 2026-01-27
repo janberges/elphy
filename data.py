@@ -4,6 +4,9 @@ import elphmod.models.graphene
 
 elphmod.misc.verbosity = 0
 
+kT = 0.0019
+n = 1.0
+nc = 12
 eps = 1e-10
 
 el, ph, elph, elel = elphmod.models.graphene.create(rydberg=True,
@@ -50,8 +53,12 @@ for rk in range(len(Rk)):
                         couplings.append((k, z, l, c, d, g))
 
 with open('model.dat', 'w') as dat:
+    dat.write(f'{kT}\n')
+    dat.write(f'{n}\n')
     dat.write(f'{elph.el.size}\n')
+    dat.write(f'{nc}\n')
     dat.write(f'{elph.ph.size}\n')
+
     dat.write(f'{len(R)}\n')
 
     for r in R:
