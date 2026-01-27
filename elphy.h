@@ -26,6 +26,7 @@ struct model {
     int sc[3][3];
     double uc[3][3];
     double (*tau)[3];
+    char (*typ)[3];
     int nel, nph, nat, nr, nt, nk, ng;
     int (*r)[3];
     struct element *t;

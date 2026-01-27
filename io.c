@@ -30,11 +30,14 @@ void get_model(const char *filename, struct model *m) {
     fscanf(fp, "%d", &m->nat);
     m->nph = 3 * m->nat;
 
+    m->typ = malloc(m->nat * sizeof *m->typ);
     m->tau = malloc(m->nat * sizeof *m->tau);
 
-    for (i = 0; i < m->nat; i++)
+    for (i = 0; i < m->nat; i++) {
+        fscanf(fp, "%s", m->typ[i]);
         for (j = 0; j < 3; j++)
             fscanf(fp, "%lf", &m->tau[i][j]);
+    }
 
     fscanf(fp, "%d", &m->nr);
     m->r = malloc(m->nr * sizeof *r);

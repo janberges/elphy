@@ -34,9 +34,9 @@ x, y, z over the three Cartesian displacement directions for all atoms.
     [a₁₀] [a₁₁] [a₁₂] ← primitive vectors in Cartesian coordinates
     [a₂₀] [a₂₁] [a₂₂]
     [number of atoms per unit cell]
-    [r₀₀] [r₀₁] [r₀₂]
-    [r₁₀] [r₁₁] [r₁₂] ← atomic positions in Cartesian coordinates
-    [r₂₀] [r₂₁] [r₂₂]
+    [X₀] [r₀₀] [r₀₁] [r₀₂]
+    [X₁] [r₁₀] [r₁₁] [r₁₂] ← atomic positions in Cartesian coordinates
+    [X₂] [r₂₀] [r₂₁] [r₂₂]
     ⋮
     [number of lattice vectors]
     [R₀₀] [R₀₁] [R₀₂]
