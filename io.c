@@ -1,38 +1,11 @@
 #include "elphy.h"
 
-/* read tight-binding or mass-spring model */
+/* read coupled tight-binding and mass-spring models */
 
 void get_model(const char *filename, struct model *m) {
     FILE *fp;
     int (*r)[3];
-    struct element *t;
-
-    fp = fopen(filename, "r");
-
-    if (fp == NULL) {
-        fprintf(stderr, "Cannot open %s. Run data.py first.\n", filename);
-        exit(1);
-    }
-
-    fscanf(fp, "%d %d %d", &m->nb, &m->nr, &m->nt);
-
-    m->r = malloc(m->nr * sizeof *r);
-    m->t = malloc(m->nt * sizeof *t);
-
-    for (r = m->r; r - m->r < m->nr; r++)
-        fscanf(fp, "%d %d %d", *r, *r + 1, *r + 2);
-
-    for (t = m->t; t - m->t < m->nt; t++)
-        fscanf(fp, "%d %d %d %lf", &t->r, &t->a, &t->b, &t->c);
-
-    fclose(fp);
-}
-
-/* read coupling model */
-
-void get_coupl(const char *filename, struct coupling *m) {
-    FILE *fp;
-    int (*r)[3];
+    struct element *t, *k;
     struct vertex *g;
 
     fp = fopen(filename, "r");
@@ -42,13 +15,29 @@ void get_coupl(const char *filename, struct coupling *m) {
         exit(1);
     }
 
-    fscanf(fp, "%d %d %d %d", &m->nph, &m->nel, &m->nr, &m->ng);
+    fscanf(fp, "%d", &m->nel);
+    fscanf(fp, "%d", &m->nph);
 
+    fscanf(fp, "%d", &m->nr);
     m->r = malloc(m->nr * sizeof *r);
-    m->g = malloc(m->ng * sizeof *g);
 
     for (r = m->r; r - m->r < m->nr; r++)
         fscanf(fp, "%d %d %d", *r, *r + 1, *r + 2);
+
+    fscanf(fp, "%d", &m->nt);
+    m->t = malloc(m->nt * sizeof *t);
+
+    for (t = m->t; t - m->t < m->nt; t++)
+        fscanf(fp, "%d %d %d %lf", &t->r, &t->a, &t->b, &t->c);
+
+    fscanf(fp, "%d", &m->nk);
+    m->k = malloc(m->nk * sizeof *k);
+
+    for (k = m->k; k - m->k < m->nk; k++)
+        fscanf(fp, "%d %d %d %lf", &k->r, &k->a, &k->b, &k->c);
+
+    fscanf(fp, "%d", &m->ng);
+    m->g = malloc(m->ng * sizeof *g);
 
     for (g = m->g; g - m->g < m->ng; g++)
         fscanf(fp, "%d %d %d %d %d %lf",

@@ -16,35 +16,31 @@ struct element {
     double c;
 };
 
-struct model {
-    int nr, nb, nt;
-    int (*r)[3];
-    struct element *t;
-};
-
 struct vertex {
     int rph, x, rel, a, b;
     double c;
 };
 
-struct coupling {
-    int nr, nel, nph, ng;
+struct model {
+    int nel, nph, nr, nt, nk, ng;
     int (*r)[3];
+    struct element *t;
+    struct element *k;
     struct vertex *g;
 };
 
 void get_model(const char *filename, struct model *m);
-void get_coupl(const char *filename, struct coupling *m);
 void get_displ(const char *filename, const int nx, double *u);
 
 int **map(const int nc, const int nr, int (*points)[3]);
 
-void supercell(double **h, const struct model m, const int nc, int **cr);
-
-void perturbation(double **h, const struct coupling m, const double *u,
+void supercell(double **a, const int nb, const int nl, const struct element *l,
     const int nc, int **cr);
 
-double *jacobian(double **h, const struct coupling m, const double *occ,
+void perturbation(double **h, const struct model m, const double *u,
+    const int nc, int **cr);
+
+double *jacobian(double **h, const struct model m, const double *occ,
     const int nc, int **cr);
 
 double fermi(const double x);

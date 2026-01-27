@@ -28,18 +28,20 @@ int **map(const int nc, const int nr, int (*points)[3]) {
 
 /* populate matrix using example of supercell tight-binding Hamiltonian */
 
-void supercell(double **h, const struct model m, const int nc, int **cr) {
-    struct element *t;
+void supercell(double **a, const int nb, const int nl, const struct element *l,
+    const int nc, int **cr) {
+
+    const struct element *m;
     int c;
 
     for (c = 0; c < nc * nc; c++)
-        for (t = m.t; t - m.t < m.nt; t++)
-            h[m.nb * c + t->a][m.nb * cr[c][t->r] + t->b] = t->c;
+        for (m = l; m - l < nl; m++)
+            a[nb * c + m->a][nb * cr[c][m->r] + m->b] = m->c;
 }
 
 /* add linear electron-lattice coupling to supercell Hamiltonian */
 
-void perturbation(double **h, const struct coupling m, const double *u,
+void perturbation(double **h, const struct model m, const double *u,
     const int nc, int **cr) {
 
     struct vertex *g;
@@ -53,7 +55,7 @@ void perturbation(double **h, const struct coupling m, const double *u,
 
 /* calculate Jacobian via Hellmann-Feynman theorem */
 
-double *jacobian(double **h, const struct coupling m, const double *occ,
+double *jacobian(double **h, const struct model m, const double *occ,
     const int nc, int **cr) {
 
     struct vertex *g;
