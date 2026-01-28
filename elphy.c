@@ -11,7 +11,10 @@ int main(int argc, char **argv) {
 
     nc = map(m, &cr, &cells);
 
-    repeat(m, nc, cells, uc, &typ, &tau);
+    typ = malloc(m.nat * nc * sizeof *typ);
+    tau = malloc(m.nat * nc * sizeof *tau);
+
+    repeat(m, nc, cells, uc, typ, tau);
 
     nx = m.nph * nc;
     n = m.nel * nc;
