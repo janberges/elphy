@@ -30,7 +30,8 @@ int main(int argc, char **argv) {
 
     perturbation(h, m, u, nc, cr);
 
-    e = eigenvalues(n, h);
+    e = malloc(n * sizeof *e);
+    eigenvalues(n, h, e);
 
     mu = fermi_level(n, nel, e, m.kt, mu);
 
@@ -47,7 +48,8 @@ int main(int argc, char **argv) {
     for (i = 0; i < n; i++)
         occ[i] = 2.0 * fermi((e[i] - mu) / m.kt);
 
-    forces = jacobian(h, m, occ, nc, cr);
+    forces = malloc(nx * sizeof *forces);
+    jacobian(h, m, occ, forces, nc, cr);
 
     for (i = 0; i < nx; i++)
         for (j = 0; j < nx; j++)

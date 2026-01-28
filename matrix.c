@@ -12,7 +12,7 @@ double **matrix(const int n) {
     for (row = 0; row < n; row++)
         a[row] = data + row * n;
 
-    return a;
+    return a; /* free data using free(*a) before free(a) */
 }
 
 /* alternative version for non-square integer arrays */
@@ -27,17 +27,15 @@ int **array_2d(const int rows, const int cols) {
     for (row = 0; row < rows; row++)
         a[row] = data + row * cols;
 
-    return a;
+    return a; /* free data using free(*a) before free(a) */
 }
 
 /* diagonalize matrix using LAPACK subroutine */
 
-double *eigenvalues(const int n, double **a) {
+int eigenvalues(const int n, double **a, double *w) {
     const char jobz = 'V', uplo = 'U';
-    double *w, *work, lworkopt;
+    double *work, lworkopt;
     int lwork, info, step;
-
-    w = malloc(n * sizeof *w);
 
     for (step = 0; step < 2; step++) {
         if (step) { /* workspace allocation */
@@ -51,5 +49,7 @@ double *eigenvalues(const int n, double **a) {
         dsyev_(&jobz, &uplo, &n, *a, &n, w, work, &lwork, &info);
     }
 
-    return w;
+    free(work);
+
+    return info;
 }

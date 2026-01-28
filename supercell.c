@@ -4,28 +4,24 @@ int dot(const int a[3], const int b[3]) {
     return a[0] * b[0] + a[1] * b[1] + a[2] * b[2];
 }
 
-int *cross(const int a[3], const int b[3]) {
-    int *c = malloc(3 * sizeof *c);
-
+void cross(const int a[3], const int b[3], int *c) {
     c[0] = a[1] * b[2] - a[2] * b[1];
     c[1] = a[2] * b[0] - a[0] * b[2];
     c[2] = a[0] * b[1] - a[1] * b[0];
-
-    return c;
 }
 
 /* map lattice vectors from unit cells to supercell */
 
 int map(const struct model m, int ***cr, int ***cells) {
-    int *b[3], cell[3], n[3], nc, i, j, c, r, tmp;
+    int b[3][3], cell[3], n[3], nc, i, j, c, r, tmp;
     int lower[3] = {0, 0, 0};
     int upper[3] = {0, 0, 0};
 
-    nc = dot(m.sc[0], cross(m.sc[1], m.sc[2]));
+    cross(m.sc[1], m.sc[2], b[0]);
+    cross(m.sc[2], m.sc[0], b[1]);
+    cross(m.sc[0], m.sc[1], b[2]);
 
-    b[0] = cross(m.sc[1], m.sc[2]);
-    b[1] = cross(m.sc[2], m.sc[0]);
-    b[2] = cross(m.sc[0], m.sc[1]);
+    nc = dot(m.sc[0], b[0]);
 
     if (nc < 0) {
         nc *= -1;
@@ -161,14 +157,14 @@ void perturbation(double **h, const struct model m, const double *u,
 
 /* calculate Jacobian via Hellmann-Feynman theorem */
 
-double *jacobian(double **h, const struct model m, const double *occ,
-    const int nc, int **cr) {
+void jacobian(double **h, const struct model m, const double *occ,
+    double *f, const int nc, int **cr) {
 
     struct vertex *g;
     int c, n, i0, iel, iph;
-    double *f;
 
-    f = calloc(m.nph * nc, sizeof *f);
+    for (iph = 0; iph < nc * m.nph; iph++)
+        f[iph] = 0.0;
 
     for (c = 0; c < nc; c++)
         for (g = m.g; g - m.g < m.ng; g++) {
@@ -179,6 +175,4 @@ double *jacobian(double **h, const struct model m, const double *occ,
             for (n = 0; n < m.nel * nc; n++)
                 f[iph] += g->c * h[n][i0] * occ[n] * h[n][iel];
         }
-
-    return f;
 }
