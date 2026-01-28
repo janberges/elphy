@@ -1,7 +1,7 @@
 #include "elphy.h"
 
 int main(int argc, char **argv) {
-    double **h0, **h, **c, *e, *u, energy, *forces, *occ;
+    double **h0, **h, **c, *e, *u, energy, *forces, *forces0, *occ;
     struct model m;
     int nc, nel, nph, nat, i, **cr, **cells;
     char (*typ)[3];
@@ -21,6 +21,7 @@ int main(int argc, char **argv) {
     e = malloc(nel * sizeof *e);
     occ = malloc(nel * sizeof *occ);
     forces = malloc(nph * sizeof *forces);
+    forces0 = calloc(nph, sizeof *forces);
 
     h0 = matrix(nel);
     h = matrix(nel);
@@ -28,6 +29,13 @@ int main(int argc, char **argv) {
 
     supercell(h0, m.nel, m.nt, m.t, nc, cr);
     supercell(c, m.nph, m.nk, m.k, nc, cr);
+
+    memcpy(*h, *h0, nel * nel * sizeof **h);
+
+    energy = step(h, c, u, m, e, occ, forces, forces0, nc, cr);
+
+    for (i = 0; i < nph; i++)
+        forces0[i] = -forces[i];
 
     repeat(m, nc, cells, uc, typ, tau);
 
@@ -37,7 +45,7 @@ int main(int argc, char **argv) {
 
     perturbation(h0, h, m, u, nc, cr);
 
-    energy = step(h, c, u, m, e, occ, forces, nc, cr);
+    energy = step(h, c, u, m, e, occ, forces, forces0, nc, cr);
 
     printf("%.9f\n", energy);
 
@@ -74,7 +82,8 @@ int main(int argc, char **argv) {
 }
 
 double step(double **h, double **c, const double *u, const struct model m,
-    double *e, double *occ, double *forces, const int nc, int **cr) {
+    double *e, double *occ, double *forces, const double *forces0,
+    const int nc, int **cr) {
 
     static double mu = 0.0;
     double energy;
@@ -96,7 +105,7 @@ double step(double **h, double **c, const double *u, const struct model m,
 
     occupations(nel, occ, e, m.kt, mu);
 
-    jacobian(h, m, occ, forces, nc, cr);
+    jacobian(h, m, occ, forces, forces0, nc, cr);
 
     for (i = 0; i < nph; i++)
         for (j = 0; j < nph; j++)

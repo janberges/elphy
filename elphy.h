@@ -59,7 +59,7 @@ void perturbation(double **h0, double **h, const struct model m,
     const double *u, const int nc, int **cr);
 
 void jacobian(double **h, const struct model m, const double *occ,
-    double *f, const int nc, int **cr);
+    double *f, const double *f0, const int nc, int **cr);
 
 double fermi(const double x);
 double dirac(const double x);
@@ -74,4 +74,5 @@ void occupations(const int ne, double *f,
     const double *e, const double kt, const double mu);
 
 double step(double **h, double **c, const double *u, const struct model m,
-    double *e, double *occ, double *forces, const int nc, int **cr);
+    double *e, double *occ, double *forces, const double *forces0,
+    const int nc, int **cr);
