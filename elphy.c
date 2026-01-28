@@ -34,9 +34,6 @@ int main(int argc, char **argv) {
 
     energy = step(h, c, u, m, e, occ, forces, forces0, nc, cr);
 
-    for (i = 0; i < nph; i++)
-        forces0[i] = -forces[i];
-
     repeat(m, nc, cells, uc, typ, tau);
 
     get_displ("u.dat", nat, uc, typ, tau, u);
@@ -107,9 +104,11 @@ double step(double **h, double **c, const double *u, const struct model m,
 
     jacobian(h, m, occ, forces, forces0, nc, cr);
 
-    for (i = 0; i < nph; i++)
+    for (i = 0; i < nph; i++) {
         for (j = 0; j < nph; j++)
             forces[i] += c[i][j] * u[j];
+        forces[i] *= -1;
+    }
 
     return energy;
 }

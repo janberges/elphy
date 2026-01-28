@@ -18,7 +18,7 @@ res = np.array(list(map(float, subprocess.check_output(['./elphy'],
     universal_newlines=True).split())))
 
 energy = driver.free_energy(show=False)
-forces = driver.jacobian(show=False)
+forces = -driver.jacobian(show=False)
 
 ref = np.insert(forces, 0, energy)
 
