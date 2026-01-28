@@ -12,10 +12,7 @@ driver = elphmod.md.Driver(elph, kT=0.0019, f='fd', n=0.5 * elph.el.size,
     supercell=(12, 12), unscreen=False)
 
 driver.random_displacements()
-
-with open('u.dat', 'w') as dat:
-    for u in driver.u:
-        dat.write('% .9f\n' % u)
+driver.to_xyz('u.dat')
 
 res = np.array(list(map(float, subprocess.check_output(['./elphy'],
     universal_newlines=True).split())))

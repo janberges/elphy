@@ -35,12 +35,20 @@ struct model {
 };
 
 void get_model(const char *filename, struct model *m);
-void get_displ(const char *filename, const int nx, double *u);
+
+void get_displ(const char *filename, const int nat,
+    double uc[3][3], char (*typ)[3], double (*tau)[3], double *u);
+
+void put_displ(const char *filename, const int nat,
+    double uc[3][3], char (*typ)[3], double (*tau)[3], double *u);
 
 int dot(const int a[3], const int b[3]);
 int *cross(const int a[3], const int b[3]);
 
 int map(const struct model m, int ***cr, int ***cells);
+
+void repeat(const struct model m, const int nc, int **cells,
+    double uc[3][3], char (**typ)[3], double (**tau)[3]);
 
 void supercell(double **a, const int nb, const int nl, const struct element *l,
     const int nc, int **cr);

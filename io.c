@@ -67,11 +67,16 @@ void get_model(const char *filename, struct model *m) {
     fclose(fp);
 }
 
-/* read atomic displacements */
+/* get atomic displacements from file with atomic positions in XYZ format */
 
-void get_displ(const char *filename, const int nx, double *u) {
+void get_displ(const char *filename, const int nat,
+    double uc[3][3], char (*typ)[3], double (*tau)[3], double *u) {
+
+    const double eps = 1e-5;
     FILE *fp;
-    int i;
+    int i, j;
+    double r;
+    char c[3];
 
     fp = fopen(filename, "r");
 
@@ -80,8 +85,74 @@ void get_displ(const char *filename, const int nx, double *u) {
         exit(1);
     }
 
-    for (i = 0; i < nx; i++)
-        fscanf(fp, "%lf", u++);
+    fscanf(fp, "%d", &i);
+
+    if (i != nat) {
+        fprintf(stderr, "%d instead of %d atoms in %s.\n", i, nat, filename);
+        exit(1);
+    }
+
+    if (fscanf(fp, " # CELL{H}:") == EOF) {
+        fprintf(stderr, "Unsupported cell definition in %s.\n", filename);
+        exit(1);
+    }
+
+    for (i = 0; i < 3; i++)
+        for (j = 0; j < 3; j++) {
+            fscanf(fp, "%lf", &r);
+            if (fabs(r - uc[j][i]) > eps) {
+                fprintf(stderr, "Wrong cell dimension in %s.\n", filename);
+                exit(1);
+            }
+        }
+
+    for (i = 0; i < nat; i++) {
+        fscanf(fp, "%s", c);
+
+        for (j = 0; j < 3; j++) {
+            if (c[j] != typ[i][j]) {
+                fprintf(stderr, "Wrong atom type in %s.\n", filename);
+                exit(1);
+            }
+            if (c[j] == '\0')
+                break;
+        }
+
+        for (j = 0; j < 3; j++) {
+            fscanf(fp, "%lf", &r);
+            u[3 * i + j] = r - tau[i][j];
+        }
+    }
+
+    fclose(fp);
+}
+
+/* store positions of displaced atoms in file in XYZ format */
+
+void put_displ(const char *filename, const int nat,
+    double uc[3][3], char (*typ)[3], double (*tau)[3], double *u) {
+
+    FILE *fp;
+    int i, j;
+
+    fp = fopen(filename, "w");
+
+    fprintf(fp, "%d\n", nat);
+
+    fprintf(fp, "# CELL{H}:");
+
+    for (i = 0; i < 3; i++)
+        for (j = 0; j < 3; j++)
+            fprintf(fp, " %.10g", uc[j][i]);
+
+    fprintf(fp, "\n");
+
+    for (i = 0; i < nat; i++) {
+        fprintf(fp, "%8s", typ[i]);
+        for (j = 0; j < 3; j++)
+            fprintf(fp, " %15.9f", tau[i][j] + u[3 * i + j]);
+        fprintf(fp, "\n");
+    }
 
     fclose(fp);
 }

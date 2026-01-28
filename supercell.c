@@ -105,6 +105,33 @@ int map(const struct model m, int ***cr, int ***cells) {
     return nc;
 }
 
+/* determine dimensions and basis atoms of supercell */
+
+void repeat(const struct model m, const int nc, int **cells,
+    double uc[3][3], char (**typ)[3], double (**tau)[3]) {
+
+    int i, j, k, c;
+
+    for (i = 0; i < 3; i++)
+        for (j = 0; j < 3; j++) {
+            uc[i][j] = 0.0;
+            for (k = 0; k < 3; k++)
+                uc[i][j] += m.sc[i][k] * m.uc[k][j];
+        }
+
+    *typ = malloc(nc * m.nat * sizeof **typ);
+    *tau = malloc(nc * m.nat * sizeof **tau);
+
+    for (c = 0; c < nc; c++)
+        for (i = 0; i < m.nat; i++)
+            for (j = 0; j < 3; j++) {
+                (*typ)[m.nat * c + i][j] = m.typ[i][j];
+                (*tau)[m.nat * c + i][j] = m.tau[i][j];
+                for (k = 0; k < 3; k++)
+                    (*tau)[m.nat * c + i][j] += cells[c][k] * m.uc[k][j];
+            }
+}
+
 /* populate matrix using example of supercell tight-binding Hamiltonian */
 
 void supercell(double **a, const int nb, const int nl, const struct element *l,

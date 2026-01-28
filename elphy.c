@@ -4,10 +4,14 @@ int main(int argc, char **argv) {
     double **h, **c, *e, *u, energy, *forces, *occ, nel, mu = 0.0;
     struct model m;
     int nc, n, nx, i, j, **cr, **cells;
+    char (*typ)[3];
+    double (*tau)[3], uc[3][3];
 
     get_model(argc > 1 ? argv[1] : "model.dat", &m);
 
     nc = map(m, &cr, &cells);
+
+    repeat(m, nc, cells, uc, &typ, &tau);
 
     nx = m.nph * nc;
     n = m.nel * nc;
@@ -20,7 +24,9 @@ int main(int argc, char **argv) {
     supercell(c, m.nph, m.nk, m.k, nc, cr);
 
     u = malloc(nx * sizeof *u);
-    get_displ("u.dat", nx, u);
+    get_displ("u.dat", nc * m.nat, uc, typ, tau, u);
+
+    /* put_displ("u_copy.dat", nc * m.nat, uc, typ, tau, u); */
 
     perturbation(h, m, u, nc, cr);
 
