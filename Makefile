@@ -4,7 +4,7 @@ CC = gcc
 CFLAGS = -std=c89 -pedantic -Wall
 LDLIBS = -llapack -lblas -lm
 
-elphy: elphy.o io.o matrix.o supercell.o temperature.o
+elphy: elphy.o io.o matrix.o supercell.o temperature.o sockets.o
 	${CC} ${CFLAGS} -o $@ $^ ${LDLIBS}
 
 %.o: %.c elphy.h
@@ -13,8 +13,14 @@ elphy: elphy.o io.o matrix.o supercell.o temperature.o
 model.dat: data.py
 	python3 $<
 
+sockets.c:
+	wget https://raw.githubusercontent.com/i-pi/i-pi/refs/heads/main/drivers/f90/$@
+
+sockets.o: sockets.c
+	$(CC) -o $@ -c $<
+
 test: elphy model.dat
 	python3 test.py
 
 clean:
-	rm -f elphy *.o *.dat
+	rm -f elphy *.o *.dat sockets.c
