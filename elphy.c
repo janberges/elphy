@@ -36,18 +36,21 @@ int main(int argc, char **argv) {
 
     repeat(m, nc, cells, uc, typ, tau);
 
-    get_displ("u.dat", nat, uc, typ, tau, u);
+    if (!strcmp(m.host, "none")) {
+        get_displ("u.dat", nat, uc, typ, tau, u);
 
-    /* put_displ("u_copy.dat", nat, uc, typ, tau, u); */
+        /* put_displ("u_copy.dat", nat, uc, typ, tau, u); */
 
-    perturbation(h0, h, m, u, nc, cr);
+        perturbation(h0, h, m, u, nc, cr);
 
-    energy = step(h, c, u, m, e, occ, forces, forces0, nc, cr);
+        energy = step(h, c, u, m, e, occ, forces, forces0, nc, cr);
 
-    printf("%.9f\n", energy);
+        printf("%.9f\n", energy);
 
-    for (i = 0; i < nph; i++)
-        printf("% .9f\n", forces[i]);
+        for (i = 0; i < nph; i++)
+            printf("% .9f\n", forces[i]);
+    } else
+        driver(h0, h, c, u, m, e, occ, forces, forces0, tau, nc, cr);
 
     free(*c);
     free(c);

@@ -1,4 +1,7 @@
 *.dat
 *.o
+RESTART
+\#*
 elphy
+i-pi.*
 sockets.c

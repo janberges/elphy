@@ -1,0 +1,17 @@
+<simulation>
+    <ffsocket name='elphy' mode='unix' pbc='false'>
+        <address>localhost</address>
+    </ffsocket>
+    <system>
+        <initialize nbeads='1'>
+            <file mode='xyz'>u.dat</file>
+        </initialize>
+        <forces>
+            <force forcefield='elphy'></force>
+        </forces>
+        <motion mode='minimize'>
+            <optimizer mode='bfgs'></optimizer>
+            <fixcom>True</fixcom>
+        </motion>
+    </system>
+</simulation>

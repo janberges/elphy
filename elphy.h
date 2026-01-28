@@ -6,6 +6,13 @@
 extern void dsyev_(const char *jobz, const char *uplo, const int *n, double *a,
     const int *lda, double *w, double *work, const int *lwork, int *info);
 
+void open_socket(int *psockfd, int *inet, int *port, const char *host,
+    const char *sockets_prefix);
+
+void writebuffer(int *psockfd, const void *data, int *plen);
+
+void readbuffer(int *psockfd, void *data, int *plen);
+
 double **matrix(const int n);
 
 int **array_2d(const int rows, const int cols);
@@ -23,6 +30,8 @@ struct vertex {
 };
 
 struct model {
+    char host[256];
+    int port;
     double kt, n;
     int sc[3][3];
     double uc[3][3];
@@ -76,3 +85,7 @@ void occupations(const int ne, double *f,
 double step(double **h, double **c, const double *u, const struct model m,
     double *e, double *occ, double *forces, const double *forces0,
     const int nc, int **cr);
+
+void driver(double **h0, double **h, double **c, double *u,
+    const struct model m, double *e, double *occ, double *forces,
+    const double *forces0, double (*tau)[3], const int nc, int **cr);

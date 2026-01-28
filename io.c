@@ -7,6 +7,7 @@ void get_model(const char *filename, struct model *m) {
     int (*r)[3], i, j;
     struct element *t, *k;
     struct vertex *g;
+    char *colon;
 
     fp = fopen(filename, "r");
 
@@ -14,6 +15,14 @@ void get_model(const char *filename, struct model *m) {
         fprintf(stderr, "Cannot open %s. Run data.py first.\n", filename);
         exit(1);
     }
+
+    fscanf(fp, "%s", m->host);
+    colon = strchr(m->host, ':');
+    if (colon) {
+        *colon = '\0';
+        m->port = atoi(colon + 1);
+    } else
+        m->port = 0;
 
     fscanf(fp, "%lf", &m->kt);
     fscanf(fp, "%lf", &m->n);

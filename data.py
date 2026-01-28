@@ -4,6 +4,7 @@ import elphmod.models.graphene
 
 elphmod.misc.verbosity = 0
 
+socket = 'none'
 Ry2Ha = 0.5
 kT = 0.0019 * Ry2Ha
 n = 1.0
@@ -54,6 +55,8 @@ for rk in range(len(Rk)):
                         couplings.append((k, z, l, c, d, g))
 
 with open('model.dat', 'w') as dat:
+    dat.write(f'{socket}\n')
+
     dat.write(f'{kT}\n')
     dat.write(f'{n}\n')
     dat.write(f'{elph.el.size}\n')
