@@ -3,11 +3,11 @@
 int main(int argc, char **argv) {
     double **h, **c, *e, *u, energy, *forces, *occ, nel, mu = 0.0;
     struct model m;
-    int nc, n, nx, i, j, **cr;
+    int nc, n, nx, i, j, **cr, **cells;
 
     get_model(argc > 1 ? argv[1] : "model.dat", &m);
 
-    nc = map(m, &cr);
+    nc = map(m, &cr, &cells);
 
     nx = m.nph * nc;
     n = m.nel * nc;

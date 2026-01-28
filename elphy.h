@@ -40,7 +40,7 @@ void get_displ(const char *filename, const int nx, double *u);
 int dot(const int a[3], const int b[3]);
 int *cross(const int a[3], const int b[3]);
 
-int map(const struct model m, int ***cr);
+int map(const struct model m, int ***cr, int ***cells);
 
 void supercell(double **a, const int nb, const int nl, const struct element *l,
     const int nc, int **cr);

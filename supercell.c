@@ -16,8 +16,8 @@ int *cross(const int a[3], const int b[3]) {
 
 /* map lattice vectors from unit cells to supercell */
 
-int map(const struct model m, int ***cr) {
-    int *b[3], **cells, cell[3], n[3], nc, i, j, c, r, tmp;
+int map(const struct model m, int ***cr, int ***cells) {
+    int *b[3], cell[3], n[3], nc, i, j, c, r, tmp;
     int lower[3] = {0, 0, 0};
     int upper[3] = {0, 0, 0};
 
@@ -47,7 +47,7 @@ int map(const struct model m, int ***cr) {
                         upper[j] = tmp;
                 }
 
-    cells = array_2d(nc, 3);
+    *cells = array_2d(nc, 3);
 
     c = 0;
     for (n[0] = lower[0]; n[0] < upper[0]; n[0]++)
@@ -59,7 +59,7 @@ int map(const struct model m, int ***cr) {
 
                 if (i == 3) {
                     for (j = 0; j < 3; j++)
-                        cells[c][j] = n[j];
+                        (*cells)[c][j] = n[j];
                     c++;
                 }
             }
@@ -74,7 +74,7 @@ int map(const struct model m, int ***cr) {
     for (c = 0; c < nc; c++) {
         for (r = 0; r < m.nr; r++) {
             for (j = 0; j < 3; j++)
-                cell[j] = cells[c][j] + m.r[r][j];
+                cell[j] = (*cells)[c][j] + m.r[r][j];
 
             for (i = 0; i < 3; i++) {
                 n[i] = dot(cell, b[i]) % nc;
@@ -91,7 +91,7 @@ int map(const struct model m, int ***cr) {
 
             for (tmp = 0; tmp < nc; tmp++) {
                 for (j = 0; j < 3; j++)
-                    if (cell[j] != cells[tmp][j])
+                    if (cell[j] != (*cells)[tmp][j])
                         break;
 
                 if (j == 3) {
