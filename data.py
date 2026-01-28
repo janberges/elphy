@@ -4,7 +4,8 @@ import elphmod.models.graphene
 
 elphmod.misc.verbosity = 0
 
-kT = 0.0019
+Ry2Ha = 0.5
+kT = 0.0019 * Ry2Ha
 n = 1.0
 A = elphmod.bravais.supercell(12, 12)[1]
 eps = 1e-10
@@ -25,7 +26,7 @@ for ri in range(len(Ri)):
     i = R.index(Ri[ri])
     for a in range(el.size):
         for b in range(el.size):
-            t = el.data[ri, a, b].real
+            t = el.data[ri, a, b].real * Ry2Ha
             if abs(t) > eps:
                 hoppings.append((i, a, b, t))
 
@@ -35,7 +36,7 @@ for rj in range(len(Rj)):
     j = R.index(Rj[rj])
     for x in range(ph.size):
         for y in range(ph.size):
-            k = ph.data[rj, x, y].real
+            k = ph.data[rj, x, y].real * Ry2Ha
             if abs(k) > eps:
                 springs.append((j, x, y, k))
 
@@ -48,7 +49,7 @@ for rk in range(len(Rk)):
             l = R.index(Rl[rl])
             for c in range(el.size):
                 for d in range(el.size):
-                    g = elph.data[rk, z, rl, c, d].real
+                    g = elph.data[rk, z, rl, c, d].real * Ry2Ha
                     if abs(g) > eps:
                         couplings.append((k, z, l, c, d, g))
 

@@ -4,6 +4,8 @@ import elphmod.models.graphene
 import numpy as np
 import subprocess
 
+Ry2Ha = 0.5
+
 elphmod.misc.verbosity = 0
 
 elph = elphmod.models.graphene.create(rydberg=True, divide_mass=False)[2]
@@ -22,4 +24,4 @@ forces = -driver.jacobian(show=False)
 
 ref = np.insert(forces, 0, energy)
 
-assert np.allclose(res, ref)
+assert np.allclose(res, ref * Ry2Ha)
