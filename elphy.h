@@ -72,3 +72,6 @@ double free_energy(const int ne, const double n,
 
 void occupations(const int ne, double *f,
     const double *e, const double kt, const double mu);
+
+double step(double **h, double **c, const double *u, const struct model m,
+    double *e, double *occ, double *forces, const int nc, int **cr);
