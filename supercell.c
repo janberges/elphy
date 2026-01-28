@@ -146,8 +146,7 @@ void perturbation(double **h0, double **h, const struct model m,
     struct vertex *g;
     int c;
 
-    for (c = 0; c < m.nel * m.nel * nc * nc; c++)
-        (*h)[c] = (*h0)[c];
+    memcpy(*h, *h0, m.nel * m.nel * nc * nc * sizeof **h);
 
     for (c = 0; c < nc; c++)
         for (g = m.g; g - m.g < m.ng; g++)

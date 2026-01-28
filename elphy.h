@@ -1,6 +1,7 @@
 #include <math.h>
 #include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
 
 extern void dsyev_(const char *jobz, const char *uplo, const int *n, double *a,
     const int *lda, double *w, double *work, const int *lwork, int *info);
