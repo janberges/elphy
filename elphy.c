@@ -1,7 +1,7 @@
 #include "elphy.h"
 
 int main(int argc, char **argv) {
-    double **h, **c, *e, *u, energy, *forces, *occ, n, mu = 0.0;
+    double **h0, **h, **c, *e, *u, energy, *forces, *occ, n, mu = 0.0;
     struct model m;
     int nc, nel, nph, nat, i, j, **cr, **cells;
     char (*typ)[3];
@@ -23,10 +23,11 @@ int main(int argc, char **argv) {
     occ = malloc(nel * sizeof *occ);
     forces = malloc(nph * sizeof *forces);
 
+    h0 = matrix(nel);
     h = matrix(nel);
     c = matrix(nph);
 
-    supercell(h, m.nel, m.nt, m.t, nc, cr);
+    supercell(h0, m.nel, m.nt, m.t, nc, cr);
     supercell(c, m.nph, m.nk, m.k, nc, cr);
 
     repeat(m, nc, cells, uc, typ, tau);
@@ -35,7 +36,7 @@ int main(int argc, char **argv) {
 
     /* put_displ("u_copy.dat", nat, uc, typ, tau, u); */
 
-    perturbation(h, m, u, nc, cr);
+    perturbation(h0, h, m, u, nc, cr);
 
     eigenvalues(nel, h, e);
 
@@ -64,6 +65,8 @@ int main(int argc, char **argv) {
     free(c);
     free(*h);
     free(h);
+    free(*h0);
+    free(h0);
 
     free(forces);
     free(occ);

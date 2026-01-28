@@ -54,8 +54,8 @@ void repeat(const struct model m, const int nc, int **cells,
 void supercell(double **a, const int nb, const int nl, const struct element *l,
     const int nc, int **cr);
 
-void perturbation(double **h, const struct model m, const double *u,
-    const int nc, int **cr);
+void perturbation(double **h0, double **h, const struct model m,
+    const double *u, const int nc, int **cr);
 
 void jacobian(double **h, const struct model m, const double *occ,
     double *f, const int nc, int **cr);
