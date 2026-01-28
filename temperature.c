@@ -53,3 +53,12 @@ double free_energy(const int ne, const double n,
 
     return grand + n * mu;
 }
+
+void occupations(const int ne, double *f,
+    const double *e, const double kt, const double mu) {
+
+    int i;
+
+    for (i = 0; i < ne; i++)
+        f[i] = 2.0 * fermi((e[i] - mu) / kt);
+}

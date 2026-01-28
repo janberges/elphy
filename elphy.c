@@ -44,9 +44,7 @@ int main(int argc, char **argv) {
     printf("%.9f\n", energy);
 
     occ = malloc(n * sizeof *occ);
-
-    for (i = 0; i < n; i++)
-        occ[i] = 2.0 * fermi((e[i] - mu) / m.kt);
+    occupations(n, occ, e, m.kt, mu);
 
     forces = malloc(nx * sizeof *forces);
     jacobian(h, m, occ, forces, nc, cr);

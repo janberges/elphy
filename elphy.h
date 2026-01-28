@@ -68,3 +68,6 @@ double fermi_level(const int ne, const double n,
 
 double free_energy(const int ne, const double n,
     const double *e, const double kt, const double mu);
+
+void occupations(const int ne, double *f,
+    const double *e, const double kt, const double mu);
