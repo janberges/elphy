@@ -1,9 +1,10 @@
-# elphanharmonie
+# elphy
 
-This project serves two purposes:
-
-* Be faster than `elphmod.md.Driver`
-* Help me learn C89
+`elphy`, short for electron-phonon anharmonicity, is a C program to calculate
+free energies and forces for tight-binding models on supercells, complemented
+with linear electron-phonon coupling and a harmonic potential. It is a faster
+rewrite of the Python module `elphmod.md` and thus primarily a driver for the
+path-integral molecular-dynamics code i-PI. It is written in ANSI C (C89/C99).
 
 ## Installation
 
@@ -59,3 +60,12 @@ x, y, z over the three Cartesian displacement directions for all atoms.
     [k₁] [z₁] [l₁] [γ₁] [δ₁] [<0 γ₁|∂H/∂u(Rₖ₁, z₁)|Rₗ₁ δ₁>] ← matrix elements
     [k₂] [z₂] [l₂] [γ₂] [δ₂] [<0 γ₂|∂H/∂u(Rₖ₂, z₂)|Rₗ₂ δ₂>]
     ⋮
+
+No unit conversions are performed, so any consistent energy and length units can
+be used. However, i-PI expects energies and forces in Hartree atomic units.
+
+The i-PI socket address is a host name optionally followed by a colon and a port
+number, e.g., `localhost:31415`. If the port number is omitted or zero, a UNIX
+socket is used for communication, otherwise an internet socket. If the host name
+is `none`, the program does not act as a client for i-PI but uses the standard
+input and output channels.
