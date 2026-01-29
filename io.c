@@ -118,13 +118,9 @@ void get_displ(const char *filename, const int nat,
     for (i = 0; i < nat; i++) {
         fscanf(fp, "%s", c);
 
-        for (j = 0; j < 3; j++) {
-            if (c[j] != typ[i][j]) {
-                fprintf(stderr, "Wrong atom type in %s.\n", filename);
-                exit(1);
-            }
-            if (c[j] == '\0')
-                break;
+        if (strcmp(c, typ[i])) {
+            fprintf(stderr, "Wrong atom type in %s.\n", filename);
+            exit(1);
         }
 
         for (j = 0; j < 3; j++) {
