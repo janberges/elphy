@@ -54,7 +54,7 @@ for rk in range(len(Rk)):
                     if abs(g) > eps:
                         couplings.append((k, z, l, c, d, g))
 
-with open('model.dat', 'w') as dat:
+with open('input.dat', 'w') as dat:
     dat.write(f'{socket}\n')
 
     dat.write(f'{kT}\n')

@@ -7,7 +7,7 @@ int main(int argc, char **argv) {
     char (*typ)[3];
     double (*tau)[3], uc[3][3];
 
-    get_model(argc > 1 ? argv[1] : "model.dat", &m);
+    get_model(argc > 1 ? argv[1] : "input.dat", &m);
 
     nc = map(m, &cr, &cells);
 
@@ -37,9 +37,9 @@ int main(int argc, char **argv) {
     repeat(m, nc, cells, uc, typ, tau);
 
     if (!strcmp(m.host, "none")) {
-        get_displ("u.dat", nat, uc, typ, tau, u);
+        get_displ("input.xyz", nat, uc, typ, tau, u);
 
-        /* put_displ("u_copy.dat", nat, uc, typ, tau, u); */
+        /* put_displ("input_copy.xyz", nat, uc, typ, tau, u); */
 
         perturbation(h0, h, m, u, nc, cr);
 

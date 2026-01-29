@@ -10,7 +10,7 @@ elphy: elphy.o driver.o io.o matrix.o supercell.o temperature.o sockets.o
 %.o: %.c elphy.h
 	$(CC) $(CFLAGS) -o $@ -c $<
 
-model.dat: data.py
+%.dat: %.py
 	python3 $<
 
 sockets.c:
@@ -19,7 +19,7 @@ sockets.c:
 sockets.o: sockets.c
 	$(CC) -o $@ -c $<
 
-test: elphy model.dat
+test: elphy input.dat
 	python3 test.py
 
 clean:

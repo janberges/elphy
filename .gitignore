@@ -1,5 +1,6 @@
 *.dat
 *.o
+*.xyz
 RESTART
 \#*
 elphy

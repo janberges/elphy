@@ -12,7 +12,7 @@ void get_model(const char *filename, struct model *m) {
     fp = fopen(filename, "r");
 
     if (fp == NULL) {
-        fprintf(stderr, "Cannot open %s. Run data.py first.\n", filename);
+        fprintf(stderr, "Cannot open %s. Run input.py first.\n", filename);
         exit(1);
     }
 
