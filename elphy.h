@@ -1,4 +1,5 @@
 #include <math.h>
+#include <stdarg.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -43,6 +44,8 @@ struct model {
     struct element *k;
     struct vertex *g;
 };
+
+void error(char *msg, ...);
 
 void get_model(const char *filename, struct model *m);
 

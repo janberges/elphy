@@ -26,10 +26,8 @@ void open_socket(int *psockfd, int *inet, int *port, const char *host,
 
         sprintf(service, "%d", *port);
 
-        if (getaddrinfo(host, service, &hints, &res)) {
-            fprintf(stderr, "Could not get address info.\n");
-            exit(1);
-        }
+        if (getaddrinfo(host, service, &hints, &res))
+            error("Could not get address info.");
 
         for (r = res; r; r = r->ai_next) {
             sfd = socket(r->ai_family, r->ai_socktype, r->ai_protocol);
@@ -38,10 +36,8 @@ void open_socket(int *psockfd, int *inet, int *port, const char *host,
                 continue;
 
             /* see i-PI's sockets.c */
-            if (setsockopt(sfd, IPPROTO_TCP, TCP_NODELAY, &yes, sizeof(int))) {
-                fprintf(stderr, "Could not set socket option.\n");
-                exit(1);
-            }
+            if (setsockopt(sfd, IPPROTO_TCP, TCP_NODELAY, &yes, sizeof(int)))
+                error("Could not set socket option.");
 
             if (!connect(sfd, r->ai_addr, r->ai_addrlen))
                 break;
@@ -51,10 +47,8 @@ void open_socket(int *psockfd, int *inet, int *port, const char *host,
 
         freeaddrinfo(res);
 
-        if (!r) {
-            fprintf(stderr, "Could not connect to INET socket.\n");
-            exit(1);
-        }
+        if (!r)
+            error("Could not connect to INET socket.");
     } else {
         addr.sun_family = AF_UNIX;
         strcpy(addr.sun_path, sockets_prefix);
@@ -62,20 +56,16 @@ void open_socket(int *psockfd, int *inet, int *port, const char *host,
 
         sfd = socket(AF_UNIX, SOCK_STREAM, 0);
 
-        if (sfd == -1 || connect(sfd, (struct sockaddr *) &addr, sizeof(addr))) {
-            fprintf(stderr, "Could not connect to UNIX socket.\n");
-            exit(1);
-        }
+        if (sfd == -1 || connect(sfd, (struct sockaddr *) &addr, sizeof(addr)))
+            error("Could not connect to UNIX socket.");
     }
 
     *psockfd = sfd;
 }
 
 void writebuffer(int *psockfd, const void *data, int *plen) {
-    if (write(*psockfd, data, *plen) == -1) {
-        fprintf(stderr, "Could not write to socket.\n");
-        exit(1);
-    }
+    if (write(*psockfd, data, *plen) == -1)
+        error("Could not write to socket.");
 }
 
 void readbuffer(int *psockfd, void *data, int *plen) {
@@ -84,9 +74,7 @@ void readbuffer(int *psockfd, void *data, int *plen) {
     len = 0;
     while (len < *plen) {
         len += new = read(*psockfd, (char *) data + len, *plen - len);
-        if (new < 1) {
-            fprintf(stderr, "Could not read from socket.\n");
-            exit(1);
-        }
+        if (new < 1)
+            error("Could not read from socket.");
     }
 }

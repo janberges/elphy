@@ -60,10 +60,8 @@ int map(const struct model m, int ***cr, int ***cells) {
                 }
             }
 
-    if (c != nc) {
-        fprintf(stderr, "Problem with supercell.\n");
-        exit(1);
-    }
+    if (c != nc)
+        error("Problem with supercell.");
 
     *cr = array_2d(nc, m.nr);
 

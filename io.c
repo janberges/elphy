@@ -1,5 +1,19 @@
 #include "elphy.h"
 
+void error(char *msg, ...) {
+    va_list args;
+    char fmt[256] = "elphy error: ";
+
+    strcat(fmt, msg);
+    strcat(fmt, "\n");
+
+    va_start(args, msg);
+    vfprintf(stderr, fmt, args);
+    va_end(args);
+
+    exit(EXIT_FAILURE);
+}
+
 /* read coupled tight-binding and mass-spring models */
 
 void get_model(const char *filename, struct model *m) {
@@ -11,10 +25,8 @@ void get_model(const char *filename, struct model *m) {
 
     fp = fopen(filename, "r");
 
-    if (fp == NULL) {
-        fprintf(stderr, "Cannot open %s. Run input.py first.\n", filename);
-        exit(1);
-    }
+    if (fp == NULL)
+        error("Cannot open %s. Run input.py first.", filename);
 
     fscanf(fp, "%s", m->host);
     colon = strchr(m->host, ':');
@@ -89,39 +101,29 @@ void get_displ(const char *filename, const int nat,
 
     fp = fopen(filename, "r");
 
-    if (fp == NULL) {
-        fprintf(stderr, "Cannot open %s. Run test.py first.\n", filename);
-        exit(1);
-    }
+    if (fp == NULL)
+        error("Cannot open %s. Run test.py first.", filename);
 
     fscanf(fp, "%d", &i);
 
-    if (i != nat) {
-        fprintf(stderr, "%d instead of %d atoms in %s.\n", i, nat, filename);
-        exit(1);
-    }
+    if (i != nat)
+        error("%d instead of %d atoms in %s.", i, nat, filename);
 
-    if (fscanf(fp, " # CELL{H}:") == EOF) {
-        fprintf(stderr, "Unsupported cell definition in %s.\n", filename);
-        exit(1);
-    }
+    if (fscanf(fp, " # CELL{H}:") == EOF)
+        error("Unsupported cell definition in %s.", filename);
 
     for (i = 0; i < 3; i++)
         for (j = 0; j < 3; j++) {
             fscanf(fp, "%lf", &r);
-            if (fabs(r - uc[j][i]) > eps) {
-                fprintf(stderr, "Wrong cell dimension in %s.\n", filename);
-                exit(1);
-            }
+            if (fabs(r - uc[j][i]) > eps)
+                error("Wrong cell dimension in %s.", filename);
         }
 
     for (i = 0; i < nat; i++) {
         fscanf(fp, "%s", c);
 
-        if (strcmp(c, typ[i])) {
-            fprintf(stderr, "Wrong atom type in %s.\n", filename);
-            exit(1);
-        }
+        if (strcmp(c, typ[i]))
+            error("Wrong atom type in %s.", filename);
 
         for (j = 0; j < 3; j++) {
             fscanf(fp, "%lf", &r);
