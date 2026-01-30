@@ -17,7 +17,7 @@ driver.random_displacements()
 driver.to_xyz('input.xyz')
 
 res = np.array([float(x.rstrip(';'))
-    for x in subprocess.check_output(['./elphy'],
+    for x in subprocess.check_output(['./elphy', 'input.dat', 'input.xyz'],
         universal_newlines=True).split() if '.' in x])
 
 energy = driver.free_energy(show=False)

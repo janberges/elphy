@@ -18,10 +18,13 @@ Different compilers and optimization flags can be selected:
 
 LAPACK and BLAS are required.
 
-## Input file
+## Usage
 
-The program `elphy` accepts a single argument with the path to an input file
-with the following content, where `[…]` are placeholders for numerical values.
+The program is run as follows:
+
+    elphy input.dat [input.xyz ...]
+
+`input.dat` is defined below, where `[…]` are placeholders for numerical values.
 The indices i, j, k, l run over lattice vectors, α, β, γ, δ over orbitals, and
 x, y, z over the three Cartesian displacement directions for all atoms.
 
@@ -66,6 +69,12 @@ be used. However, i-PI expects energies and forces in Hartree atomic units.
 
 The i-PI socket address is a host name optionally followed by a colon and a port
 number, e.g., `localhost:31415`. If the port number is omitted or zero, a UNIX
-socket is used for communication, otherwise an internet socket. If the host name
-is `none`, the program does not act as a client for i-PI but uses the standard
-input and output channels.
+socket is used for communication, otherwise an internet socket. The address must
+match the information in the i-PI input file `input.xml`. Start i-PI first:
+
+    i-pi input.xml &
+    elphy input.dat
+
+It is possible to pass further command arguments `input.xyz ...`. In this case,
+the program does not connect to a socket but prints for the atomic coordinates
+in each XYZ file the corresponding free energies and forces to standard output.

@@ -3,11 +3,14 @@
 int main(int argc, char **argv) {
     double **h0, **h, **c, *e, *u, energy, *forces, *forces0, *occ;
     struct model m;
-    int nc, nel, nph, nat, **cr, **cells;
+    int nc, nel, nph, nat, i, **cr, **cells;
     char (*typ)[3];
     double (*tau)[3], uc[3][3];
 
-    get_model(argc > 1 ? argv[1] : "input.dat", &m);
+    if (argc > 1)
+        get_model(argv[1], &m);
+    else
+        error("Argument missing. Usage: elphy input.dat [input.xyz ...]");
 
     nc = map(m, &cr, &cells);
 
@@ -36,14 +39,16 @@ int main(int argc, char **argv) {
 
     repeat(m, nc, cells, uc, typ, tau);
 
-    if (!strcmp(m.host, "none")) {
-        get_displ("input.xyz", nat, uc, typ, tau, u);
+    if (argc > 2) {
+        for (i = 2; i < argc; i++) {
+            get_displ(argv[i], nat, uc, typ, tau, u);
 
-        perturbation(h0, h, m, u, nc, cr);
+            perturbation(h0, h, m, u, nc, cr);
 
-        energy = step(h, c, m, u, e, occ, forces, forces0, nc, cr);
+            energy = step(h, c, m, u, e, occ, forces, forces0, nc, cr);
 
-        put_force("stdout", nat, energy, typ, tau, forces);
+            put_force("stdout", nat, energy, typ, tau, forces);
+        }
     } else
         driver(h0, h, c, m, u, e, occ, forces, forces0, tau, nc, cr);
 

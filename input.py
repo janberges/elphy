@@ -4,7 +4,7 @@ import elphmod.models.graphene
 
 elphmod.misc.verbosity = 0
 
-socket = 'none'
+socket = 'localhost:31415'
 Ry2Ha = 0.5
 kT = 0.0019 * Ry2Ha
 n = 1.0

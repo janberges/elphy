@@ -1,6 +1,7 @@
 <simulation>
-    <ffsocket name='elphy' mode='unix' pbc='false'>
+    <ffsocket name='elphy' mode='inet' pbc='false'>
         <address>localhost</address>
+        <port>31415</port> <!-- ignored for mode='unix' -->
     </ffsocket>
     <system>
         <initialize nbeads='1'>
