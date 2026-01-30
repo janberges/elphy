@@ -41,7 +41,12 @@ int main(int argc, char **argv) {
 
     if (argc > 2) {
         for (i = 2; i < argc; i++) {
-            get_displ(argv[i], nat, uc, typ, tau, u);
+            if (exists(argv[i]))
+                get_displ(argv[i], nat, uc, typ, tau, u);
+            else {
+                random_displacements(nat, u);
+                put_displ(argv[i], nat, uc, typ, tau, u);
+            }
 
             perturbation(h0, h, m, u, nc, cr);
 
@@ -79,6 +84,29 @@ int main(int argc, char **argv) {
     free(m.typ);
 
     return 0;
+}
+
+void random_displacements(const int nat, double *u) {
+    const double rho_max = 0.1;
+    double rho, norm;
+    int i, j;
+
+    for (i = 0; i < nat; i++) {
+        rho = rho_max * (double) rand() / (double) RAND_MAX;
+
+        norm = 0.0;
+
+        for (j = 3 * i; j < 3 * i + 3; j++) {
+            u[j] = (double) rand();
+            norm += u[j] * u[j];
+        }
+
+        norm = sqrt(norm);
+
+        if (norm != 0.0)
+            for (j = 0; j < 3; j++)
+                u[3 * i + j] *= rho / norm;
+    }
 }
 
 double step(double **h, double **c, const struct model m, const double *u,

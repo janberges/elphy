@@ -13,12 +13,11 @@ elph = elphmod.models.graphene.create(rydberg=True, divide_mass=False)[2]
 driver = elphmod.md.Driver(elph, kT=0.0019, f='fd', n=0.5 * elph.el.size,
     supercell=(12, 12), unscreen=False)
 
-driver.random_displacements()
-driver.to_xyz('input.xyz')
-
 res = np.array([float(x.rstrip(';'))
     for x in subprocess.check_output(['./elphy', 'input.dat', 'input.xyz'],
         universal_newlines=True).split() if '.' in x])
+
+driver.from_xyz('input.xyz')
 
 energy = driver.free_energy(show=False)
 forces = -driver.jacobian(show=False)

@@ -47,6 +47,8 @@ struct model {
 
 void error(char *msg, ...);
 
+int exists(const char *filename);
+
 void get_model(const char *filename, struct model *m);
 
 void get_displ(const char *filename, const int nat, double uc[3][3],
@@ -87,6 +89,8 @@ double free_energy(const int ne, const double n,
 
 void occupations(const int ne, double *f,
     const double *e, const double kt, const double mu);
+
+void random_displacements(const int nat, double *u);
 
 double step(double **h, double **c, const struct model m, const double *u,
     double *e, double *occ, double *forces, const double *forces0,

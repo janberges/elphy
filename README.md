@@ -81,3 +81,4 @@ match the information in the i-PI input file `input.xml`. Start i-PI first:
 It is possible to pass further command arguments `input.xyz ...`. In this case,
 the program does not connect to a socket but prints for the atomic coordinates
 in each XYZ file the corresponding free energies and forces to standard output.
+Missing files are created for structures with small random displacements.

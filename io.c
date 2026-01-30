@@ -14,6 +14,17 @@ void error(char *msg, ...) {
     exit(EXIT_FAILURE);
 }
 
+int exists(const char *filename) {
+    FILE *fp = fopen(filename, "r");
+
+    if (fp != NULL) {
+        fclose(fp);
+        return 1;
+    }
+
+    return 0;
+}
+
 /* read coupled tight-binding and mass-spring models */
 
 void get_model(const char *filename, struct model *m) {
