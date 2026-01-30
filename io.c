@@ -37,7 +37,7 @@ void get_model(const char *filename, struct model *m) {
     fp = fopen(filename, "r");
 
     if (fp == NULL)
-        error("Cannot open %s. Run input.py first.", filename);
+        error("Cannot open %s.", filename);
 
     fscanf(fp, "%s", m->host);
     colon = strchr(m->host, ':');
