@@ -156,7 +156,7 @@ void put_displ(const char *filename, const int nat,
     fprintf(fp, "\n");
 
     for (i = 0; i < nat; i++) {
-        fprintf(fp, "%8s", typ[i]);
+        fprintf(fp, "%-3s", typ[i]);
         for (j = 0; j < 3; j++)
             fprintf(fp, " %15.9f", tau[i][j] + u[3 * i + j]);
         fprintf(fp, "\n");
