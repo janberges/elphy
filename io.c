@@ -99,7 +99,7 @@ void get_displ(const char *filename, const int nat,
     double r;
     char c[3];
 
-    fp = fopen(filename, "r");
+    fp = strcmp(filename, "stdin") ? fopen(filename, "r") : stdin;
 
     if (fp == NULL)
         error("Cannot open %s. Run test.py first.", filename);
@@ -131,7 +131,8 @@ void get_displ(const char *filename, const int nat,
         }
     }
 
-    fclose(fp);
+    if (fp != stdin)
+        fclose(fp);
 }
 
 /* store positions of displaced atoms in file in XYZ format */
@@ -142,7 +143,7 @@ void put_displ(const char *filename, const int nat,
     FILE *fp;
     int i, j;
 
-    fp = fopen(filename, "w");
+    fp = strcmp(filename, "stdout") ? fopen(filename, "w") : stdout;
 
     fprintf(fp, "%d\n", nat);
 
@@ -161,5 +162,6 @@ void put_displ(const char *filename, const int nat,
         fprintf(fp, "\n");
     }
 
-    fclose(fp);
+    if (fp != stdout)
+        fclose(fp);
 }
