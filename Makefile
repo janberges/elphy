@@ -1,4 +1,4 @@
-.PHONY: test clean
+.PHONY: test clean clean_dat clean_ipi clean_all
 
 CC = gcc
 CFLAGS = -std=c89 -pedantic -Wall
@@ -17,4 +17,12 @@ test: elphy input.dat
 	python3 test.py
 
 clean:
-	rm -f elphy *.o *.dat
+	rm -f elphy *.o
+
+clean_dat:
+	rm -f *.dat *.xyz
+
+clean_ipi:
+	rm -f RESTART \#* i-pi.*
+
+clean_all: clean clean_dat clean_ipi
