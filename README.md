@@ -25,44 +25,47 @@ The program is run as follows:
     elphy input.dat [input.xyz ...]
 
 `input.dat` is defined below, where `[…]` are placeholders for numerical values.
-The indices i, j, k, l run over lattice vectors, α, β, γ, δ over orbitals, and
-x, y, z over the three Cartesian displacement directions for all atoms.
 
     [i-PI socket address]
     [temperature kT]
     [number of electrons per unit cell]
     [number of orbitals per unit cell]
     [A₀₀] [A₀₁] [A₀₂]
-    [A₁₀] [A₁₁] [A₁₂] ← supercell vectors in units of primitive vectors
+    [A₁₀] [A₁₁] [A₁₂]
     [A₂₀] [A₂₁] [A₂₂]
     [a₀₀] [a₀₁] [a₀₂]
-    [a₁₀] [a₁₁] [a₁₂] ← primitive vectors in Cartesian coordinates
+    [a₁₀] [a₁₁] [a₁₂]
     [a₂₀] [a₂₁] [a₂₂]
     [number of atoms per unit cell]
     [X₀] [r₀₀] [r₀₁] [r₀₂]
-    [X₁] [r₁₀] [r₁₁] [r₁₂] ← atomic positions in Cartesian coordinates
+    [X₁] [r₁₀] [r₁₁] [r₁₂]
     [X₂] [r₂₀] [r₂₁] [r₂₂]
     ⋮
     [number of lattice vectors]
     [R₀₀] [R₀₁] [R₀₂]
-    [R₁₀] [R₁₁] [R₁₂] ← lattice vectors in units of primitive vectors
+    [R₁₀] [R₁₁] [R₁₂]
     [R₂₀] [R₂₁] [R₂₂]
     ⋮
     [number of hopping parameters]
     [i₀] [α₀] [β₀] [<0 α₀|H|Rᵢ₀ β₀>]
-    [i₁] [α₁] [β₁] [<0 α₁|H|Rᵢ₁ β₁>] ← hopping parameters
+    [i₁] [α₁] [β₁] [<0 α₁|H|Rᵢ₁ β₁>]
     [i₂] [α₂] [β₂] [<0 α₂|H|Rᵢ₂ β₂>]
     ⋮
     [number of interatomic force constants]
     [j₀] [x₀] [y₀] [∂²E/[∂u(0, x₀) ∂u(Rⱼ₀, y₀)]
-    [j₁] [x₁] [y₁] [∂²E/[∂u(0, x₁) ∂u(Rⱼ₁, y₁)] ← force constants
+    [j₁] [x₁] [y₁] [∂²E/[∂u(0, x₁) ∂u(Rⱼ₁, y₁)]
     [j₂] [x₂] [y₂] [∂²E/[∂u(0, x₂) ∂u(Rⱼ₂, y₂)]
     ⋮
     [number of electron-phonon matrix elements]
     [k₀] [z₀] [l₀] [γ₀] [δ₀] [<0 γ₀|∂H/∂u(Rₖ₀, z₀)|Rₗ₀ δ₀>]
-    [k₁] [z₁] [l₁] [γ₁] [δ₁] [<0 γ₁|∂H/∂u(Rₖ₁, z₁)|Rₗ₁ δ₁>] ← matrix elements
+    [k₁] [z₁] [l₁] [γ₁] [δ₁] [<0 γ₁|∂H/∂u(Rₖ₁, z₁)|Rₗ₁ δ₁>]
     [k₂] [z₂] [l₂] [γ₂] [δ₂] [<0 γ₂|∂H/∂u(Rₖ₂, z₂)|Rₗ₂ δ₂>]
     ⋮
+
+The indices `i, j, k, l` run over lattice vectors, `α, β, γ, δ` over orbitals,
+and `x, y, z` over the three Cartesian displacement directions for all atoms.
+Primitive and position vectors `a` and `r` are given in Cartesian coordinates,
+supercell and lattice vectors `A` and `R` in integer crystal coordinates.
 
 No unit conversions are performed, so any consistent energy and length units can
 be used. However, i-PI expects energies and forces in Hartree atomic units.
