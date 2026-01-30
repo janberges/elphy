@@ -88,10 +88,10 @@ double free_energy(const int ne, const double n,
 void occupations(const int ne, double *f,
     const double *e, const double kt, const double mu);
 
-double step(double **h, double **c, const double *u, const struct model m,
+double step(double **h, double **c, const struct model m, const double *u,
     double *e, double *occ, double *forces, const double *forces0,
     const int nc, int **cr);
 
-void driver(double **h0, double **h, double **c, double *u,
-    const struct model m, double *e, double *occ, double *forces,
-    const double *forces0, double (*tau)[3], const int nc, int **cr);
+void driver(double **h0, double **h, double **c, const struct model m,
+    double *u, double *e, double *occ, double *forces, const double *forces0,
+    double (*tau)[3], const int nc, int **cr);

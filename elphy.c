@@ -32,7 +32,7 @@ int main(int argc, char **argv) {
 
     memcpy(*h, *h0, nel * nel * sizeof **h);
 
-    energy = step(h, c, u, m, e, occ, forces, forces0, nc, cr);
+    energy = step(h, c, m, u, e, occ, forces, forces0, nc, cr);
 
     repeat(m, nc, cells, uc, typ, tau);
 
@@ -41,11 +41,11 @@ int main(int argc, char **argv) {
 
         perturbation(h0, h, m, u, nc, cr);
 
-        energy = step(h, c, u, m, e, occ, forces, forces0, nc, cr);
+        energy = step(h, c, m, u, e, occ, forces, forces0, nc, cr);
 
         put_force("stdout", nat, energy, typ, tau, forces);
     } else
-        driver(h0, h, c, u, m, e, occ, forces, forces0, tau, nc, cr);
+        driver(h0, h, c, m, u, e, occ, forces, forces0, tau, nc, cr);
 
     free(*c);
     free(c);
@@ -76,7 +76,7 @@ int main(int argc, char **argv) {
     return 0;
 }
 
-double step(double **h, double **c, const double *u, const struct model m,
+double step(double **h, double **c, const struct model m, const double *u,
     double *e, double *occ, double *forces, const double *forces0,
     const int nc, int **cr) {
 

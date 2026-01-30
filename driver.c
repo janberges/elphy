@@ -1,8 +1,8 @@
 #include "elphy.h"
 
-void driver(double **h0, double **h, double **c, double *u,
-    const struct model m, double *e, double *occ, double *forces,
-    const double *forces0, double (*tau)[3], const int nc, int **cr) {
+void driver(double **h0, double **h, double **c, const struct model m,
+    double *u, double *e, double *occ, double *forces, const double *forces0,
+    double (*tau)[3], const int nc, int **cr) {
 
     const char *sockets_prefix = "/tmp/ipi_";
     int socket, buf, inet = m.port != 0, isinit = 0, hasdata = 0;
@@ -54,7 +54,7 @@ void driver(double **h0, double **h, double **c, double *u,
 
             perturbation(h0, h, m, u, nc, cr);
 
-            energy = step(h, c, u, m, e, occ, forces, forces0, nc, cr);
+            energy = step(h, c, m, u, e, occ, forces, forces0, nc, cr);
 
             printf("Free energy: %15.9f Ha\n", energy);
 
