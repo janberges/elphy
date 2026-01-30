@@ -49,11 +49,14 @@ void error(char *msg, ...);
 
 void get_model(const char *filename, struct model *m);
 
-void get_displ(const char *filename, const int nat,
-    double uc[3][3], char (*typ)[3], double (*tau)[3], double *u);
+void get_displ(const char *filename, const int nat, double uc[3][3],
+    char (*typ)[3], double (*tau)[3], double *u);
 
-void put_displ(const char *filename, const int nat,
-    double uc[3][3], char (*typ)[3], double (*tau)[3], double *u);
+void put_displ(const char *filename, const int nat, double uc[3][3],
+    char (*typ)[3], double (*tau)[3], double *u);
+
+void put_force(const char *filename, const int nat, const double energy,
+    char (*typ)[3], double (*tau)[3], const double *forces);
 
 int dot(const int a[3], const int b[3]);
 

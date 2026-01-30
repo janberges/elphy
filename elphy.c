@@ -3,7 +3,7 @@
 int main(int argc, char **argv) {
     double **h0, **h, **c, *e, *u, energy, *forces, *forces0, *occ;
     struct model m;
-    int nc, nel, nph, nat, i, **cr, **cells;
+    int nc, nel, nph, nat, **cr, **cells;
     char (*typ)[3];
     double (*tau)[3], uc[3][3];
 
@@ -39,16 +39,11 @@ int main(int argc, char **argv) {
     if (!strcmp(m.host, "none")) {
         get_displ("input.xyz", nat, uc, typ, tau, u);
 
-        /* put_displ("input_copy.xyz", nat, uc, typ, tau, u); */
-
         perturbation(h0, h, m, u, nc, cr);
 
         energy = step(h, c, u, m, e, occ, forces, forces0, nc, cr);
 
-        printf("%.9f\n", energy);
-
-        for (i = 0; i < nph; i++)
-            printf("% .9f\n", forces[i]);
+        put_force("stdout", nat, energy, typ, tau, forces);
     } else
         driver(h0, h, c, u, m, e, occ, forces, forces0, tau, nc, cr);
 

@@ -16,8 +16,9 @@ driver = elphmod.md.Driver(elph, kT=0.0019, f='fd', n=0.5 * elph.el.size,
 driver.random_displacements()
 driver.to_xyz('input.xyz')
 
-res = np.array(list(map(float, subprocess.check_output(['./elphy'],
-    universal_newlines=True).split())))
+res = np.array([float(x.rstrip(';'))
+    for x in subprocess.check_output(['./elphy'],
+        universal_newlines=True).split() if '.' in x])
 
 energy = driver.free_energy(show=False)
 forces = -driver.jacobian(show=False)

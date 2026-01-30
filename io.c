@@ -90,8 +90,8 @@ void get_model(const char *filename, struct model *m) {
 
 /* get atomic displacements from file with atomic positions in XYZ format */
 
-void get_displ(const char *filename, const int nat,
-    double uc[3][3], char (*typ)[3], double (*tau)[3], double *u) {
+void get_displ(const char *filename, const int nat, double uc[3][3],
+    char (*typ)[3], double (*tau)[3], double *u) {
 
     const double eps = 1e-5;
     FILE *fp;
@@ -137,8 +137,8 @@ void get_displ(const char *filename, const int nat,
 
 /* store positions of displaced atoms in file in XYZ format */
 
-void put_displ(const char *filename, const int nat,
-    double uc[3][3], char (*typ)[3], double (*tau)[3], double *u) {
+void put_displ(const char *filename, const int nat, double uc[3][3],
+    char (*typ)[3], double (*tau)[3], double *u) {
 
     FILE *fp;
     int i, j;
@@ -159,6 +159,29 @@ void put_displ(const char *filename, const int nat,
         fprintf(fp, "%-3s", typ[i]);
         for (j = 0; j < 3; j++)
             fprintf(fp, " %15.9f", tau[i][j] + u[3 * i + j]);
+        fprintf(fp, "\n");
+    }
+
+    if (fp != stdout)
+        fclose(fp);
+}
+
+/* store free energy and forces in file in XYZ format */
+
+void put_force(const char *filename, const int nat, const double energy,
+    char (*typ)[3], double (*tau)[3], const double *forces) {
+
+    FILE *fp;
+    int i, j;
+
+    fp = strcmp(filename, "stdout") ? fopen(filename, "w") : stdout;
+
+    fprintf(fp, "%d\nfree energy (Ha): %.9f; forces (Ha/bohr):\n", nat, energy);
+
+    for (i = 0; i < nat; i++) {
+        fprintf(fp, "%-3s", typ[i]);
+        for (j = 0; j < 3; j++)
+            fprintf(fp, " %13.9f", forces[3 * i + j]);
         fprintf(fp, "\n");
     }
 
