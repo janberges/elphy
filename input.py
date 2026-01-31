@@ -7,7 +7,7 @@ elphmod.misc.verbosity = 0
 socket = 'localhost:31415'
 Ry2Ha = 0.5
 kT = 0.0019 * Ry2Ha
-n = 1.0
+n = 2.0
 A = elphmod.bravais.supercell(12, 12)[1]
 eps = 1e-10
 

@@ -10,7 +10,7 @@ elphmod.misc.verbosity = 0
 
 elph = elphmod.models.graphene.create(rydberg=True, divide_mass=False)[2]
 
-driver = elphmod.md.Driver(elph, kT=0.0019, f='fd', n=0.5 * elph.el.size,
+driver = elphmod.md.Driver(elph, kT=0.0019, f='fd', n=elph.el.size,
     supercell=(12, 12), unscreen=False)
 
 res = np.array([float(x.rstrip(';'))
