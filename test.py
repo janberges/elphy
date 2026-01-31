@@ -1,17 +1,11 @@
 #!/usr/bin/env python3
 
-import elphmod.models.graphene
+from input import *
+
 import numpy as np
 import subprocess
 
-Ry2Ha = 0.5
-
-elphmod.misc.verbosity = 0
-
-elph = elphmod.models.graphene.create(rydberg=True, divide_mass=False)[2]
-
-driver = elphmod.md.Driver(elph, kT=0.0019, f='fd', n=elph.el.size,
-    supercell=(12, 12), unscreen=False)
+driver = elphmod.md.Driver(elph, kT, 'fd', n, supercell=A, unscreen=False)
 
 res = np.array([float(x.rstrip(';'))
     for x in subprocess.check_output(['./elphy', 'input.dat', 'input.xyz'],

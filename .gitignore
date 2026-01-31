@@ -3,5 +3,6 @@
 *.xyz
 RESTART
 \#*
+__pycache__
 elphy
 i-pi.*
