@@ -5,7 +5,7 @@ void driver(double **h0, double **h, double **c, const struct model m,
     double (*tau)[3], const int nc, int **cr) {
 
     const char *sockets_prefix = "/tmp/ipi_";
-    int socket, buf, inet = m.port != 0, isinit = 0, hasdata = 0;
+    int socket, buf, inet = m.port != 0, needinit = 0, havedata = 0;
     char header[12], *initbuffer;
     const int nat = m.nat * nc;
     int chalen = sizeof(char);
@@ -27,9 +27,9 @@ void driver(double **h0, double **h, double **c, const struct model m,
         readbuffer(&socket, header, &msglen);
 
         if (!strncmp(header, "STATUS", 6)) {
-            if (!isinit)
+            if (needinit)
                 writebuffer(&socket, "NEEDINIT    ", &msglen);
-            else if (hasdata)
+            else if (havedata)
                 writebuffer(&socket, "HAVEDATA    ", &msglen);
             else
                 writebuffer(&socket, "READY       ", &msglen);
@@ -41,7 +41,7 @@ void driver(double **h0, double **h, double **c, const struct model m,
             readbuffer(&socket, initbuffer, &buf); /* init string */
             free(initbuffer);
 
-            isinit = 1;
+            needinit = 0;
         } else if (!strncmp(header, "POSDATA", 7)) {
             readbuffer(&socket, cell, &matlen); /* cell */
             readbuffer(&socket, cell, &matlen); /* inverse cell */
@@ -56,7 +56,7 @@ void driver(double **h0, double **h, double **c, const struct model m,
 
             energy = step(h, c, m, u, e, occ, forces, forces0, nc, cr);
 
-            hasdata = 1;
+            havedata = 1;
         } else if (!strncmp(header, "GETFORCE", 8)) {
             writebuffer(&socket, "FORCEREADY  ", &msglen);
 
@@ -69,7 +69,7 @@ void driver(double **h0, double **h, double **c, const struct model m,
             writebuffer(&socket, &buf, &intlen); /* size of extras */
             writebuffer(&socket, " ", &chalen); /* extras */
 
-            hasdata = 0;
+            havedata = 0;
         } else if (!strncmp(header, "EXIT", 4))
             break;
     }
