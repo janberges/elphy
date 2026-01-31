@@ -56,8 +56,6 @@ void driver(double **h0, double **h, double **c, const struct model m,
 
             energy = step(h, c, m, u, e, occ, forces, forces0, nc, cr);
 
-            printf("Free energy: %15.9f Ha\n", energy);
-
             hasdata = 1;
         } else if (!strncmp(header, "GETFORCE", 8)) {
             writebuffer(&socket, "FORCEREADY  ", &msglen);
