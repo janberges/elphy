@@ -12,6 +12,8 @@ eps = 1e-10
 el, ph, elph, elel = elphmod.models.graphene.create(rydberg=True,
     divide_mass=False)
 
+elph.data *= 1.5 # otherwise the system is stable
+
 def put_model(filename):
     Ri = list(map(tuple, el.R))
     Rj = list(map(tuple, ph.R))
