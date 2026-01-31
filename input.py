@@ -14,81 +14,85 @@ eps = 1e-10
 el, ph, elph, elel = elphmod.models.graphene.create(rydberg=True,
     divide_mass=False)
 
-Ri = list(map(tuple, el.R))
-Rj = list(map(tuple, ph.R))
-Rk = list(map(tuple, elph.Rk))
-Rl = list(map(tuple, elph.Rk))
+def put_model(filename):
+    Ri = list(map(tuple, el.R))
+    Rj = list(map(tuple, ph.R))
+    Rk = list(map(tuple, elph.Rk))
+    Rl = list(map(tuple, elph.Rk))
 
-R = sorted(set(Ri + Rj + Rk + Rl))
+    R = sorted(set(Ri + Rj + Rk + Rl))
 
-hoppings = []
+    hoppings = []
 
-for ri in range(len(Ri)):
-    i = R.index(Ri[ri])
-    for a in range(el.size):
-        for b in range(el.size):
-            t = el.data[ri, a, b].real * Ry2Ha
-            if abs(t) > eps:
-                hoppings.append((i, a, b, t))
+    for ri in range(len(Ri)):
+        i = R.index(Ri[ri])
+        for a in range(el.size):
+            for b in range(el.size):
+                t = el.data[ri, a, b].real * Ry2Ha
+                if abs(t) > eps:
+                    hoppings.append((i, a, b, t))
 
-springs = []
+    springs = []
 
-for rj in range(len(Rj)):
-    j = R.index(Rj[rj])
-    for x in range(ph.size):
-        for y in range(ph.size):
-            k = ph.data[rj, x, y].real * Ry2Ha
-            if abs(k) > eps:
-                springs.append((j, x, y, k))
+    for rj in range(len(Rj)):
+        j = R.index(Rj[rj])
+        for x in range(ph.size):
+            for y in range(ph.size):
+                k = ph.data[rj, x, y].real * Ry2Ha
+                if abs(k) > eps:
+                    springs.append((j, x, y, k))
 
-couplings = []
+    couplings = []
 
-for rk in range(len(Rk)):
-    k = R.index(Rk[rk])
-    for z in range(ph.size):
-        for rl in range(len(Rl)):
-            l = R.index(Rl[rl])
-            for c in range(el.size):
-                for d in range(el.size):
-                    g = elph.data[rk, z, rl, c, d].real * Ry2Ha
-                    if abs(g) > eps:
-                        couplings.append((k, z, l, c, d, g))
+    for rk in range(len(Rk)):
+        k = R.index(Rk[rk])
+        for z in range(ph.size):
+            for rl in range(len(Rl)):
+                l = R.index(Rl[rl])
+                for c in range(el.size):
+                    for d in range(el.size):
+                        g = elph.data[rk, z, rl, c, d].real * Ry2Ha
+                        if abs(g) > eps:
+                            couplings.append((k, z, l, c, d, g))
 
-with open('input.dat', 'w') as dat:
-    dat.write(f'{socket}\n')
+    with open(filename, 'w') as dat:
+        dat.write(f'{socket}\n')
 
-    dat.write(f'{kT}\n')
-    dat.write(f'{n}\n')
-    dat.write(f'{elph.el.size}\n')
+        dat.write(f'{kT}\n')
+        dat.write(f'{n}\n')
+        dat.write(f'{elph.el.size}\n')
 
-    for i in range(3):
-        dat.write('%2d %2d %2d\n' % tuple(A[i]))
+        for i in range(3):
+            dat.write('%2d %2d %2d\n' % tuple(A[i]))
 
-    for i in range(3):
-        dat.write('%12.9f %12.9f %12.9f\n' % tuple(elph.ph.a[i]))
+        for i in range(3):
+            dat.write('%12.9f %12.9f %12.9f\n' % tuple(elph.ph.a[i]))
 
-    dat.write(f'{elph.ph.nat}\n')
+        dat.write(f'{elph.ph.nat}\n')
 
-    for i in range(elph.ph.nat):
-        dat.write('%2s %12.9f %12.9f %12.9f\n'
-            % (elph.ph.atom_order[i], *elph.ph.r[i]))
+        for i in range(elph.ph.nat):
+            dat.write('%2s %12.9f %12.9f %12.9f\n'
+                % (elph.ph.atom_order[i], *elph.ph.r[i]))
 
-    dat.write(f'{len(R)}\n')
+        dat.write(f'{len(R)}\n')
 
-    for r in R:
-        dat.write('%2d %2d %2d\n' % r)
+        for r in R:
+            dat.write('%2d %2d %2d\n' % r)
 
-    dat.write(f'{len(hoppings)}\n')
+        dat.write(f'{len(hoppings)}\n')
 
-    for t in sorted(hoppings):
-        dat.write('%d %d %d %12.9f\n' % t)
+        for t in sorted(hoppings):
+            dat.write('%d %d %d %12.9f\n' % t)
 
-    dat.write(f'{len(springs)}\n')
+        dat.write(f'{len(springs)}\n')
 
-    for k in sorted(springs):
-        dat.write('%d %d %d %12.9f\n' % k)
+        for k in sorted(springs):
+            dat.write('%d %d %d %12.9f\n' % k)
 
-    dat.write(f'{len(couplings)}\n')
+        dat.write(f'{len(couplings)}\n')
 
-    for g in sorted(couplings):
-        dat.write('%d %d %d %d %d %12.9f\n' % g)
+        for g in sorted(couplings):
+            dat.write('%d %d %d %d %d %12.9f\n' % g)
+
+if __name__ == '__main__':
+    put_model('input.dat')
