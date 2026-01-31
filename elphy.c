@@ -37,6 +37,9 @@ int main(int argc, char **argv) {
 
     energy = step(h, c, m, u, e, occ, forces, forces0, nc, cr);
 
+    for (i = 0; i < nph; i++)
+        forces0[i] = -forces[i];
+
     repeat(m, nc, cells, uc, typ, tau);
 
     if (argc > 2) {
