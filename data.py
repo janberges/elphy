@@ -6,7 +6,7 @@ socket = 'localhost:31415'
 Ry2Ha = 0.5
 kT = 0.0019
 n = 2.0
-A = elphmod.bravais.supercell(12, 12)[1]
+A = elphmod.bravais.supercell(12, (6, 12, 0))[1]
 eps = 1e-10
 
 el, ph, elph, elel = elphmod.models.graphene.create(rydberg=True,
