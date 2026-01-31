@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 
-from input import *
+from data import *
 
 import numpy as np
 import subprocess
