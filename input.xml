@@ -15,4 +15,9 @@
             <fixcom>True</fixcom>
         </motion>
     </system>
+    <output prefix='ipi'>
+        <properties stride='1' filename='out'>[step, potential]</properties>
+        <trajectory stride='1' filename='pos'>positions</trajectory>
+        <trajectory stride='1' filename='for'>forces</trajectory>
+    </output>
 </simulation>
