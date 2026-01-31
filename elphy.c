@@ -91,7 +91,7 @@ int main(int argc, char **argv) {
 
 void random_displacements(const int nat, double *u) {
     const double rho_max = 0.1;
-    double rho, norm;
+    double rho, norm, avg;
     int i, j;
 
     for (i = 0; i < nat; i++) {
@@ -109,6 +109,18 @@ void random_displacements(const int nat, double *u) {
         if (norm != 0.0)
             for (j = 0; j < 3; j++)
                 u[3 * i + j] *= rho / norm;
+    }
+
+    for (j = 0; j < 3; j++) {
+        avg = 0.0;
+
+        for (i = 0; i < nat; i++)
+            avg += u[3 * i + j];
+
+        avg /= nat;
+
+        for (i = 0; i < nat; i++)
+            u[3 * i + j] -= avg;
     }
 }
 
