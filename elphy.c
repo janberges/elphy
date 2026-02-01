@@ -62,6 +62,7 @@ int main(int argc, char **argv) {
     free(h0);
 
     free(cu);
+    free(forces0);
     free(forces);
     free(occ);
     free(e);
