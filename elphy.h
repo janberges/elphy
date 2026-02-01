@@ -37,6 +37,7 @@ struct model {
     int sc[3][3];
     double uc[3][3];
     double (*tau)[3];
+    double (*fdc)[3];
     char (*typ)[3];
     int nel, nph, nat, nr, nt, nk, ng;
     int (*r)[3];
@@ -67,7 +68,7 @@ void cross(const int a[3], const int b[3], int *c);
 int map(const struct model m, int ***cr, int ***cells);
 
 void repeat(const struct model m, const int nc, int **cells,
-    double uc[3][3], char (*typ)[3], double (*tau)[3]);
+    double uc[3][3], char (*typ)[3], double (*tau)[3], double (*fdc)[3]);
 
 void supercell(double **a, const int nb, const int nl, const struct element *l,
     const int nc, int **cr);

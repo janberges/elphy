@@ -37,9 +37,9 @@ The program is run as follows:
     [a₁₀] [a₁₁] [a₁₂]
     [a₂₀] [a₂₁] [a₂₂]
     [number of atoms per unit cell]
-    [X₀] [r₀₀] [r₀₁] [r₀₂]
-    [X₁] [r₁₀] [r₁₁] [r₁₂]
-    [X₂] [r₂₀] [r₂₁] [r₂₂]
+    [X₀] [r₀₀] [r₀₁] [r₀₂] [F₀₀] [F₀₁] [F₀₂]
+    [X₁] [r₁₀] [r₁₁] [r₁₂] [F₁₀] [F₁₁] [F₁₂]
+    [X₂] [r₂₀] [r₂₁] [r₂₂] [F₂₀] [F₂₁] [F₂₂]
     ⋮
     [number of lattice vectors]
     [R₀₀] [R₀₁] [R₀₂]
@@ -64,15 +64,16 @@ The program is run as follows:
 
 The indices `i, j, k, l` run over lattice vectors, `α, β, γ, δ` over orbitals,
 and `x, y, z` over the three Cartesian displacement directions for all atoms.
-Primitive and position vectors `a` and `r` are given in Cartesian coordinates,
-supercell and lattice vectors `A` and `R` in integer crystal coordinates.
+The primitive, position, and force vectors `a, r, F` are given in Cartesian,
+the supercell and lattice vectors `A, R` in integer crystal coordinates.
 
 No unit conversions are performed, so any consistent energy and length units can
 be used. However, i-PI expects energies and forces in Hartree atomic units.
 
 Note that the interatomic force constants are assumed to be partially screened:
 They shall exclude the harmonic term of the electronic potential-energy surface.
-Any forces that the model may generate at zero displacements are set to zero.
+Any forces that the model may generate at zero displacements can be compensated
+by subtracting a force correction specified next to the atomic positions.
 
 The i-PI socket address is a host name optionally followed by a colon and a port
 number, e.g., `localhost:31415`. If the port number is omitted or zero, a UNIX

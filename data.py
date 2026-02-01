@@ -71,7 +71,7 @@ def put_model(filename):
         dat.write(f'{elph.ph.nat}\n')
 
         for i in range(elph.ph.nat):
-            dat.write('%2s %12.9f %12.9f %12.9f\n'
+            dat.write('%2s %12.9f %12.9f %12.9f 0 0 0\n'
                 % (elph.ph.atom_order[i], *elph.ph.r[i]))
 
         dat.write(f'{len(R)}\n')

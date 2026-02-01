@@ -23,7 +23,7 @@ int main(int argc, char **argv) {
     u = malloc(nph * sizeof *u);
     e = malloc(nel * sizeof *e);
     occ = malloc(nel * sizeof *occ);
-    forces = calloc(nph, sizeof *forces);
+    forces = malloc(nph * sizeof *forces);
     forces0 = malloc(nph * sizeof *forces0);
 
     h0 = matrix(nel);
@@ -33,11 +33,7 @@ int main(int argc, char **argv) {
     supercell(h0, m.nel, m.nt, m.t, nc, cr);
     supercell(c, m.nph, m.nk, m.k, nc, cr);
 
-    memcpy(*h, *h0, nel * nel * sizeof **h);
-
-    energy = step(h, c, m, u, e, occ, forces0, forces, nc, cr);
-
-    repeat(m, nc, cells, uc, typ, tau);
+    repeat(m, nc, cells, uc, typ, tau, (double (*)[3]) forces0);
 
     if (argc > 2) {
         for (i = 2; i < argc; i++) {
@@ -80,6 +76,7 @@ int main(int argc, char **argv) {
     free(m.k);
     free(m.t);
     free(m.r);
+    free(m.fdc);
     free(m.tau);
     free(m.typ);
 

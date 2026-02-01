@@ -64,11 +64,14 @@ void get_model(const char *filename, struct model *m) {
 
     m->typ = malloc(m->nat * sizeof *m->typ);
     m->tau = malloc(m->nat * sizeof *m->tau);
+    m->fdc = malloc(m->nat * sizeof *m->fdc);
 
     for (i = 0; i < m->nat; i++) {
         fscanf(fp, "%s", m->typ[i]);
         for (j = 0; j < 3; j++)
             fscanf(fp, "%lf", &m->tau[i][j]);
+        for (j = 0; j < 3; j++)
+            fscanf(fp, "%lf", &m->fdc[i][j]);
     }
 
     fscanf(fp, "%d", &m->nr);
