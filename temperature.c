@@ -33,7 +33,7 @@ double fermi_level(const int ne, const int nspin, double n,
             sum_e_w += e[i] * w;
         }
 
-        if (fabs(sum_f- n) < tol)
+        if (fabs(sum_f - n) < tol)
             return mu;
 
         mu = (n - ne * f0 + sum_e_w) / sum_w;
