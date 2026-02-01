@@ -12,7 +12,7 @@ res = np.array([float(x.rstrip(';'))
 driver.from_xyz('input.xyz')
 
 energy = driver.free_energy(show=False)
-forces = -driver.jacobian(show=False)
+forces = driver.F0 - driver.jacobian(show=False)
 
 ref = np.insert(forces, 0, energy)
 
