@@ -5,6 +5,7 @@ elphmod.misc.verbosity = 0
 socket = 'localhost:31415'
 Ry2Ha = 0.5
 kT = 0.0019
+umax = 0.1
 n = 2.0
 A = elphmod.bravais.supercell(12, (6, 12, 0))[1]
 eps = 1e-10
@@ -59,6 +60,7 @@ def put_model(filename):
         dat.write(f'{socket}\n')
 
         dat.write(f'{kT * Ry2Ha}\n')
+        dat.write(f'{umax}\n')
         dat.write(f'{n}\n')
         dat.write(f'{elph.el.size}\n')
 

@@ -33,7 +33,7 @@ struct vertex {
 struct model {
     char host[256];
     int port;
-    double kt, n;
+    double kt, n, umax;
     int sc[3][3];
     double uc[3][3];
     double (*tau)[3];
@@ -91,7 +91,7 @@ double free_energy(const int ne, const double n,
 void occupations(const int ne, double *f,
     const double *e, const double kt, const double mu);
 
-void random_displacements(const int nat, double *u);
+void random_displacements(const int nat, double *u, double umax);
 
 double step(double **h, double **c, const struct model m, const double *u,
     double *e, double *occ, double *forces, const double *forces0,

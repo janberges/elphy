@@ -40,7 +40,7 @@ int main(int argc, char **argv) {
             if (exists(argv[i]))
                 get_displ(argv[i], nat, uc, typ, tau, u);
             else {
-                random_displacements(nat, u);
+                random_displacements(nat, u, m.umax);
                 put_displ(argv[i], nat, uc, typ, tau, u);
             }
 
@@ -83,13 +83,12 @@ int main(int argc, char **argv) {
     return 0;
 }
 
-void random_displacements(const int nat, double *u) {
-    const double rho_max = 0.1;
+void random_displacements(const int nat, double *u, double umax) {
     double rho, norm, avg;
     int i, j;
 
     for (i = 0; i < nat; i++) {
-        rho = rho_max * (double) rand() / (double) RAND_MAX;
+        rho = umax * (double) rand() / (double) RAND_MAX;
 
         norm = 0.0;
 

@@ -48,6 +48,7 @@ void get_model(const char *filename, struct model *m) {
         m->port = 0;
 
     fscanf(fp, "%lf", &m->kt);
+    fscanf(fp, "%lf", &m->umax);
     fscanf(fp, "%lf", &m->n);
     fscanf(fp, "%d", &m->nel);
 

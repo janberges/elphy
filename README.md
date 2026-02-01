@@ -28,6 +28,7 @@ The program is run as follows:
 
     [i-PI socket address]
     [temperature kT]
+    [radius of random displacements]
     [number of electrons per unit cell]
     [number of orbitals per unit cell]
     [A₀₀] [A₀₁] [A₀₂]
@@ -83,7 +84,8 @@ match the information in the i-PI input file `input.xml`.
 It is possible to pass further command arguments `input.xyz ...`. In this case,
 the program does not connect to a socket but prints for the atomic coordinates
 in each XYZ file the corresponding free energies and forces to standard output.
-Missing files are created for structures with small random displacements.
+Missing files are created for structures with random displacements smaller than
+the defined radius.
 
 ## Tests and examples
 
