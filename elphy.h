@@ -94,9 +94,9 @@ void occupations(const int ne, const int nspin, double *f,
 void random_displacements(const int nat, double *u, double umax);
 
 double step(double **h, double **c, const struct model m, const double *u,
-    double *e, double *occ, double *forces, const double *forces0,
+    double *e, double *occ, double *forces, const double *forces0, double *cu,
     const int nc, int **cr);
 
 void driver(double **h0, double **h, double **c, const struct model m,
     double *u, double *e, double *occ, double *forces, const double *forces0,
-    double (*tau)[3], const int nc, int **cr);
+    double *cu, double (*tau)[3], const int nc, int **cr);

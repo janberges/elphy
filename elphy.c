@@ -1,7 +1,7 @@
 #include "elphy.h"
 
 int main(int argc, char **argv) {
-    double **h0, **h, **c, *e, *u, energy, *forces, *forces0, *occ;
+    double **h0, **h, **c, *e, *u, energy, *forces, *forces0, *cu, *occ;
     struct model m;
     int nc, nel, nph, nat, i, **cr, **cells;
     char (*typ)[3];
@@ -25,6 +25,7 @@ int main(int argc, char **argv) {
     occ = malloc(nel * sizeof *occ);
     forces = malloc(nph * sizeof *forces);
     forces0 = malloc(nph * sizeof *forces0);
+    cu = malloc(nph * sizeof *cu);
 
     h0 = matrix(nel);
     h = matrix(nel);
@@ -46,12 +47,12 @@ int main(int argc, char **argv) {
 
             perturbation(h0, h, m, u, nc, cr);
 
-            energy = step(h, c, m, u, e, occ, forces, forces0, nc, cr);
+            energy = step(h, c, m, u, e, occ, forces, forces0, cu, nc, cr);
 
             put_force("stdout", nat, energy, typ, tau, forces);
         }
     } else
-        driver(h0, h, c, m, u, e, occ, forces, forces0, tau, nc, cr);
+        driver(h0, h, c, m, u, e, occ, forces, forces0, cu, tau, nc, cr);
 
     free(*c);
     free(c);
@@ -60,6 +61,7 @@ int main(int argc, char **argv) {
     free(*h0);
     free(h0);
 
+    free(cu);
     free(forces);
     free(occ);
     free(e);
@@ -118,7 +120,7 @@ void random_displacements(const int nat, double *u, double umax) {
 }
 
 double step(double **h, double **c, const struct model m, const double *u,
-    double *e, double *occ, double *forces, const double *forces0,
+    double *e, double *occ, double *forces, const double *forces0, double *cu,
     const int nc, int **cr) {
 
     static double mu = 0.0;
@@ -133,20 +135,23 @@ double step(double **h, double **c, const struct model m, const double *u,
 
     mu = fermi_level(nel, m.nspin, n, e, m.kt, mu);
 
+    for (i = 0; i < nph; i++) {
+        cu[i] = 0.0;
+        for (j = 0; j < nph; j++)
+            cu[i] += c[i][j] * u[j];
+    }
+
     energy = free_energy(nel, m.nspin, n, e, m.kt, mu);
 
     for (i = 0; i < nph; i++)
-        for (j = 0; j < nph; j++)
-            energy += 0.5 * u[i] * c[i][j] * u[j];
+        energy += 0.5 * u[i] * cu[i];
 
     occupations(nel, m.nspin, occ, e, m.kt, mu);
 
     compute_forces(h, m, occ, forces, forces0, nc, cr);
 
-    for (i = 0; i < nph; i++) {
-        for (j = 0; j < nph; j++)
-            forces[i] -= c[i][j] * u[j];
-    }
+    for (i = 0; i < nph; i++)
+        forces[i] -= cu[i];
 
     return energy;
 }
