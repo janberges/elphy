@@ -23,8 +23,8 @@ int main(int argc, char **argv) {
     u = malloc(nph * sizeof *u);
     e = malloc(nel * sizeof *e);
     occ = malloc(nel * sizeof *occ);
-    forces = malloc(nph * sizeof *forces);
-    forces0 = calloc(nph, sizeof *forces);
+    forces = calloc(nph, sizeof *forces);
+    forces0 = malloc(nph * sizeof *forces0);
 
     h0 = matrix(nel);
     h = matrix(nel);
@@ -35,10 +35,7 @@ int main(int argc, char **argv) {
 
     memcpy(*h, *h0, nel * nel * sizeof **h);
 
-    energy = step(h, c, m, u, e, occ, forces, forces0, nc, cr);
-
-    for (i = 0; i < nph; i++)
-        forces0[i] = -forces[i];
+    energy = step(h, c, m, u, e, occ, forces0, forces, nc, cr);
 
     repeat(m, nc, cells, uc, typ, tau);
 
