@@ -127,19 +127,19 @@ double step(double **h, double **c, const struct model m, const double *u,
 
     nel = m.nel * nc;
     nph = m.nph * nc;
-    n = 0.5 * m.n * nc;
+    n = m.n * nc;
 
     eigenvalues(nel, h, e);
 
-    mu = fermi_level(nel, n, e, m.kt, mu);
+    mu = fermi_level(nel, m.nspin, n, e, m.kt, mu);
 
-    energy = 2.0 * free_energy(nel, n, e, m.kt, mu);
+    energy = free_energy(nel, m.nspin, n, e, m.kt, mu);
 
     for (i = 0; i < nph; i++)
         for (j = 0; j < nph; j++)
             energy += 0.5 * u[i] * c[i][j] * u[j];
 
-    occupations(nel, occ, e, m.kt, mu);
+    occupations(nel, m.nspin, occ, e, m.kt, mu);
 
     compute_forces(h, m, occ, forces, forces0, nc, cr);
 

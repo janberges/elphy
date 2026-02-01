@@ -7,6 +7,7 @@ Ry2Ha = 0.5
 kT = 0.0019
 umax = 0.1
 n = 2.0
+nspin = 2
 A = elphmod.bravais.supercell(12, (6, 12, 0))[1]
 eps = 1e-10
 
@@ -63,6 +64,7 @@ def put_model(filename):
         dat.write(f'{umax}\n')
         dat.write(f'{n}\n')
         dat.write(f'{elph.el.size}\n')
+        dat.write(f'{nspin}\n')
 
         for i in range(3):
             dat.write('%2d %2d %2d\n' % tuple(A[i]))

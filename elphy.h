@@ -39,7 +39,7 @@ struct model {
     double (*tau)[3];
     double (*fdc)[3];
     char (*typ)[3];
-    int nel, nph, nat, nr, nt, nk, ng;
+    int nspin, nel, nph, nat, nr, nt, nk, ng;
     int (*r)[3];
     struct element *t;
     struct element *k;
@@ -82,13 +82,13 @@ void compute_forces(double **h, const struct model m, const double *occ,
 double fermi(const double x);
 double dirac(const double x);
 
-double fermi_level(const int ne, const double n,
+double fermi_level(const int ne, const int nspin, double n,
     const double *e, const double kt, double mu);
 
-double free_energy(const int ne, const double n,
+double free_energy(const int ne, const int nspin, const double n,
     const double *e, const double kt, const double mu);
 
-void occupations(const int ne, double *f,
+void occupations(const int ne, const int nspin, double *f,
     const double *e, const double kt, const double mu);
 
 void random_displacements(const int nat, double *u, double umax);

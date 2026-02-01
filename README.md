@@ -31,6 +31,7 @@ The program is run as follows:
     [radius of random displacements]
     [number of electrons per unit cell]
     [number of orbitals per unit cell]
+    [maximum number of electrons per orbital]
     [A₀₀] [A₀₁] [A₀₂]
     [A₁₀] [A₁₁] [A₁₂]
     [A₂₀] [A₂₁] [A₂₂]

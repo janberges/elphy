@@ -8,7 +8,7 @@ double dirac(const double x) {
     return 1.0 / (2.0 * cosh(x) + 2.0);
 }
 
-double fermi_level(const int ne, const double n,
+double fermi_level(const int ne, const int nspin, double n,
     const double *e, const double kt, double mu) {
 
     const double eps = 1e-10, tol = 1e-5;
@@ -16,6 +16,8 @@ double fermi_level(const int ne, const double n,
     const double d0 = dirac(0.0) / kt;
     double x, f, w, sum_f, sum_w, sum_e_w;
     int i;
+
+    n /= nspin;
 
     for (;;) {
         sum_f = sum_w = sum_e_w = 0.0;
@@ -38,7 +40,7 @@ double fermi_level(const int ne, const double n,
     }
 }
 
-double free_energy(const int ne, const double n,
+double free_energy(const int ne, const int nspin, const double n,
     const double *e, const double kt, const double mu) {
 
     double grand = 0.0, x;
@@ -49,16 +51,16 @@ double free_energy(const int ne, const double n,
         grand -= x > 709.0 ? x : log(exp(x) + 1.0);
     }
 
-    grand *= kt;
+    grand *= nspin * kt;
 
     return grand + n * mu;
 }
 
-void occupations(const int ne, double *f,
+void occupations(const int ne, const int nspin, double *f,
     const double *e, const double kt, const double mu) {
 
     int i;
 
     for (i = 0; i < ne; i++)
-        f[i] = 2.0 * fermi((e[i] - mu) / kt);
+        f[i] = nspin * fermi((e[i] - mu) / kt);
 }

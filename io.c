@@ -51,6 +51,7 @@ void get_model(const char *filename, struct model *m) {
     fscanf(fp, "%lf", &m->umax);
     fscanf(fp, "%lf", &m->n);
     fscanf(fp, "%d", &m->nel);
+    fscanf(fp, "%d", &m->nspin);
 
     for (i = 0; i < 3; i++)
         for (j = 0; j < 3; j++)
