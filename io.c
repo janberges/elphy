@@ -17,7 +17,7 @@ void error(char *msg, ...) {
 int exists(const char *filename) {
     FILE *fp = fopen(filename, "r");
 
-    if (fp != NULL) {
+    if (fp) {
         fclose(fp);
         return 1;
     }
@@ -36,7 +36,7 @@ void get_model(const char *filename, struct model *m) {
 
     fp = fopen(filename, "r");
 
-    if (fp == NULL)
+    if (!fp)
         error("Cannot open %s.", filename);
 
     fscanf(fp, "%s", m->host);
@@ -117,7 +117,7 @@ void get_displ(const char *filename, const int nat, double uc[3][3],
 
     fp = strcmp(filename, "stdin") ? fopen(filename, "r") : stdin;
 
-    if (fp == NULL)
+    if (!fp)
         error("Cannot open %s. Run test.py first.", filename);
 
     fscanf(fp, "%d", &i);
