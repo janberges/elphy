@@ -77,7 +77,7 @@ void perturbation(double **h0, double **h, const struct model m,
     const double *u, const int nc, int **cr);
 
 void compute_forces(double **h, const struct model m, const double *occ,
-    double *f, const double *f0, const int nc, int **cr);
+    double *forces, const double *forces0, const int nc, int **cr);
 
 double fermi(const double x);
 double dirac(const double x);
