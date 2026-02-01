@@ -73,7 +73,7 @@ be used. However, i-PI expects energies and forces in Hartree atomic units.
 Note that the interatomic force constants are assumed to be partially screened:
 They shall exclude the harmonic term of the electronic potential-energy surface.
 Any forces that the model may generate at zero displacements can be compensated
-by subtracting a force correction specified next to the atomic positions.
+by adding a force correction specified next to the atomic positions.
 
 The i-PI socket address is a host name optionally followed by a colon and a port
 number, e.g., `localhost:31415`. If the port number is omitted or zero, a UNIX

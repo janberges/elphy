@@ -76,7 +76,7 @@ void supercell(double **a, const int nb, const int nl, const struct element *l,
 void perturbation(double **h0, double **h, const struct model m,
     const double *u, const int nc, int **cr);
 
-void jacobian(double **h, const struct model m, const double *occ,
+void compute_forces(double **h, const struct model m, const double *occ,
     double *f, const double *f0, const int nc, int **cr);
 
 double fermi(const double x);

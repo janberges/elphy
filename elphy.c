@@ -142,12 +142,11 @@ double step(double **h, double **c, const struct model m, const double *u,
 
     occupations(nel, occ, e, m.kt, mu);
 
-    jacobian(h, m, occ, forces, forces0, nc, cr);
+    compute_forces(h, m, occ, forces, forces0, nc, cr);
 
     for (i = 0; i < nph; i++) {
         for (j = 0; j < nph; j++)
-            forces[i] += c[i][j] * u[j];
-        forces[i] *= -1;
+            forces[i] -= c[i][j] * u[j];
     }
 
     return energy;
