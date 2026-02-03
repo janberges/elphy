@@ -124,9 +124,12 @@ double step(double **h, double **c, const struct model m, const double *u,
     double *e, double *occ, double *forces, const double *forces0, double *cu,
     const int nc, int **cr) {
 
+    const char uplo = 'U';
+    const int inc = 1;
+    const double alpha = 1.0, beta = 0.0;
     static double mu = 0.0;
     double energy;
-    int nel, nph, n, i, j;
+    int nel, nph, n, i;
 
     nel = m.nel * nc;
     nph = m.nph * nc;
@@ -136,16 +139,11 @@ double step(double **h, double **c, const struct model m, const double *u,
 
     mu = fermi_level(nel, m.nspin, n, e, m.kt, mu);
 
-    for (i = 0; i < nph; i++) {
-        cu[i] = 0.0;
-        for (j = 0; j < nph; j++)
-            cu[i] += c[i][j] * u[j];
-    }
+    dsymv_(&uplo, &nph, &alpha, *c, &nph, u, &inc, &beta, cu, &inc);
 
     energy = free_energy(nel, m.nspin, n, e, m.kt, mu);
 
-    for (i = 0; i < nph; i++)
-        energy += 0.5 * u[i] * cu[i];
+    energy += 0.5 * ddot_(&nph, u, &inc, cu, &inc);
 
     occupations(nel, m.nspin, occ, e, m.kt, mu);
 

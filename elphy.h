@@ -7,6 +7,13 @@
 extern void dsyev_(const char *jobz, const char *uplo, const int *n, double *a,
     const int *lda, double *w, double *work, const int *lwork, int *info);
 
+extern void dsymv_(const char *uplo, const int *n, const double *alpha,
+    const double *a, const int *lda, const double *x, const int *incx,
+    const double *beta, double *y, const int *incy);
+
+extern double ddot_(const int *n, const double *dx, const int *incx,
+    const double *dy, const int *incy);
+
 void open_socket(int *psockfd, int *inet, int *port, const char *host,
     const char *sockets_prefix);
 
