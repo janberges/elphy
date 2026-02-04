@@ -2,7 +2,7 @@
 
 int main(int argc, char **argv) {
     double **h0, **h, **c, *e, *u, energy, *forces, *forces0, *cu, *occ;
-    struct model m;
+    struct model m = {0};
     int nc, nel, nph, nat, i, **cr, **cells;
     char (*typ)[3];
     double (*tau)[3], uc[3][3];
