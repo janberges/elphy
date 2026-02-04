@@ -1,9 +1,9 @@
 #include "elphy.h"
 
 int main(int argc, char **argv) {
-    double **h0, **h, **c, *e, *u, energy, *forces, *forces0, *occ;
+    double **h0, **h, **c, *e, *u, energy, *forces, *forces0, *occ, tmp, *work;
     struct model m = {0};
-    int nc, nel, nph, nat, i, **cr, **cells;
+    int nc, nel, nph, nat, i, **cr, **cells, lwork, info;
     char (*typ)[3];
     double (*tau)[3], uc[3][3];
 
@@ -30,6 +30,12 @@ int main(int argc, char **argv) {
     h = matrix(nel);
     c = matrix(nph);
 
+    lwork = -1;
+    dsyev_("V", "U", &nel, *h, &nel, e, &tmp, &lwork, &info);
+    lwork = (int) tmp;
+
+    work = malloc(lwork * sizeof *work);
+
     supercell(h0, m.nel, m.nt, m.t, nc, cr);
     supercell(c, m.nph, m.nk, m.k, nc, cr);
 
@@ -46,12 +52,16 @@ int main(int argc, char **argv) {
 
             perturbation(h0, h, m, u, nc, cr);
 
-            energy = step(h, c, m, u, e, occ, forces, forces0, nc, cr);
+            energy = step(h, c, m, u, e, occ, forces, forces0, nc, cr,
+                lwork, work);
 
             put_force("stdout", nat, energy, typ, tau, forces);
         }
     } else
-        driver(h0, h, c, m, u, e, occ, forces, forces0, tau, nc, cr);
+        driver(h0, h, c, m, u, e, occ, forces, forces0, tau, nc, cr,
+            lwork, work);
+
+    free(work);
 
     free(*c);
     free(c);
@@ -120,19 +130,19 @@ void random_displacements(const int nat, double *u, double umax) {
 
 double step(double **h, double **c, const struct model m, const double *u,
     double *e, double *occ, double *forces, const double *forces0, const int nc,
-    int **cr) {
+    int **cr, const int lwork, double *work) {
 
     const int inc = 1;
     const double minus = -1.0, zero = 0.0, plus = 1.0;
     static double mu = 0.0;
     double energy;
-    int nel, nph, n;
+    int info, nel, nph, n;
 
     nel = m.nel * nc;
     nph = m.nph * nc;
     n = m.n * nc;
 
-    eigenvalues(nel, h, e);
+    dsyev_("V", "U", &nel, *h, &nel, e, work, &lwork, &info);
 
     mu = fermi_level(nel, n / m.nspin, e, m.kt, mu);
 

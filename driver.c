@@ -2,7 +2,7 @@
 
 void driver(double **h0, double **h, double **c, const struct model m,
     double *u, double *e, double *occ, double *forces, const double *forces0,
-    double (*tau)[3], const int nc, int **cr) {
+    double (*tau)[3], const int nc, int **cr, const int lwork, double *work) {
 
     const char *sockets_prefix = "/tmp/ipi_";
     int socket, buf, inet = m.port != 0, needinit = 0, havedata = 0;
@@ -54,7 +54,8 @@ void driver(double **h0, double **h, double **c, const struct model m,
 
             perturbation(h0, h, m, u, nc, cr);
 
-            energy = step(h, c, m, u, e, occ, forces, forces0, nc, cr);
+            energy = step(h, c, m, u, e, occ, forces, forces0, nc, cr,
+                lwork, work);
 
             havedata = 1;
         } else if (!strncmp(header, "GETFORCE", 8)) {

@@ -29,26 +29,3 @@ int **array_2d(const int rows, const int cols) {
 
     return a; /* free data using free(*a) before free(a) */
 }
-
-/* diagonalize matrix using LAPACK subroutine */
-
-int eigenvalues(const int n, double **a, double *w) {
-    double *work, lworkopt;
-    int lwork, info, step;
-
-    for (step = 0; step < 2; step++) {
-        if (step) { /* workspace allocation */
-            lwork = (int) lworkopt;
-            work = malloc(lwork * sizeof *work);
-        } else { /* workspace query */
-            lwork = -1;
-            work = &lworkopt;
-        }
-
-        dsyev_("V", "U", &n, *a, &n, w, work, &lwork, &info);
-    }
-
-    free(work);
-
-    return info;
-}

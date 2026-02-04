@@ -28,8 +28,6 @@ double **matrix(const int n);
 
 int **array_2d(const int rows, const int cols);
 
-int eigenvalues(const int n, double **a, double *w);
-
 struct element {
     int r, a, b;
     double c;
@@ -105,8 +103,8 @@ void random_displacements(const int nat, double *u, double umax);
 
 double step(double **h, double **c, const struct model m, const double *u,
     double *e, double *occ, double *forces, const double *forces0, const int nc,
-    int **cr);
+    int **cr, const int lwork, double *work);
 
 void driver(double **h0, double **h, double **c, const struct model m,
     double *u, double *e, double *occ, double *forces, const double *forces0,
-    double (*tau)[3], const int nc, int **cr);
+    double (*tau)[3], const int nc, int **cr, const int lwork, double *work);
