@@ -5,9 +5,10 @@ int dot(const int a[3], const int b[3]) {
 }
 
 void cross(const int a[3], const int b[3], int *c) {
-    c[0] = a[1] * b[2] - a[2] * b[1];
-    c[1] = a[2] * b[0] - a[0] * b[2];
-    c[2] = a[0] * b[1] - a[1] * b[0];
+    int i;
+    for (i = 0; i < 3; i++)
+        c[i] = a[(i + 1) % 3] * b[(i + 2) % 3]
+             - a[(i + 2) % 3] * b[(i + 1) % 3];
 }
 
 /* map lattice vectors from unit cells to supercell */
