@@ -3,6 +3,8 @@
 
 #define _POSIX_C_SOURCE 200112L /* beyond ANSI C, see man feature_test_macros */
 #include <netdb.h> /* getaddrinfo etc. */
+#undef _POSIX_C_SOURCE
+
 #include <sys/socket.h>
 #include <sys/un.h> /* UNIX sockets */
 #include <unistd.h> /* read and write */
