@@ -16,8 +16,11 @@ input.dat: data.py
 test: elphy input.dat
 	python3 test.py
 
-ipi ipi.pos_0.xyz: elphy input.dat
-	./elphy input.dat input.xyz
+input.xyz: elphy input.dat
+	rm -f $@
+	./$^ $@
+
+ipi ipi.pos_0.xyz: elphy input.dat input.xyz
 	i-pi input.xml &
 	sleep 2
 	./elphy input.dat
