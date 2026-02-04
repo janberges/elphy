@@ -33,7 +33,6 @@ int **array_2d(const int rows, const int cols) {
 /* diagonalize matrix using LAPACK subroutine */
 
 int eigenvalues(const int n, double **a, double *w) {
-    const char jobz = 'V', uplo = 'U';
     double *work, lworkopt;
     int lwork, info, step;
 
@@ -46,7 +45,7 @@ int eigenvalues(const int n, double **a, double *w) {
             work = &lworkopt;
         }
 
-        dsyev_(&jobz, &uplo, &n, *a, &n, w, work, &lwork, &info);
+        dsyev_("V", "U", &n, *a, &n, w, work, &lwork, &info);
     }
 
     free(work);
