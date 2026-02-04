@@ -39,7 +39,9 @@ void get_model(const char *filename, struct model *m) {
     if (!fp)
         error("Cannot open %s.", filename);
 
-    fscanf(fp, "%s", m->host);
+    if (fscanf(fp, "%s", m->host) != 1)
+        error("Invalid i-PI socket address in %s.", filename);
+
     colon = strchr(m->host, ':');
     if (colon) {
         *colon = '\0';
@@ -47,21 +49,34 @@ void get_model(const char *filename, struct model *m) {
     } else
         m->port = 0;
 
-    fscanf(fp, "%lf", &m->kt);
-    fscanf(fp, "%lf", &m->umax);
-    fscanf(fp, "%lf", &m->n);
-    fscanf(fp, "%d", &m->nel);
-    fscanf(fp, "%d", &m->nspin);
+    if (fscanf(fp, "%lf", &m->kt) != 1)
+        error("Invalid temperature in %s.", filename);
+
+    if (fscanf(fp, "%lf", &m->umax) != 1)
+        error("Invalid radius of random displacements in %s.", filename);
+
+    if (fscanf(fp, "%lf", &m->n) != 1)
+        error("Invalid number of electrons per unit cell in %s.", filename);
+
+    if (fscanf(fp, "%d", &m->nel) != 1)
+        error("Invalid number of orbitals per unit cell in %s.", filename);
+
+    if (fscanf(fp, "%d", &m->nspin) != 1)
+        error("Invalid maximum number of electrons per orbital in %s.",
+            filename);
 
     for (i = 0; i < 3; i++)
         for (j = 0; j < 3; j++)
-            fscanf(fp, "%d", &m->sc[i][j]);
+            if (fscanf(fp, "%d", &m->sc[i][j]) != 1)
+                error("Invalid supercell vector in %s.", filename);
 
     for (i = 0; i < 3; i++)
         for (j = 0; j < 3; j++)
-            fscanf(fp, "%lf", &m->uc[i][j]);
+            if (fscanf(fp, "%lf", &m->uc[i][j]) != 1)
+                error("Invalid primitive vector in %s.", filename);
 
-    fscanf(fp, "%d", &m->nat);
+    if (fscanf(fp, "%d", &m->nat) != 1)
+        error("Invalid number of atoms per unit cell in %s", filename);
     m->nph = 3 * m->nat;
 
     m->typ = malloc(m->nat * sizeof *m->typ);
@@ -69,37 +84,52 @@ void get_model(const char *filename, struct model *m) {
     m->fdc = malloc(m->nat * sizeof *m->fdc);
 
     for (i = 0; i < m->nat; i++) {
-        fscanf(fp, "%s", m->typ[i]);
+        if (fscanf(fp, "%s", m->typ[i]) != 1)
+            error("Invalid atom type in %s.", filename);
+
         for (j = 0; j < 3; j++)
-            fscanf(fp, "%lf", &m->tau[i][j]);
+            if (fscanf(fp, "%lf", &m->tau[i][j]) != 1)
+                error("Invalid position vector in %s.", filename);
+
         for (j = 0; j < 3; j++)
-            fscanf(fp, "%lf", &m->fdc[i][j]);
+            if (fscanf(fp, "%lf", &m->fdc[i][j]) != 1)
+                error("Invalid force vector in %s.", filename);
     }
 
-    fscanf(fp, "%d", &m->nr);
+    if (fscanf(fp, "%d", &m->nr) != 1)
+        error("Invalid number of lattice vectors in %s.", filename);
     m->r = malloc(m->nr * sizeof *r);
 
     for (r = m->r; r - m->r < m->nr; r++)
-        fscanf(fp, "%d %d %d", *r, *r + 1, *r + 2);
+        if (fscanf(fp, "%d %d %d", *r, *r + 1, *r + 2) != 3)
+            error("Invalid lattice vector in %s.", filename);
 
-    fscanf(fp, "%d", &m->nt);
+    if (fscanf(fp, "%d", &m->nt) != 1)
+        error("Invalid number of hopping parameters in %s.", filename);
     m->t = malloc(m->nt * sizeof *t);
 
     for (t = m->t; t - m->t < m->nt; t++)
-        fscanf(fp, "%d %d %d %lf", &t->r, &t->a, &t->b, &t->c);
+        if (fscanf(fp, "%d %d %d %lf", &t->r, &t->a, &t->b, &t->c) != 4)
+            error("Invalid hopping parameter in %s.", filename);
 
-    fscanf(fp, "%d", &m->nk);
+    if (fscanf(fp, "%d", &m->nk) != 1)
+        error("Invalid number of interatomic force constants in %s.", filename);
     m->k = malloc(m->nk * sizeof *k);
 
     for (k = m->k; k - m->k < m->nk; k++)
-        fscanf(fp, "%d %d %d %lf", &k->r, &k->a, &k->b, &k->c);
+        if (fscanf(fp, "%d %d %d %lf", &k->r, &k->a, &k->b, &k->c) != 4)
+            error("Invalid interatomic force constant in %s.", filename);
 
-    fscanf(fp, "%d", &m->ng);
+    if (fscanf(fp, "%d", &m->ng) != 1)
+        error("Invalid number of electron-phonon matrix elements in %s.",
+            filename);
     m->g = malloc(m->ng * sizeof *g);
 
     for (g = m->g; g - m->g < m->ng; g++)
-        fscanf(fp, "%d %d %d %d %d %lf",
-            &g->rph, &g->x, &g->rel, &g->a, &g->b, &g->c);
+        if (fscanf(fp, "%d %d %d %d %d %lf",
+            &g->rph, &g->x, &g->rel, &g->a, &g->b, &g->c) != 6)
+                error("Invalid electron-phonon matrix element in %s.",
+                    filename);
 
     fclose(fp);
 }
@@ -120,7 +150,8 @@ void get_displ(const char *filename, const int nat, double uc[3][3],
     if (!fp)
         error("Cannot open %s. Run test.py first.", filename);
 
-    fscanf(fp, "%d", &i);
+    if (fscanf(fp, "%d", &i) != 1)
+        error("Invalid number of atoms in %s.", filename);
 
     if (i != nat)
         error("%d instead of %d atoms in %s.", i, nat, filename);
@@ -130,19 +161,24 @@ void get_displ(const char *filename, const int nat, double uc[3][3],
 
     for (i = 0; i < 3; i++)
         for (j = 0; j < 3; j++) {
-            fscanf(fp, "%lf", &r);
+            if (fscanf(fp, "%lf", &r) != 1)
+                error("Invalid cell dimension in %s.", filename);
+
             if (fabs(r - uc[j][i]) > eps)
                 error("Wrong cell dimension in %s.", filename);
         }
 
     for (i = 0; i < nat; i++) {
-        fscanf(fp, "%s", c);
+        if (fscanf(fp, "%s", c) != 1)
+            error("Invalid atom type in %s.", filename);
 
         if (strcmp(c, typ[i]))
             error("Wrong atom type in %s.", filename);
 
         for (j = 0; j < 3; j++) {
-            fscanf(fp, "%lf", &r);
+            if (fscanf(fp, "%lf", &r) != 1)
+                error("Invalid position vector %s.", filename);
+
             u[3 * i + j] = r - tau[i][j];
         }
     }
