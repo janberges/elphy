@@ -92,11 +92,11 @@ void add_forces(double **h, const struct model m, const double *occ,
 double fermi(const double x);
 double dirac(const double x);
 
-double fermi_level(const int ne, const int nspin, double n,
-    const double *e, const double kt, double mu);
+double fermi_level(const int ne, double n, const double *e, const double kt,
+    double mu);
 
-double free_energy(const int ne, const int nspin, const double n,
-    const double *e, const double kt, const double mu);
+double grand_potential(const int ne, const double *e, const double kt,
+    const double mu);
 
 void occupations(const int ne, const int nspin, double *f,
     const double *e, const double kt, const double mu);

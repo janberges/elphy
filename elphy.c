@@ -135,13 +135,13 @@ double step(double **h, double **c, const struct model m, const double *u,
 
     eigenvalues(nel, h, e);
 
-    mu = fermi_level(nel, m.nspin, n, e, m.kt, mu);
+    mu = fermi_level(nel, n / m.nspin, e, m.kt, mu);
 
     dsymv_(&uplo, &nph, &minus, *c, &nph, u, &inc, &zero, forces, &inc);
 
     energy = -0.5 * ddot_(&nph, u, &inc, forces, &inc);
 
-    energy += free_energy(nel, m.nspin, n, e, m.kt, mu);
+    energy += m.nspin * grand_potential(nel, e, m.kt, mu) + n * mu;
 
     occupations(nel, m.nspin, occ, e, m.kt, mu);
 
