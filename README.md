@@ -97,3 +97,11 @@ the defined radius.
 - `make show` displays an animation of the relaxation process.
 
 The Python packages `elphmod`, `ipi`, and `matplotlib` are required.
+
+## Acknowledgment
+
+The method is described in the following paper:
+
+- Arne Schobert, Jan Berges, Erik G. C. P. van Loon, Michael A. Sentef, Sergey
+  Brener, Mariana Rossi, and Tim O. Wehling, [SciPost Phys. **16**, 046 (2024)
+  ](https://doi.org/10.21468/SciPostPhys.16.2.046).
