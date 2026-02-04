@@ -105,7 +105,7 @@ int map(const struct model m, int ***cr, int ***cells) {
 void repeat(const struct model m, const int nc, int **cells,
     double uc[3][3], char (*typ)[3], double (*tau)[3], double (*fdc)[3]) {
 
-    int i, j, k, c;
+    int i, j, k, c, ci;
 
     for (i = 0; i < 3; i++)
         for (j = 0; j < 3; j++) {
@@ -115,14 +115,16 @@ void repeat(const struct model m, const int nc, int **cells,
         }
 
     for (c = 0; c < nc; c++)
-        for (i = 0; i < m.nat; i++)
+        for (i = 0; i < m.nat; i++) {
+            ci = m.nat * c + i;
             for (j = 0; j < 3; j++) {
-                typ[m.nat * c + i][j] = m.typ[i][j];
-                tau[m.nat * c + i][j] = m.tau[i][j];
-                fdc[m.nat * c + i][j] = m.fdc[i][j];
+                typ[ci][j] = m.typ[i][j];
+                tau[ci][j] = m.tau[i][j];
+                fdc[ci][j] = m.fdc[i][j];
                 for (k = 0; k < 3; k++)
-                    tau[m.nat * c + i][j] += cells[c][k] * m.uc[k][j];
+                    tau[ci][j] += cells[c][k] * m.uc[k][j];
             }
+        }
 }
 
 /* populate matrix using example of supercell tight-binding Hamiltonian */
