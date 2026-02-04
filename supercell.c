@@ -159,15 +159,15 @@ void add_forces(double **h, const struct model m, const double *occ,
     double *forces, const int nc, int **cr) {
 
     struct vertex *g;
-    int c, n, i0, iel, iph;
+    int c, n, a, b, x;
 
     for (c = 0; c < nc; c++)
         for (g = m.g; g - m.g < m.ng; g++) {
-            i0 = m.nel * c + g->a;
-            iel = m.nel * cr[c][g->rel] + g->b;
-            iph = m.nph * cr[c][g->rph] + g->x;
+            a = m.nel * c + g->a;
+            b = m.nel * cr[c][g->rel] + g->b;
+            x = m.nph * cr[c][g->rph] + g->x;
 
             for (n = 0; n < m.nel * nc; n++)
-                forces[iph] -= g->c * h[n][i0] * occ[n] * h[n][iel];
+                forces[x] -= g->c * h[n][a] * occ[n] * h[n][b];
         }
 }
