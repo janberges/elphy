@@ -1,19 +1,17 @@
-from data import *
-
+import elphmod
 import numpy as np
 import subprocess
-
-driver = elphmod.md.Driver(elph, kT, 'fd', n, supercell=A, unscreen=False)
 
 res = np.array([float(x.rstrip(';'))
     for x in subprocess.check_output(['./elphy', 'input.dat', 'input.xyz'],
         universal_newlines=True).split() if '.' in x])
 
+driver = elphmod.md.Driver.load('driver.pickle')
 driver.from_xyz('input.xyz')
 
 energy = driver.free_energy(show=False)
 forces = driver.F0 - driver.jacobian(show=False)
 
-ref = np.insert(forces, 0, energy)
+ref = 0.5 * np.insert(forces, 0, energy)
 
-assert np.allclose(res, ref * Ry2Ha)
+assert np.allclose(res, ref)

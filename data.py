@@ -16,6 +16,8 @@ el, ph, elph, elel = elphmod.models.graphene.create(rydberg=True,
 
 elph.data *= 1.5 # otherwise the system is stable
 
+driver = elphmod.md.Driver(elph, kT, 'fd', n, supercell=A, unscreen=False)
+
 def put_model(filename):
     Ri = list(map(tuple, el.R))
     Rj = list(map(tuple, ph.R))
@@ -100,3 +102,4 @@ def put_model(filename):
 
 if __name__ == '__main__':
     put_model('input.dat')
+    driver.save('driver.pickle')

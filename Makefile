@@ -10,10 +10,10 @@ elphy: elphy.o driver.o io.o matrix.o supercell.o temperature.o sockets.o
 %.o: %.c elphy.h
 	$(CC) $(CFLAGS) -o $@ -c $<
 
-input.dat: data.py
+input.dat driver.pickle: data.py
 	python3 $<
 
-test: elphy input.dat
+test: elphy input.dat driver.pickle
 	python3 test.py
 
 input.xyz: elphy input.dat
@@ -25,7 +25,7 @@ ipi ipi.pos_0.xyz: elphy input.dat input.xyz
 	sleep 2
 	./elphy input.dat
 
-show: ipi.pos_0.xyz
+show: ipi.pos_0.xyz driver.pickle
 	python3 show.py
 
 clean:
