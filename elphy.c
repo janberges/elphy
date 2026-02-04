@@ -136,11 +136,10 @@ double step(double **h, double **c, const struct model m, const double *u,
     const double minus = -1.0, zero = 0.0, plus = 1.0;
     static double mu = 0.0;
     double energy;
-    int info, nel, nph, n;
-
-    nel = m.nel * nc;
-    nph = m.nph * nc;
-    n = m.n * nc;
+    const double n = m.n * nc;
+    const int nel = m.nel * nc;
+    const int nph = m.nph * nc;
+    int info;
 
     dsyev_("V", "U", &nel, *h, &nel, e, work, &lwork, &info);
 
