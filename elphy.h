@@ -17,12 +17,13 @@ extern double ddot_(const int *n, const double *dx, const int *incx,
 extern void daxpy_(const int *n, const double *da, const double *dx,
     const int *incx, double *dy, const int *incy);
 
-void open_socket(int *psockfd, int *inet, int *port, const char *host,
-    const char *sockets_prefix);
+int open_inet_socket(const char *host, int port);
 
-void writebuffer(int *psockfd, const void *data, int *plen);
+int open_unix_socket(const char *host, const char *prefix);
 
-void readbuffer(int *psockfd, void *data, int *plen);
+void swrite(const int sfd, const void *data, const int len);
+
+void sread(const int sfd, void *data, const int len);
 
 double **matrix(const int n);
 

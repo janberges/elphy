@@ -4,8 +4,7 @@ void driver(double **h0, double **h, double **c, const struct model m,
     double *u, double *e, double *occ, double *forces, const double *forces0,
     double (*tau)[3], const int nc, int **cr, const int lwork, double *work) {
 
-    const char *sockets_prefix = "/tmp/ipi_";
-    int socket, buf, inet = m.port != 0, needinit = 0, havedata = 0;
+    int sfd, buf, needinit = 0, havedata = 0;
     char header[12], *initbuffer;
     const int nat = m.nat * nc;
     int chalen = sizeof(char);
@@ -21,32 +20,35 @@ void driver(double **h0, double **h, double **c, const struct model m,
     positions = malloc(poslen);
     virial = calloc(9, sizeof *virial);
 
-    open_socket(&socket, &inet, (int *) &m.port, m.host, sockets_prefix);
+    if (m.port)
+        sfd = open_inet_socket(m.host, m.port);
+    else
+        sfd = open_unix_socket(m.host, "/tmp/ipi_");
 
     for (;;) {
-        readbuffer(&socket, header, &msglen);
+        sread(sfd, header, msglen);
 
         if (!strncmp(header, "STATUS", 6)) {
             if (needinit)
-                writebuffer(&socket, "NEEDINIT    ", &msglen);
+                swrite(sfd, "NEEDINIT    ", msglen);
             else if (havedata)
-                writebuffer(&socket, "HAVEDATA    ", &msglen);
+                swrite(sfd, "HAVEDATA    ", msglen);
             else
-                writebuffer(&socket, "READY       ", &msglen);
+                swrite(sfd, "READY       ", msglen);
         } else if (!strncmp(header, "INIT", 4)) {
-            readbuffer(&socket, &buf, &intlen); /* replica index */
-            readbuffer(&socket, &buf, &intlen); /* size of init string */
+            sread(sfd, &buf, intlen); /* replica index */
+            sread(sfd, &buf, intlen); /* size of init string */
 
             initbuffer = malloc(buf);
-            readbuffer(&socket, initbuffer, &buf); /* init string */
+            sread(sfd, initbuffer, buf); /* init string */
             free(initbuffer);
 
             needinit = 0;
         } else if (!strncmp(header, "POSDATA", 7)) {
-            readbuffer(&socket, cell, &matlen); /* cell */
-            readbuffer(&socket, cell, &matlen); /* inverse cell */
-            readbuffer(&socket, &buf, &intlen); /* number of atoms */
-            readbuffer(&socket, positions, &poslen); /* positions */
+            sread(sfd, cell, matlen); /* cell */
+            sread(sfd, cell, matlen); /* inverse cell */
+            sread(sfd, &buf, intlen); /* number of atoms */
+            sread(sfd, positions, poslen); /* positions */
 
             for (i = 0; i < nat; i++)
                 for (j = 0; j < 3; j++)
@@ -59,16 +61,16 @@ void driver(double **h0, double **h, double **c, const struct model m,
 
             havedata = 1;
         } else if (!strncmp(header, "GETFORCE", 8)) {
-            writebuffer(&socket, "FORCEREADY  ", &msglen);
+            swrite(sfd, "FORCEREADY  ", msglen);
 
-            writebuffer(&socket, &energy, &dbllen); /* potential */
-            writebuffer(&socket, &nat, &intlen); /* number of atoms */
-            writebuffer(&socket, forces, &poslen); /* forces */
-            writebuffer(&socket, virial, &matlen); /* virial tensor */
+            swrite(sfd, &energy, dbllen); /* potential */
+            swrite(sfd, &nat, intlen); /* number of atoms */
+            swrite(sfd, forces, poslen); /* forces */
+            swrite(sfd, virial, matlen); /* virial tensor */
 
             buf = 1;
-            writebuffer(&socket, &buf, &intlen); /* size of extras */
-            writebuffer(&socket, " ", &chalen); /* extras */
+            swrite(sfd, &buf, intlen); /* size of extras */
+            swrite(sfd, " ", chalen); /* extras */
 
             havedata = 0;
         } else if (!strncmp(header, "EXIT", 4))
