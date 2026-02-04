@@ -1,7 +1,7 @@
 #include "elphy.h"
 
 int main(int argc, char **argv) {
-    double **h0, **h, **c, *e, *u, energy, *forces, *forces0, *cu, *occ;
+    double **h0, **h, **c, *e, *u, energy, *forces, *forces0, *occ;
     struct model m = {0};
     int nc, nel, nph, nat, i, **cr, **cells;
     char (*typ)[3];
@@ -25,7 +25,6 @@ int main(int argc, char **argv) {
     occ = malloc(nel * sizeof *occ);
     forces = malloc(nph * sizeof *forces);
     forces0 = malloc(nph * sizeof *forces0);
-    cu = malloc(nph * sizeof *cu);
 
     h0 = matrix(nel);
     h = matrix(nel);
@@ -47,12 +46,12 @@ int main(int argc, char **argv) {
 
             perturbation(h0, h, m, u, nc, cr);
 
-            energy = step(h, c, m, u, e, occ, forces, forces0, cu, nc, cr);
+            energy = step(h, c, m, u, e, occ, forces, forces0, nc, cr);
 
             put_force("stdout", nat, energy, typ, tau, forces);
         }
     } else
-        driver(h0, h, c, m, u, e, occ, forces, forces0, cu, tau, nc, cr);
+        driver(h0, h, c, m, u, e, occ, forces, forces0, tau, nc, cr);
 
     free(*c);
     free(c);
@@ -61,7 +60,6 @@ int main(int argc, char **argv) {
     free(*h0);
     free(h0);
 
-    free(cu);
     free(forces0);
     free(forces);
     free(occ);
@@ -121,15 +119,15 @@ void random_displacements(const int nat, double *u, double umax) {
 }
 
 double step(double **h, double **c, const struct model m, const double *u,
-    double *e, double *occ, double *forces, const double *forces0, double *cu,
-    const int nc, int **cr) {
+    double *e, double *occ, double *forces, const double *forces0, const int nc,
+    int **cr) {
 
     const char uplo = 'U';
     const int inc = 1;
-    const double alpha = 1.0, beta = 0.0;
+    const double minus = -1.0, zero = 0.0, plus = 1.0;
     static double mu = 0.0;
     double energy;
-    int nel, nph, n, i;
+    int nel, nph, n;
 
     nel = m.nel * nc;
     nph = m.nph * nc;
@@ -139,18 +137,17 @@ double step(double **h, double **c, const struct model m, const double *u,
 
     mu = fermi_level(nel, m.nspin, n, e, m.kt, mu);
 
-    dsymv_(&uplo, &nph, &alpha, *c, &nph, u, &inc, &beta, cu, &inc);
+    dsymv_(&uplo, &nph, &minus, *c, &nph, u, &inc, &zero, forces, &inc);
 
-    energy = free_energy(nel, m.nspin, n, e, m.kt, mu);
+    energy = -0.5 * ddot_(&nph, u, &inc, forces, &inc);
 
-    energy += 0.5 * ddot_(&nph, u, &inc, cu, &inc);
+    energy += free_energy(nel, m.nspin, n, e, m.kt, mu);
 
     occupations(nel, m.nspin, occ, e, m.kt, mu);
 
-    compute_forces(h, m, occ, forces, forces0, nc, cr);
+    add_forces(h, m, occ, forces, nc, cr);
 
-    for (i = 0; i < nph; i++)
-        forces[i] -= cu[i];
+    daxpy_(&nph, &plus, forces0, &inc, forces, &inc);
 
     return energy;
 }

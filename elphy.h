@@ -14,6 +14,9 @@ extern void dsymv_(const char *uplo, const int *n, const double *alpha,
 extern double ddot_(const int *n, const double *dx, const int *incx,
     const double *dy, const int *incy);
 
+extern void daxpy_(const int *n, const double *da, const double *dx,
+    const int *incx, double *dy, const int *incy);
+
 void open_socket(int *psockfd, int *inet, int *port, const char *host,
     const char *sockets_prefix);
 
@@ -83,8 +86,8 @@ void supercell(double **a, const int nb, const int nl, const struct element *l,
 void perturbation(double **h0, double **h, const struct model m,
     const double *u, const int nc, int **cr);
 
-void compute_forces(double **h, const struct model m, const double *occ,
-    double *forces, const double *forces0, const int nc, int **cr);
+void add_forces(double **h, const struct model m, const double *occ,
+    double *forces, const int nc, int **cr);
 
 double fermi(const double x);
 double dirac(const double x);
@@ -101,9 +104,9 @@ void occupations(const int ne, const int nspin, double *f,
 void random_displacements(const int nat, double *u, double umax);
 
 double step(double **h, double **c, const struct model m, const double *u,
-    double *e, double *occ, double *forces, const double *forces0, double *cu,
-    const int nc, int **cr);
+    double *e, double *occ, double *forces, const double *forces0, const int nc,
+    int **cr);
 
 void driver(double **h0, double **h, double **c, const struct model m,
     double *u, double *e, double *occ, double *forces, const double *forces0,
-    double *cu, double (*tau)[3], const int nc, int **cr);
+    double (*tau)[3], const int nc, int **cr);
