@@ -20,13 +20,13 @@ input.xyz: elphy input.dat
 	rm -f $@
 	./$^ $@
 
-ipi ipi.pos_0.xyz: elphy input.dat input.xyz
-	i-pi input.xml &
+ipi ipi.pos_0.xyz: input.xml elphy input.dat input.xyz
+	i-pi $< &
 	sleep 2
 	./elphy input.dat
 
-ipi_elphmod: input.xyz driver.pickle
-	i-pi input.xml &
+ipi_elphmod: input.xml input.xyz driver.pickle
+	i-pi $< &
 	sleep 2
 	i-pi-driver-py -p 31415 -m elphmod -o driver=driver.pickle
 
