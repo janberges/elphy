@@ -94,17 +94,28 @@ int main(int argc, char **argv) {
     return 0;
 }
 
+/* MINSTD using double instead of long long int (to avoid C99 feature) */
+
+double minstd(void) {
+    const double a = 48271.0, m = 2147483647.0;
+    static double i = 1.0;
+
+    i = fmod(i * a, m);
+
+    return i / m;
+}
+
 void random_displacements(const int nat, double *u, double umax) {
     double rho, norm, avg;
     int i, j;
 
     for (i = 0; i < nat; i++) {
-        rho = umax * (double) rand() / (double) RAND_MAX;
+        rho = umax * minstd();
 
         norm = 0.0;
 
         for (j = 3 * i; j < 3 * i + 3; j++) {
-            u[j] = 1.0 - 2.0 * (double) rand() / (double) RAND_MAX;
+            u[j] = 1.0 - 2.0 * minstd();
             norm += u[j] * u[j];
         }
 

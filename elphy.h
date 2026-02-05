@@ -100,6 +100,8 @@ double grand_potential(const int ne, const double *e, const double kt,
 void occupations(const int ne, const int nspin, double *f,
     const double *e, const double kt, const double mu);
 
+double minstd(void);
+
 void random_displacements(const int nat, double *u, double umax);
 
 double step(double **h, double **c, const struct model m, const double *u,
