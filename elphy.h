@@ -17,18 +17,6 @@ extern double ddot_(const int *n, const double *dx, const int *incx,
 extern void daxpy_(const int *n, const double *da, const double *dx,
     const int *incx, double *dy, const int *incy);
 
-int open_inet_socket(const char *host, int port);
-
-int open_unix_socket(const char *host, const char *prefix);
-
-void swrite(const int sfd, const void *data, const int len);
-
-void sread(const int sfd, void *data, const int len);
-
-double **matrix(const int n);
-
-int **array_2d(const int rows, const int cols);
-
 struct element {
     int r, a, b;
     double c;
@@ -55,6 +43,14 @@ struct model {
     struct vertex *g;
 };
 
+double step(double **h, double **c, const struct model m, const double *u,
+    double *e, double *occ, double *forces, const double *forces0, const int nc,
+    int **cr, const int lwork, double *work);
+
+void driver(double **h0, double **h, double **c, const struct model m,
+    double *u, double *e, double *occ, double *forces, const double *forces0,
+    double (*tau)[3], const int nc, int **cr, const int lwork, double *work);
+
 void error(char *msg, ...);
 
 int exists(const char *filename);
@@ -69,6 +65,22 @@ void put_displ(const char *filename, const int nat, double uc[3][3],
 
 void put_force(const char *filename, const int nat, const double energy,
     char (*typ)[3], double (*tau)[3], const double *forces);
+
+double **matrix(const int n);
+
+int **array_2d(const int rows, const int cols);
+
+double minstd(void);
+
+void random_displacements(const int nat, double *u, double umax);
+
+int open_inet_socket(const char *host, int port);
+
+int open_unix_socket(const char *host, const char *prefix);
+
+void sread(const int sfd, void *data, const int len);
+
+void swrite(const int sfd, const void *data, const int len);
 
 int dot(const int a[3], const int b[3]);
 
@@ -89,6 +101,7 @@ void add_forces(double **h, const struct model m, const double *occ,
     double *forces, const int nc, int **cr);
 
 double fermi(const double x);
+
 double dirac(const double x);
 
 double fermi_level(const int ne, double n, const double *e, const double kt,
@@ -99,15 +112,3 @@ double grand_potential(const int ne, const double *e, const double kt,
 
 void occupations(const int ne, const int nspin, double *f,
     const double *e, const double kt, const double mu);
-
-double minstd(void);
-
-void random_displacements(const int nat, double *u, double umax);
-
-double step(double **h, double **c, const struct model m, const double *u,
-    double *e, double *occ, double *forces, const double *forces0, const int nc,
-    int **cr, const int lwork, double *work);
-
-void driver(double **h0, double **h, double **c, const struct model m,
-    double *u, double *e, double *occ, double *forces, const double *forces0,
-    double (*tau)[3], const int nc, int **cr, const int lwork, double *work);

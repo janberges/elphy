@@ -67,11 +67,6 @@ int open_unix_socket(const char *host, const char *prefix) {
     return sfd;
 }
 
-void swrite(const int sfd, const void *data, const int len) {
-    if (write(sfd, data, len) == -1)
-        error("Could not write to socket.");
-}
-
 void sread(const int sfd, void *data, const int len) {
     int all, new;
 
@@ -81,4 +76,9 @@ void sread(const int sfd, void *data, const int len) {
         if (new < 1)
             error("Could not read from socket.");
     }
+}
+
+void swrite(const int sfd, const void *data, const int len) {
+    if (write(sfd, data, len) == -1)
+        error("Could not write to socket.");
 }
