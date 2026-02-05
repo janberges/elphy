@@ -4,7 +4,7 @@ CC = gcc
 CFLAGS = -std=c89 -pedantic -Wall
 LDLIBS = -llapack -lblas -lm
 
-elphy: elphy.o driver.o io.o matrix.o supercell.o temperature.o sockets.o
+elphy: elphy.o driver.o io.o matrix.o random.o supercell.o temperature.o sockets.o
 	${CC} ${CFLAGS} -o $@ $^ ${LDLIBS}
 
 %.o: %.c elphy.h
