@@ -104,7 +104,7 @@ void random_displacements(const int nat, double *u, double umax) {
         norm = 0.0;
 
         for (j = 3 * i; j < 3 * i + 3; j++) {
-            u[j] = (double) rand();
+            u[j] = 1.0 - 2.0 * (double) rand() / (double) RAND_MAX;
             norm += u[j] * u[j];
         }
 
