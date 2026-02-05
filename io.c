@@ -148,7 +148,7 @@ void get_displ(const char *filename, const int nat, double uc[3][3],
     fp = strcmp(filename, "stdin") ? fopen(filename, "r") : stdin;
 
     if (!fp)
-        error("Cannot open %s. Run test.py first.", filename);
+        error("Cannot open %s.", filename);
 
     if (fscanf(fp, "%d", &i) != 1)
         error("Invalid number of atoms in %s.", filename);
