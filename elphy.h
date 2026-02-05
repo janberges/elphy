@@ -3,6 +3,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <time.h>
 
 extern void dsyev_(const char *jobz, const char *uplo, const int *n, double *a,
     const int *lda, double *w, double *work, const int *lwork, int *info);
@@ -69,8 +70,6 @@ void put_force(const char *filename, const int nat, const double energy,
 double **matrix(const int n);
 
 int **array_2d(const int rows, const int cols);
-
-double minstd(void);
 
 void random_displacements(const int nat, double *u, double umax);
 

@@ -42,6 +42,8 @@ int main(int argc, char **argv) {
     repeat(m, nc, cells, uc, typ, tau, (double (*)[3]) forces0);
 
     if (argc > 2) {
+        srand(time(NULL));
+
         for (i = 2; i < argc; i++) {
             if (exists(argv[i]))
                 get_displ(argv[i], nat, uc, typ, tau, u);
