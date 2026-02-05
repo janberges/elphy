@@ -1,24 +1,8 @@
-import elphmod.models.graphene
+def put_model(filename, el, ph, elph, A, kT, n,
+    nspin=2, umax=0.1, socket='localhost:31415', eps=1e-10):
 
-elphmod.misc.verbosity = 0
+    Ry2Ha = 0.5
 
-socket = 'localhost:31415'
-Ry2Ha = 0.5
-kT = 0.0019
-umax = 0.1
-n = 2.0
-nspin = 2
-A = elphmod.bravais.supercell(12, (6, 12, 0))[1]
-eps = 1e-10
-
-el, ph, elph, elel = elphmod.models.graphene.create(rydberg=True,
-    divide_mass=False)
-
-elph.data *= 1.5 # otherwise the system is stable
-
-driver = elphmod.md.Driver(elph, kT, 'fd', n, supercell=A, unscreen=False)
-
-def put_model(filename):
     Ri = list(map(tuple, el.R))
     Rj = list(map(tuple, ph.R))
     Rk = list(map(tuple, elph.Rk))
@@ -101,5 +85,18 @@ def put_model(filename):
             dat.write('%d %d %d %d %d %12.9f\n' % g)
 
 if __name__ == '__main__':
-    put_model('input.dat')
+    import elphmod.models.graphene
+
+    A = elphmod.bravais.supercell(12, (6, 12, 0))[1]
+    kT = 0.0019
+    n = 2.0
+
+    el, ph, elph, elel = elphmod.models.graphene.create(rydberg=True,
+        divide_mass=False)
+
+    elph.data *= 1.5 # otherwise the system is stable
+
+    driver = elphmod.md.Driver(elph, kT, 'fd', n, supercell=A, unscreen=False)
+
+    put_model('input.dat', el, ph, elph, A, kT, n)
     driver.save('driver.pickle')
