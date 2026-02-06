@@ -168,6 +168,9 @@ void put_displ(const char *filename, const int nat, double uc[3][3],
 
     fp = strcmp(filename, "stdout") ? fopen(filename, "w") : stdout;
 
+    if (!fp)
+        error("Cannot open %s.", filename);
+
     fprintf(fp, "%d\n", nat);
 
     fprintf(fp, "# CELL{H}:");
@@ -202,6 +205,9 @@ void put_force(const char *filename, const int nat, const double energy,
     int i, j;
 
     fp = strcmp(filename, "stdout") ? fopen(filename, "w") : stdout;
+
+    if (!fp)
+        error("Cannot open %s.", filename);
 
     fprintf(fp, "%d\nfree energy (Ha): %.9f; forces (Ha/bohr):\n", nat, energy);
 
