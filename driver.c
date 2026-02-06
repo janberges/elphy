@@ -6,7 +6,7 @@ void driver(double **h0, double **h, double **c, const struct model m,
     char *host) {
 
     int port, sfd, buf, needinit = 0, havedata = 0;
-    char *colon, header[12], *initbuffer;
+    char *tmp, header[12];
     const int nat = m.nat * nc;
     int chalen = sizeof(char);
     int intlen = sizeof(int);
@@ -21,11 +21,11 @@ void driver(double **h0, double **h, double **c, const struct model m,
     positions = malloc(poslen);
     virial = calloc(9, sizeof *virial);
 
-    colon = strchr(host, ':');
+    tmp = strchr(host, ':');
 
-    if (colon) {
-        *colon = '\0';
-        port = atoi(colon + 1);
+    if (tmp) {
+        *tmp = '\0';
+        port = atoi(tmp + 1);
     } else
         port = 0;
 
@@ -48,9 +48,9 @@ void driver(double **h0, double **h, double **c, const struct model m,
             sread(sfd, &buf, intlen); /* replica index */
             sread(sfd, &buf, intlen); /* size of init string */
 
-            initbuffer = malloc(buf);
-            sread(sfd, initbuffer, buf); /* init string */
-            free(initbuffer);
+            tmp = malloc(buf);
+            sread(sfd, tmp, buf); /* init string */
+            free(tmp);
 
             needinit = 0;
         } else if (!strncmp(header, "POSDATA", 7)) {
