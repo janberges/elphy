@@ -114,7 +114,6 @@ void get_model(const char *filename, struct model *m) {
 int get_displ(const char *filename, const int nat, double uc[3][3],
     char (*typ)[3], double (*tau)[3], double *u) {
 
-    const double eps = 1e-5;
     FILE *fp;
     int i, j, status;
     double r;
@@ -134,17 +133,8 @@ int get_displ(const char *filename, const int nat, double uc[3][3],
     if (i != nat)
         error("%d instead of %d atoms in %s.", i, nat, filename);
 
-    if (fscanf(fp, " # CELL{H}:") == EOF)
-        error("Unsupported cell definition in %s.", filename);
-
-    for (i = 0; i < 3; i++)
-        for (j = 0; j < 3; j++) {
-            if (fscanf(fp, "%lf", &r) != 1)
-                error("Invalid cell dimension in %s.", filename);
-
-            if (fabs(r - uc[j][i]) > eps)
-                error("Wrong cell dimension in %s.", filename);
-        }
+    if (fscanf(fp, " %*[^\n]") != 0)
+        error("Invalid comment line in %s.", filename);
 
     for (i = 0; i < nat; i++) {
         if (fscanf(fp, "%s", c) != 1)
