@@ -27,7 +27,7 @@ ipi ipi.pos_0.xyz: input.xml elphy input.dat input.xyz
 ipi_elphmod: input.xml input.xyz driver.pickle
 	i-pi $< &
 	sleep 3
-	i-pi-driver-py -p 31415 -m elphmod -o driver=driver.pickle
+	i-pi-driver-py -m elphmod -o driver=driver.pickle -a localhost -p 31415
 
 show: ipi.pos_0.xyz driver.pickle
 	python3 show.py
