@@ -52,9 +52,7 @@ int main(int argc, char **argv) {
             lwork, work, argv[2]);
 
     if (argc != 3) {
-        perturbation(h0, h, m, u, nc, cr);
-
-        energy = step(h, c, m, u, e, occ, forces, forces0, nc, cr,
+        energy = step(h0, h, c, m, u, e, occ, forces, forces0, nc, cr,
             lwork, work);
 
         put_force("stdout", nat, energy, typ, tau, forces);
@@ -93,9 +91,10 @@ int main(int argc, char **argv) {
     return 0;
 }
 
-double step(double **h, double **c, const struct model m, const double *u,
-    double *e, double *occ, double *forces, const double *forces0, const int nc,
-    int **cr, const int lwork, double *work) {
+double step(double **h0, double **h, double **c, const struct model m,
+    const double *u, double *e, double *occ, double *forces,
+    const double *forces0, const int nc, int **cr, const int lwork,
+    double *work) {
 
     const int inc = 1;
     const double minus = -1.0, zero = 0.0, plus = 1.0;
@@ -105,6 +104,8 @@ double step(double **h, double **c, const struct model m, const double *u,
     const int nel = m.nel * nc;
     const int nph = m.nph * nc;
     int info;
+
+    perturbation(h0, h, m, u, nc, cr);
 
     dsyev_("V", "U", &nel, *h, &nel, e, work, &lwork, &info);
 

@@ -42,9 +42,10 @@ struct model {
     struct vertex *g;
 };
 
-double step(double **h, double **c, const struct model m, const double *u,
-    double *e, double *occ, double *forces, const double *forces0, const int nc,
-    int **cr, const int lwork, double *work);
+double step(double **h0, double **h, double **c, const struct model m,
+    const double *u, double *e, double *occ, double *forces,
+    const double *forces0, const int nc, int **cr, const int lwork,
+    double *work);
 
 void driver(double **h0, double **h, double **c, const struct model m,
     double *u, double *e, double *occ, double *forces, const double *forces0,

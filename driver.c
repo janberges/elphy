@@ -63,9 +63,7 @@ void driver(double **h0, double **h, double **c, const struct model m,
                 for (j = 0; j < 3; j++)
                     u[3 * i + j] = positions[3 * i + j] - tau[i][j];
 
-            perturbation(h0, h, m, u, nc, cr);
-
-            energy = step(h, c, m, u, e, occ, forces, forces0, nc, cr,
+            energy = step(h0, h, c, m, u, e, occ, forces, forces0, nc, cr,
                 lwork, work);
 
             havedata = 1;
