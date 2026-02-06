@@ -164,6 +164,7 @@ void put_displ(const char *filename, const int nat, double uc[3][3],
 
     FILE *fp;
     int i, j;
+    char a[64], *c;
 
     fp = strcmp(filename, "stdout") ? fopen(filename, "w") : stdout;
 
@@ -172,8 +173,12 @@ void put_displ(const char *filename, const int nat, double uc[3][3],
     fprintf(fp, "# CELL{H}:");
 
     for (i = 0; i < 3; i++)
-        for (j = 0; j < 3; j++)
-            fprintf(fp, " %.10g", uc[j][i]);
+        for (j = 0; j < 3; j++) {
+            sprintf(a, "%.7f", uc[j][i]);
+            for (c = a + strlen(a) - 1; c > a && (*c == '0' || *c == '.'); c--)
+                *c = '\0';
+            fprintf(fp, " %s", a);
+        }
 
     fprintf(fp, "\n");
 
