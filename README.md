@@ -26,7 +26,7 @@ The program accepts one, two, or three arguments:
     elphy <data file> <socket>
     elphy <data file> <init file> <radius>
 
-With one argument, the program reads atomic positions from standard input and
+With one argument, it alternately reads atomic positions from standard input and
 writes energies and forces to standard output, both using the XYZ format.
 
 With two arguments, it exchanges these quantities with i-PI through its socket

@@ -111,12 +111,12 @@ void get_model(const char *filename, struct model *m) {
 
 /* get atomic displacements from file with atomic positions in XYZ format */
 
-void get_displ(const char *filename, const int nat, double uc[3][3],
+int get_displ(const char *filename, const int nat, double uc[3][3],
     char (*typ)[3], double (*tau)[3], double *u) {
 
     const double eps = 1e-5;
     FILE *fp;
-    int i, j;
+    int i, j, status;
     double r;
     char c[3];
 
@@ -125,7 +125,10 @@ void get_displ(const char *filename, const int nat, double uc[3][3],
     if (!fp)
         error("Cannot open %s.", filename);
 
-    if (fscanf(fp, "%d", &i) != 1)
+    if ((status = fscanf(fp, "%d", &i)) == EOF)
+        return EOF;
+
+    if (status != 1)
         error("Invalid number of atoms in %s.", filename);
 
     if (i != nat)
@@ -160,6 +163,8 @@ void get_displ(const char *filename, const int nat, double uc[3][3],
 
     if (fp != stdin)
         fclose(fp);
+
+    return 0;
 }
 
 /* store positions of displaced atoms in file in XYZ format */

@@ -56,7 +56,7 @@ void error(char *msg, ...);
 
 void get_model(const char *filename, struct model *m);
 
-void get_displ(const char *filename, const int nat, double uc[3][3],
+int get_displ(const char *filename, const int nat, double uc[3][3],
     char (*typ)[3], double (*tau)[3], double *u);
 
 void put_displ(const char *filename, const int nat, double uc[3][3],

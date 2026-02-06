@@ -42,21 +42,24 @@ int main(int argc, char **argv) {
     repeat(m, nc, cells, uc, typ, tau, (double (*)[3]) forces0);
 
     if (argc == 2)
-        get_displ("stdin", nat, uc, typ, tau, u);
+        while (get_displ("stdin", nat, uc, typ, tau, u) != EOF) {
+            energy = step(h0, h, c, m, u, e, occ, forces, forces0, nc, cr,
+                lwork, work);
+
+            put_force("stdout", nat, energy, typ, tau, forces);
+        }
     else if (argc == 4) {
         srand(time(NULL));
         random_displacements(nat, u, atof(argv[3]));
         put_displ(argv[2], nat, uc, typ, tau, u);
-    } else
-        driver(h0, h, c, m, u, e, occ, forces, forces0, tau, nc, cr,
-            lwork, work, argv[2]);
 
-    if (argc != 3) {
         energy = step(h0, h, c, m, u, e, occ, forces, forces0, nc, cr,
             lwork, work);
 
         put_force("stdout", nat, energy, typ, tau, forces);
-    }
+    } else
+        driver(h0, h, c, m, u, e, occ, forces, forces0, tau, nc, cr,
+            lwork, work, argv[2]);
 
     free(work);
 
