@@ -25,7 +25,7 @@ int open_inet_socket(const char *host, int port) {
     sprintf(service, "%d", port);
 
     if (getaddrinfo(host, service, &hints, &res))
-        error("Could not get address info.");
+        error("Cannot get address info.");
 
     for (r = res; r; r = r->ai_next) {
         sfd = socket(r->ai_family, r->ai_socktype, r->ai_protocol);
@@ -35,7 +35,7 @@ int open_inet_socket(const char *host, int port) {
 
         /* see i-PI's sockets.c */
         if (setsockopt(sfd, IPPROTO_TCP, TCP_NODELAY, &yes, sizeof(int)))
-            error("Could not set socket option.");
+            error("Cannot set socket option.");
 
         if (!connect(sfd, r->ai_addr, r->ai_addrlen))
             break;
@@ -46,7 +46,7 @@ int open_inet_socket(const char *host, int port) {
     freeaddrinfo(res);
 
     if (!r)
-        error("Could not connect to INET socket.");
+        error("Cannot connect to INET socket.");
 
     return sfd;
 }
@@ -62,7 +62,7 @@ int open_unix_socket(const char *host, const char *prefix) {
     sfd = socket(AF_UNIX, SOCK_STREAM, 0);
 
     if (sfd == -1 || connect(sfd, (struct sockaddr *) &addr, sizeof(addr)))
-        error("Could not connect to UNIX socket.");
+        error("Cannot connect to UNIX socket.");
 
     return sfd;
 }
@@ -74,11 +74,11 @@ void sread(const int sfd, void *data, const int len) {
     while (all < len) {
         all += new = read(sfd, (char *) data + all, len - all);
         if (new < 1)
-            error("Could not read from socket.");
+            error("Cannot read from socket.");
     }
 }
 
 void swrite(const int sfd, const void *data, const int len) {
     if (write(sfd, data, len) == -1)
-        error("Could not write to socket.");
+        error("Cannot write to socket.");
 }
