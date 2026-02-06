@@ -145,7 +145,7 @@ int get_displ(const char *filename, const int nat, double uc[3][3],
 
         for (j = 0; j < 3; j++) {
             if (fscanf(fp, "%lf", &r) != 1)
-                error("Invalid position vector %s.", filename);
+                error("Invalid position vector in %s.", filename);
 
             u[3 * i + j] = r - tau[i][j];
         }
