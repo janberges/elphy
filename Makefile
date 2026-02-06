@@ -17,13 +17,12 @@ test: elphy input.dat driver.pickle
 	python3 test.py
 
 input.xyz: elphy input.dat
-	rm -f $@
-	./$^ $@
+	./$^ $@ 0.1
 
 ipi ipi.pos_0.xyz: input.xml elphy input.dat input.xyz
 	i-pi $< &
 	sleep 2
-	./elphy input.dat
+	./elphy input.dat localhost:31415
 
 ipi_elphmod: input.xml input.xyz driver.pickle
 	i-pi $< &

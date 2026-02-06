@@ -3,7 +3,7 @@ import numpy as np
 import subprocess
 
 res = np.array([float(x.rstrip(';'))
-    for x in subprocess.check_output(['./elphy', 'input.dat', 'input.xyz'],
+    for x in subprocess.check_output('./elphy input.dat input.xyz 0.1'.split(),
         universal_newlines=True).split() if '.' in x])
 
 driver = elphmod.md.Driver.load('driver.pickle')

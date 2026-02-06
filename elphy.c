@@ -3,14 +3,14 @@
 int main(int argc, char **argv) {
     double **h0, **h, **c, *e, *u, energy, *forces, *forces0, *occ, tmp, *work;
     struct model m = {0};
-    int nc, nel, nph, nat, i, **cr, **cells, lwork, info;
+    int nc, nel, nph, nat, **cr, **cells, lwork, info;
     char (*typ)[3];
     double (*tau)[3], uc[3][3];
 
-    if (argc > 1)
+    if (argc > 1 && argc < 5)
         get_model(argv[1], &m);
     else
-        error("Argument missing. Usage: elphy input.dat [input.xyz ...]");
+        error("Usage: elphy <data file> [<socket>|<init file> <radius>]");
 
     nc = map(m, &cr, &cells);
 
@@ -41,27 +41,24 @@ int main(int argc, char **argv) {
 
     repeat(m, nc, cells, uc, typ, tau, (double (*)[3]) forces0);
 
-    if (argc > 2) {
+    if (argc == 2)
+        get_displ("stdin", nat, uc, typ, tau, u);
+    else if (argc == 4) {
         srand(time(NULL));
-
-        for (i = 2; i < argc; i++) {
-            if (exists(argv[i]))
-                get_displ(argv[i], nat, uc, typ, tau, u);
-            else {
-                random_displacements(nat, u, m.umax);
-                put_displ(argv[i], nat, uc, typ, tau, u);
-            }
-
-            perturbation(h0, h, m, u, nc, cr);
-
-            energy = step(h, c, m, u, e, occ, forces, forces0, nc, cr,
-                lwork, work);
-
-            put_force("stdout", nat, energy, typ, tau, forces);
-        }
+        random_displacements(nat, u, atof(argv[3]));
+        put_displ(argv[2], nat, uc, typ, tau, u);
     } else
         driver(h0, h, c, m, u, e, occ, forces, forces0, tau, nc, cr,
+            lwork, work, argv[2]);
+
+    if (argc != 3) {
+        perturbation(h0, h, m, u, nc, cr);
+
+        energy = step(h, c, m, u, e, occ, forces, forces0, nc, cr,
             lwork, work);
+
+        put_force("stdout", nat, energy, typ, tau, forces);
+    }
 
     free(work);
 

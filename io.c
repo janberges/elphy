@@ -14,17 +14,6 @@ void error(char *msg, ...) {
     exit(EXIT_FAILURE);
 }
 
-int exists(const char *filename) {
-    FILE *fp = fopen(filename, "r");
-
-    if (fp) {
-        fclose(fp);
-        return 1;
-    }
-
-    return 0;
-}
-
 /* read coupled tight-binding and mass-spring models */
 
 void get_model(const char *filename, struct model *m) {
@@ -32,28 +21,14 @@ void get_model(const char *filename, struct model *m) {
     int (*r)[3], i, j;
     struct element *t, *k;
     struct vertex *g;
-    char *colon;
 
     fp = fopen(filename, "r");
 
     if (!fp)
         error("Cannot open %s.", filename);
 
-    if (fscanf(fp, "%s", m->host) != 1)
-        error("Invalid i-PI socket address in %s.", filename);
-
-    colon = strchr(m->host, ':');
-    if (colon) {
-        *colon = '\0';
-        m->port = atoi(colon + 1);
-    } else
-        m->port = 0;
-
     if (fscanf(fp, "%lf", &m->kt) != 1)
         error("Invalid temperature in %s.", filename);
-
-    if (fscanf(fp, "%lf", &m->umax) != 1)
-        error("Invalid radius of random displacements in %s.", filename);
 
     if (fscanf(fp, "%lf", &m->n) != 1)
         error("Invalid number of electrons per unit cell in %s.", filename);

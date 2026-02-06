@@ -2,10 +2,11 @@
 
 void driver(double **h0, double **h, double **c, const struct model m,
     double *u, double *e, double *occ, double *forces, const double *forces0,
-    double (*tau)[3], const int nc, int **cr, const int lwork, double *work) {
+    double (*tau)[3], const int nc, int **cr, const int lwork, double *work,
+    char *host) {
 
-    int sfd, buf, needinit = 0, havedata = 0;
-    char header[12], *initbuffer;
+    int port, sfd, buf, needinit = 0, havedata = 0;
+    char *colon, header[12], *initbuffer;
     const int nat = m.nat * nc;
     int chalen = sizeof(char);
     int intlen = sizeof(int);
@@ -20,10 +21,18 @@ void driver(double **h0, double **h, double **c, const struct model m,
     positions = malloc(poslen);
     virial = calloc(9, sizeof *virial);
 
-    if (m.port)
-        sfd = open_inet_socket(m.host, m.port);
+    colon = strchr(host, ':');
+
+    if (colon) {
+        *colon = '\0';
+        port = atoi(colon + 1);
+    } else
+        port = 0;
+
+    if (port)
+        sfd = open_inet_socket(host, port);
     else
-        sfd = open_unix_socket(m.host, "/tmp/ipi_");
+        sfd = open_unix_socket(host, "/tmp/ipi_");
 
     for (;;) {
         sread(sfd, header, msglen);

@@ -20,15 +20,28 @@ LAPACK and BLAS are required.
 
 ## Usage
 
-The program is run as follows:
+The program accepts one, two, or three arguments:
 
-    elphy input.dat [input.xyz ...]
+    elphy <data file>
+    elphy <data file> <socket>
+    elphy <data file> <init file> <radius>
 
-The main input file `input.dat` is defined below:
+With one argument, the program reads atomic positions from standard input and
+writes energies and forces to standard output, both using the XYZ format.
 
-    <i-PI socket address>
+With two arguments, it exchanges these quantities with i-PI through its socket
+interface. `<socket>` is a host name optionally followed by a colon and a port
+number, e.g., `localhost:31415`. If the port number is omitted or zero, a UNIX
+socket is used for communication, otherwise an internet socket. The address must
+match the information in the i-PI input file `input.xml`.
+
+With three arguments, it creates an `<init file>` with initial atomic positions
+in the XYZ format for i-PI, adding random displacements smaller than `<radius>`,
+and prints the corresponding energies and forces.
+
+The `<data file>` is defined below:
+
     <temperature kT>
-    <radius of random displacements>
     <number of electrons per unit cell>
     <number of orbitals per unit cell>
     <maximum number of electrons per orbital>
@@ -77,17 +90,6 @@ They shall exclude the harmonic term of the electronic potential-energy surface.
 Any forces that the model may generate at zero displacements can be compensated
 by adding a force correction specified next to the atomic positions.
 
-The i-PI socket address is a host name optionally followed by a colon and a port
-number, e.g., `localhost:31415`. If the port number is omitted or zero, a UNIX
-socket is used for communication, otherwise an internet socket. The address must
-match the information in the i-PI input file `input.xml`.
-
-It is possible to pass further command arguments `input.xyz ...`. In this case,
-the program does not connect to a socket but prints for the atomic coordinates
-in each XYZ file the corresponding free energies and forces to standard output.
-Missing files are created for structures with random displacements smaller than
-the defined radius.
-
 ## Tests and examples
 
 - `make input.dat` creates an example input file with data for graphene.
@@ -105,4 +107,4 @@ The method is described in the following paper:
 
 - Arne Schobert, Jan Berges, Erik G. C. P. van Loon, Michael A. Sentef, Sergey
   Brener, Mariana Rossi, and Tim O. Wehling, [SciPost Phys. **16**, 046 (2024)
-  ](https://doi.org/10.21468/SciPostPhys.16.2.046).
+  ](https://doi.org/10.21468/SciPostPhys.16.2.046)

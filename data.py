@@ -1,5 +1,4 @@
-def put_model(filename, el, ph, elph, A, kT, n,
-    nspin=2, umax=0.1, socket='localhost:31415', eps=1e-10):
+def put_model(filename, el, ph, elph, A, kT, n, nspin=2, eps=1e-10):
 
     Ry2Ha = 0.5
 
@@ -44,10 +43,7 @@ def put_model(filename, el, ph, elph, A, kT, n,
                             couplings.append((k, z, l, c, d, g))
 
     with open(filename, 'w') as dat:
-        dat.write(f'{socket}\n')
-
         dat.write(f'{kT * Ry2Ha}\n')
-        dat.write(f'{umax}\n')
         dat.write(f'{n}\n')
         dat.write(f'{elph.el.size}\n')
         dat.write(f'{nspin}\n')

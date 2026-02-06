@@ -29,9 +29,7 @@ struct vertex {
 };
 
 struct model {
-    char host[256];
-    int port;
-    double kt, n, umax;
+    double kt, n;
     int sc[3][3];
     double uc[3][3];
     double (*tau)[3];
@@ -50,11 +48,10 @@ double step(double **h, double **c, const struct model m, const double *u,
 
 void driver(double **h0, double **h, double **c, const struct model m,
     double *u, double *e, double *occ, double *forces, const double *forces0,
-    double (*tau)[3], const int nc, int **cr, const int lwork, double *work);
+    double (*tau)[3], const int nc, int **cr, const int lwork, double *work,
+    char *host);
 
 void error(char *msg, ...);
-
-int exists(const char *filename);
 
 void get_model(const char *filename, struct model *m);
 
