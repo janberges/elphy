@@ -21,12 +21,12 @@ input.xyz: elphy input.dat
 
 ipi ipi.pos_0.xyz: input.xml elphy input.dat input.xyz
 	i-pi $< &
-	sleep 2
+	sleep 3
 	./elphy input.dat localhost:31415
 
 ipi_elphmod: input.xml input.xyz driver.pickle
 	i-pi $< &
-	sleep 2
+	sleep 3
 	i-pi-driver-py -p 31415 -m elphmod -o driver=driver.pickle
 
 show: ipi.pos_0.xyz driver.pickle
