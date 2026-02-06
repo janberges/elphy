@@ -17,9 +17,12 @@ void driver(double **h0, double **h, double **c, const struct model m,
     double energy, *cell, *positions, *virial;
     int i, j;
 
-    cell = malloc(matlen);
-    positions = malloc(poslen);
-    virial = calloc(9, sizeof *virial);
+    if (!(cell = malloc(matlen)))
+        error("No memory for primitive vectors.");
+    if (!(positions = malloc(poslen)))
+        error("No memory for atomic positions.");
+    if (!(virial = calloc(9, sizeof *virial)))
+        error("No memory for virial tensor.");
 
     tmp = strchr(host, ':');
 
@@ -48,7 +51,8 @@ void driver(double **h0, double **h, double **c, const struct model m,
             sread(sfd, &buf, intlen); /* replica index */
             sread(sfd, &buf, intlen); /* size of init string */
 
-            tmp = malloc(buf);
+            if (!(tmp = malloc(buf)))
+                error("No memory for init string.");
             sread(sfd, tmp, buf); /* init string */
             free(tmp);
 

@@ -54,9 +54,12 @@ void get_model(const char *filename, struct model *m) {
         error("Invalid number of atoms per unit cell in %s", filename);
     m->nph = 3 * m->nat;
 
-    m->typ = malloc(m->nat * sizeof *m->typ);
-    m->tau = malloc(m->nat * sizeof *m->tau);
-    m->fdc = malloc(m->nat * sizeof *m->fdc);
+    if (!(m->typ = malloc(m->nat * sizeof *m->typ)))
+        error("No memory for atom types.");
+    if (!(m->tau = malloc(m->nat * sizeof *m->tau)))
+        error("No memory for atomic positions.");
+    if (!(m->fdc = malloc(m->nat * sizeof *m->fdc)))
+        error("No memory for force correction.");
 
     for (i = 0; i < m->nat; i++) {
         if (fscanf(fp, "%s", m->typ[i]) != 1)
@@ -73,7 +76,8 @@ void get_model(const char *filename, struct model *m) {
 
     if (fscanf(fp, "%d", &m->nr) != 1)
         error("Invalid number of lattice vectors in %s.", filename);
-    m->r = malloc(m->nr * sizeof *r);
+    if (!(m->r = malloc(m->nr * sizeof *r)))
+        error("No memory for lattice vectors.");
 
     for (r = m->r; r - m->r < m->nr; r++)
         if (fscanf(fp, "%d %d %d", *r, *r + 1, *r + 2) != 3)
@@ -81,7 +85,8 @@ void get_model(const char *filename, struct model *m) {
 
     if (fscanf(fp, "%d", &m->nt) != 1)
         error("Invalid number of hopping parameters in %s.", filename);
-    m->t = malloc(m->nt * sizeof *t);
+    if (!(m->t = malloc(m->nt * sizeof *t)))
+        error("No memory for hopping parameters.");
 
     for (t = m->t; t - m->t < m->nt; t++)
         if (fscanf(fp, "%d %d %d %lf", &t->r, &t->a, &t->b, &t->c) != 4)
@@ -89,7 +94,8 @@ void get_model(const char *filename, struct model *m) {
 
     if (fscanf(fp, "%d", &m->nk) != 1)
         error("Invalid number of interatomic force constants in %s.", filename);
-    m->k = malloc(m->nk * sizeof *k);
+    if (!(m->k = malloc(m->nk * sizeof *k)))
+        error("No memory for interatomic force constants.");
 
     for (k = m->k; k - m->k < m->nk; k++)
         if (fscanf(fp, "%d %d %d %lf", &k->r, &k->a, &k->b, &k->c) != 4)
@@ -98,7 +104,8 @@ void get_model(const char *filename, struct model *m) {
     if (fscanf(fp, "%d", &m->ng) != 1)
         error("Invalid number of electron-phonon matrix elements in %s.",
             filename);
-    m->g = malloc(m->ng * sizeof *g);
+    if (!(m->g = malloc(m->ng * sizeof *g)))
+        error("No memory for electron-phonon matrix elements.");
 
     for (g = m->g; g - m->g < m->ng; g++)
         if (fscanf(fp, "%d %d %d %d %d %lf",

@@ -6,8 +6,10 @@ double **matrix(const int n) {
     double **a, *data;
     int row;
 
-    a = malloc(n * sizeof data);
-    data = calloc(n * n, sizeof *data);
+    if (!(a = malloc(n * sizeof data)))
+        error("No memory for matrix.");
+    if (!(data = calloc(n * n, sizeof *data)))
+        error("No memory for %d x %d doubles.", n, n);
 
     for (row = 0; row < n; row++)
         a[row] = data + row * n;
@@ -21,8 +23,10 @@ int **array_2d(const int rows, const int cols) {
     int **a, *data;
     int row;
 
-    a = malloc(rows * sizeof data);
-    data = calloc(rows * cols, sizeof *data);
+    if (!(a = malloc(rows * sizeof data)))
+        error("No memory for 2D array.");
+    if (!(data = calloc(rows * cols, sizeof *data)))
+        error("No memory for %d x %d integers.", rows, cols);
 
     for (row = 0; row < rows; row++)
         a[row] = data + row * cols;

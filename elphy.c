@@ -18,13 +18,20 @@ int main(int argc, char **argv) {
     nph = m.nph * nc;
     nat = m.nat * nc;
 
-    typ = malloc(nat * sizeof *typ);
-    tau = malloc(nat * sizeof *tau);
-    u = malloc(nph * sizeof *u);
-    e = malloc(nel * sizeof *e);
-    occ = malloc(nel * sizeof *occ);
-    forces = malloc(nph * sizeof *forces);
-    forces0 = malloc(nph * sizeof *forces0);
+    if (!(typ = malloc(nat * sizeof *typ)))
+        error("No memory for atom types.");
+    if (!(tau = malloc(nat * sizeof *tau)))
+        error("No memory for atomic positions.");
+    if (!(u = malloc(nph * sizeof *u)))
+        error("No memory for atomic displacements.");
+    if (!(e = malloc(nel * sizeof *e)))
+        error("No memory for electron energies.");
+    if (!(occ = malloc(nel * sizeof *occ)))
+        error("No memory for electron occupations.");
+    if (!(forces = malloc(nph * sizeof *forces)))
+        error("No memory for forces.");
+    if (!(forces0 = malloc(nph * sizeof *forces0)))
+        error("No memory for force correction.");
 
     h0 = matrix(nel);
     h = matrix(nel);
@@ -34,7 +41,8 @@ int main(int argc, char **argv) {
     dsyev_("V", "U", &nel, *h, &nel, e, &tmp, &lwork, &info);
     lwork = (int) tmp;
 
-    work = malloc(lwork * sizeof *work);
+    if (!(work = malloc(lwork * sizeof *work)))
+        error("No memory for LAPACK work array.");
 
     supercell(h0, m.nel, m.nt, m.t, nc, cr);
     supercell(c, m.nph, m.nk, m.k, nc, cr);
