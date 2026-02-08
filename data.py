@@ -81,16 +81,38 @@ def put_model(filename, el, ph, elph, A, kT, n, nspin=2, eps=1e-10):
             dat.write('%d %d %d %d %d %12.9f\n' % g)
 
 if __name__ == '__main__':
-    import elphmod.models.graphene
+    import sys
 
-    A = elphmod.bravais.supercell(12, (6, 12, 0))[1]
-    kT = 0.0019
-    n = 2.0
+    model = sys.argv[1] if len(sys.argv) > 1 else 'none'
 
-    el, ph, elph, elel = elphmod.models.graphene.create(rydberg=True,
-        divide_mass=False)
+    if model == 'graphene':
+        import elphmod.models.graphene
 
-    elph.data *= 1.5 # otherwise the system is stable
+        A = elphmod.bravais.supercell(12, (6, 12, 0))[1]
+        kT = 0.0019
+        n = 2.0
+
+        el, ph, elph, elel = elphmod.models.graphene.create(rydberg=True,
+            divide_mass=False)
+
+        elph.data *= 1.5 # otherwise the system is stable
+
+    elif model == 'TaS2':
+        import elphmod.models.tas2
+
+        A = elphmod.bravais.supercell(9, 9)[1]
+        kT = 0.005
+        n = 1.0
+
+        el, ph, elph = elphmod.models.tas2.create(rydberg=True,
+            divide_mass=False)
+
+        driver = elphmod.md.Driver(elph, 0.02, 'mv', n, nk=(12, 12), nq=(2, 2))
+
+        elphmod.ph.q2r(ph, nq=driver.nq, D_full=driver.C0, divide_mass=False)
+
+    else:
+        sys.exit(f'Usage: python3 {sys.argv[0]} graphene|TaS2')
 
     driver = elphmod.md.Driver(elph, kT, 'fd', n, supercell=A, unscreen=False)
 

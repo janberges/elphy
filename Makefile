@@ -4,6 +4,8 @@ CC = gcc
 CFLAGS = -std=c89 -pedantic -Wall
 LDLIBS = -llapack -lblas -lm
 
+model = graphene
+
 elphy: elphy.o driver.o io.o matrix.o random.o sockets.o supercell.o temperature.o
 	${CC} ${CFLAGS} -o $@ $^ ${LDLIBS}
 
@@ -11,7 +13,7 @@ elphy: elphy.o driver.o io.o matrix.o random.o sockets.o supercell.o temperature
 	$(CC) $(CFLAGS) -o $@ -c $<
 
 input.dat driver.pickle: data.py
-	python3 $<
+	python3 $< $(model)
 
 test: elphy input.dat driver.pickle
 	python3 test.py
