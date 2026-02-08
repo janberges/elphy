@@ -1,7 +1,7 @@
 #include "elphy.h"
 
 int main(int argc, char **argv) {
-    double **h0, **h, **c, *e, *u, energy, *forces, *forces0, *occ, tmp, *work;
+    double **h0, **h, **c, *e, *u, energy, *forces, *forces0, **occ, tmp, *work;
     struct model m = {0};
     int nc, nel, nph, nat, **cr, **cells, lwork, info;
     char (*typ)[3];
@@ -26,8 +26,6 @@ int main(int argc, char **argv) {
         error("No memory for atomic displacements.");
     if (!(e = malloc(nel * sizeof *e)))
         error("No memory for electron energies.");
-    if (!(occ = malloc(nel * sizeof *occ)))
-        error("No memory for electron occupations.");
     if (!(forces = malloc(nph * sizeof *forces)))
         error("No memory for forces.");
     if (!(forces0 = malloc(nph * sizeof *forces0)))
@@ -35,6 +33,7 @@ int main(int argc, char **argv) {
 
     h0 = matrix(nel);
     h = matrix(nel);
+    occ = matrix(nel);
     c = matrix(nph);
 
     lwork = -1;
@@ -73,6 +72,8 @@ int main(int argc, char **argv) {
 
     free(*c);
     free(c);
+    free(*occ);
+    free(occ);
     free(*h);
     free(h);
     free(*h0);
@@ -80,7 +81,6 @@ int main(int argc, char **argv) {
 
     free(forces0);
     free(forces);
-    free(occ);
     free(e);
     free(u);
     free(tau);
@@ -103,7 +103,7 @@ int main(int argc, char **argv) {
 }
 
 double step(double **h0, double **h, double **c, const struct model m,
-    const double *u, double *e, double *occ, double *forces,
+    const double *u, double *e, double **occ, double *forces,
     const double *forces0, const int nc, int **cr, const int lwork,
     double *work) {
 
@@ -128,9 +128,9 @@ double step(double **h0, double **h, double **c, const struct model m,
 
     energy += m.nspin * grand_potential(nel, e, m.kt, mu) + n * mu;
 
-    occupations(nel, m.nspin, occ, e, m.kt, mu);
+    occupations(nel, m.nspin, occ, e, h, m.kt, mu);
 
-    add_forces(h, m, occ, forces, nc, cr);
+    add_forces(m, occ, forces, nc, cr);
 
     daxpy_(&nph, &plus, forces0, &inc, forces, &inc);
 

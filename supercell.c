@@ -158,19 +158,14 @@ void perturbation(double **h0, double **h, const struct model m,
 
 /* calculate Jacobian via Hellmann-Feynman theorem */
 
-void add_forces(double **h, const struct model m, const double *occ,
-    double *forces, const int nc, int **cr) {
+void add_forces(const struct model m, double **occ, double *forces,
+    const int nc, int **cr) {
 
     struct vertex *g;
-    int c, n, a, b, x;
+    int c;
 
     for (c = 0; c < nc; c++)
-        for (g = m.g; g - m.g < m.ng; g++) {
-            a = m.nel * c + g->a;
-            b = m.nel * cr[c][g->rel] + g->b;
-            x = m.nph * cr[c][g->rph] + g->x;
-
-            for (n = 0; n < m.nel * nc; n++)
-                forces[x] -= g->c * h[n][a] * occ[n] * h[n][b];
-        }
+        for (g = m.g; g - m.g < m.ng; g++)
+            forces[m.nph * cr[c][g->rph] + g->x]
+                -= occ[m.nel * c + g->a][m.nel * cr[c][g->rel] + g->b] * g->c;
 }

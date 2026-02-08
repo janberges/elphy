@@ -52,11 +52,22 @@ double grand_potential(const int ne, const double *e, const double kt,
     return kt * grand;
 }
 
-void occupations(const int ne, const int nspin, double *f,
-    const double *e, const double kt, const double mu) {
+void occupations(const int ne, const int nspin, double **occ,
+    const double *e, double **psi, const double kt, const double mu) {
 
-    int i;
+    const int inc = 1;
+    const double zero = 0.0, one = 1.0;
+    double tmp;
+    int n, a, b;
 
-    for (i = 0; i < ne; i++)
-        f[i] = nspin * fermi((e[i] - mu) / kt);
+    for (n = 0; n < ne; n++) {
+        tmp = sqrt(nspin * fermi((e[n] - mu) / kt));
+        dscal_(&ne, &tmp, psi[n], &inc);
+    }
+
+    dsyrk_("U", "N", &ne, &ne, &one, *psi, &ne, &zero, *occ, &ne);
+
+    for (a = 0; a < ne; a++)
+        for (b = 0; b < a; b++)
+            occ[b][a] = occ[a][b];
 }

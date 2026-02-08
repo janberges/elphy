@@ -1,7 +1,7 @@
 #include "elphy.h"
 
 void driver(double **h0, double **h, double **c, const struct model m,
-    double *u, double *e, double *occ, double *forces, const double *forces0,
+    double *u, double *e, double **occ, double *forces, const double *forces0,
     double (*tau)[3], const int nc, int **cr, const int lwork, double *work,
     char *host) {
 

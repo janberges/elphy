@@ -18,6 +18,12 @@ extern double ddot_(const int *n, const double *dx, const int *incx,
 extern void daxpy_(const int *n, const double *da, const double *dx,
     const int *incx, double *dy, const int *incy);
 
+extern void dscal_(const int *n, const double *da, double *dx, const int *incx);
+
+extern void dsyrk_(const char *uplo, const char *trans, const int *n,
+    const int *k, const double *alpha, const double *a, const int *lda,
+    const double *beta, double *c, const int *ldc);
+
 struct element {
     int r, a, b;
     double c;
@@ -43,12 +49,12 @@ struct model {
 };
 
 double step(double **h0, double **h, double **c, const struct model m,
-    const double *u, double *e, double *occ, double *forces,
+    const double *u, double *e, double **occ, double *forces,
     const double *forces0, const int nc, int **cr, const int lwork,
     double *work);
 
 void driver(double **h0, double **h, double **c, const struct model m,
-    double *u, double *e, double *occ, double *forces, const double *forces0,
+    double *u, double *e, double **occ, double *forces, const double *forces0,
     double (*tau)[3], const int nc, int **cr, const int lwork, double *work,
     char *host);
 
@@ -94,8 +100,8 @@ void supercell(double **a, const int nb, const int nl, const struct element *l,
 void perturbation(double **h0, double **h, const struct model m,
     const double *u, const int nc, int **cr);
 
-void add_forces(double **h, const struct model m, const double *occ,
-    double *forces, const int nc, int **cr);
+void add_forces(const struct model m, double **occ, double *forces,
+    const int nc, int **cr);
 
 double fermi(const double x);
 
@@ -107,5 +113,5 @@ double fermi_level(const int ne, double n, const double *e, const double kt,
 double grand_potential(const int ne, const double *e, const double kt,
     const double mu);
 
-void occupations(const int ne, const int nspin, double *f,
-    const double *e, const double kt, const double mu);
+void occupations(const int ne, const int nspin, double **occ,
+    const double *e, double **psi, const double kt, const double mu);
