@@ -193,7 +193,7 @@ void put_displ(const char *filename, const int nat, double uc[3][3],
     fprintf(fp, "\n");
 
     for (i = 0; i < nat; i++) {
-        fprintf(fp, "%-3s", typ[i]);
+        fprintf(fp, "%-2s", typ[i]);
         for (j = 0; j < 3; j++)
             fprintf(fp, " %15.9f", tau[i][j] + u[3 * i + j]);
         fprintf(fp, "\n");
@@ -219,7 +219,7 @@ void put_force(const char *filename, const int nat, const double energy,
     fprintf(fp, "%d\nfree energy (Ha): %.9f; forces (Ha/bohr):\n", nat, energy);
 
     for (i = 0; i < nat; i++) {
-        fprintf(fp, "%-3s", typ[i]);
+        fprintf(fp, "%-2s", typ[i]);
         for (j = 0; j < 3; j++)
             fprintf(fp, " %13.9f", forces[3 * i + j]);
         fprintf(fp, "\n");
