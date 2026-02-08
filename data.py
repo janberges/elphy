@@ -1,6 +1,7 @@
 def put_model(filename, el, ph, elph, A, kT, n, nspin=2, eps=1e-10):
-
     Ry2Ha = 0.5
+
+    A = elphmod.bravais.supercell(*A)[1]
 
     Ri = list(map(tuple, el.R))
     Rj = list(map(tuple, ph.R))
@@ -88,7 +89,7 @@ if __name__ == '__main__':
     if model == 'graphene':
         import elphmod.models.graphene
 
-        A = elphmod.bravais.supercell(12, (6, 12, 0))[1]
+        A = 12, (6, 12, 0)
         kT = 0.0019
         n = 2.0
 
@@ -100,7 +101,7 @@ if __name__ == '__main__':
     elif model == 'TaS2':
         import elphmod.models.tas2
 
-        A = elphmod.bravais.supercell(9, 9)[1]
+        A = 9, 9
         kT = 0.005
         n = 1.0
 
