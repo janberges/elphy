@@ -116,50 +116,39 @@ void get_model(const char *filename, struct model *m) {
     fclose(fp);
 }
 
-/* get atomic displacements from file with atomic positions in XYZ format */
+/* input atomic positions in XYZ format and calculate displacements */
 
-int get_displ(const char *filename, const int nat, double uc[3][3],
-    char (*typ)[3], double (*tau)[3], double *u) {
-
-    FILE *fp;
+int get_displ(const int nat, char (*typ)[3], double (*tau)[3], double *u) {
     int i, j, status;
     double r;
     char c[3];
 
-    fp = strcmp(filename, "stdin") ? fopen(filename, "r") : stdin;
-
-    if (!fp)
-        error("Cannot open %s.", filename);
-
-    if ((status = fscanf(fp, "%d", &i)) == EOF)
+    if ((status = scanf("%d", &i)) == EOF)
         return EOF;
 
     if (status != 1)
-        error("Invalid number of atoms in %s.", filename);
+        error("Invalid number of atoms.");
 
     if (i != nat)
-        error("%d instead of %d atoms in %s.", i, nat, filename);
+        error("%d instead of %d atoms.", i, nat);
 
-    if (fscanf(fp, " %*[^\n]") != 0)
-        error("Invalid comment line in %s.", filename);
+    if (scanf(" %*[^\n]") != 0)
+        error("Invalid comment line.");
 
     for (i = 0; i < nat; i++) {
-        if (fscanf(fp, "%s", c) != 1)
-            error("Invalid atom type in %s.", filename);
+        if (scanf("%s", c) != 1)
+            error("Invalid atom type.");
 
         if (strcmp(c, typ[i]))
-            error("Wrong atom type in %s.", filename);
+            error("Wrong atom type.");
 
         for (j = 0; j < 3; j++) {
-            if (fscanf(fp, "%lf", &r) != 1)
-                error("Invalid position vector in %s.", filename);
+            if (scanf("%lf", &r) != 1)
+                error("Invalid position vector.");
 
             u[3 * i + j] = r - tau[i][j];
         }
     }
-
-    if (fp != stdin)
-        fclose(fp);
 
     return 0;
 }
@@ -173,7 +162,7 @@ void put_displ(const char *filename, const int nat, double uc[3][3],
     int i, j;
     char a[64], *c;
 
-    fp = strcmp(filename, "stdout") ? fopen(filename, "w") : stdout;
+    fp = fopen(filename, "w");
 
     if (!fp)
         error("Cannot open %s.", filename);
@@ -199,32 +188,22 @@ void put_displ(const char *filename, const int nat, double uc[3][3],
         fprintf(fp, "\n");
     }
 
-    if (fp != stdout)
-        fclose(fp);
+    fclose(fp);
 }
 
-/* store free energy and forces in file in XYZ format */
+/* output free energy and forces in XYZ format */
 
-void put_force(const char *filename, const int nat, const double energy,
-    char (*typ)[3], double (*tau)[3], const double *forces) {
+void put_force(const int nat, char (*typ)[3],
+    const double energy, const double *forces) {
 
-    FILE *fp;
     int i, j;
 
-    fp = strcmp(filename, "stdout") ? fopen(filename, "w") : stdout;
-
-    if (!fp)
-        error("Cannot open %s.", filename);
-
-    fprintf(fp, "%d\nfree energy (Ha): %.9f; forces (Ha/bohr):\n", nat, energy);
+    printf("%d\nfree energy (Ha): %.9f; forces (Ha/bohr):\n", nat, energy);
 
     for (i = 0; i < nat; i++) {
-        fprintf(fp, "%-2s", typ[i]);
+        printf("%-2s", typ[i]);
         for (j = 0; j < 3; j++)
-            fprintf(fp, " %13.9f", forces[3 * i + j]);
-        fprintf(fp, "\n");
+            printf(" %13.9f", forces[3 * i + j]);
+        printf("\n");
     }
-
-    if (fp != stdout)
-        fclose(fp);
 }

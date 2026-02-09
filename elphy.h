@@ -62,14 +62,13 @@ void error(char *msg, ...);
 
 void get_model(const char *filename, struct model *m);
 
-int get_displ(const char *filename, const int nat, double uc[3][3],
-    char (*typ)[3], double (*tau)[3], double *u);
+int get_displ(const int nat, char (*typ)[3], double (*tau)[3], double *u);
 
 void put_displ(const char *filename, const int nat, double uc[3][3],
     char (*typ)[3], double (*tau)[3], double *u);
 
-void put_force(const char *filename, const int nat, const double energy,
-    char (*typ)[3], double (*tau)[3], const double *forces);
+void put_force(const int nat, char (*typ)[3],
+    const double energy, const double *forces);
 
 double **matrix(const int n);
 

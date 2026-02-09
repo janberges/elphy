@@ -49,11 +49,11 @@ int main(int argc, char **argv) {
     repeat(m, nc, cells, uc, typ, tau, (double (*)[3]) forces0);
 
     if (argc == 2)
-        while (get_displ("stdin", nat, uc, typ, tau, u) != EOF) {
+        while (get_displ(nat, typ, tau, u) != EOF) {
             energy = step(h0, h, c, m, u, e, occ, forces, forces0, nc, cr,
                 lwork, work);
 
-            put_force("stdout", nat, energy, typ, tau, forces);
+            put_force(nat, typ, energy, forces);
         }
     else if (argc == 4) {
         srand(time(NULL));
@@ -63,7 +63,7 @@ int main(int argc, char **argv) {
         energy = step(h0, h, c, m, u, e, occ, forces, forces0, nc, cr,
             lwork, work);
 
-        put_force("stdout", nat, energy, typ, tau, forces);
+        put_force(nat, typ, energy, forces);
     } else
         driver(h0, h, c, m, u, e, occ, forces, forces0, tau, nc, cr,
             lwork, work, argv[2]);
