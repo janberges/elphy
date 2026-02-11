@@ -5,22 +5,22 @@
 #include <string.h>
 #include <time.h>
 
-extern void dsyev_(const char *jobz, const char *uplo, const int *n, double *a,
+void dsyev_(const char *jobz, const char *uplo, const int *n, double *a,
     const int *lda, double *w, double *work, const int *lwork, int *info);
 
-extern void dsymv_(const char *uplo, const int *n, const double *alpha,
+void dsymv_(const char *uplo, const int *n, const double *alpha,
     const double *a, const int *lda, const double *x, const int *incx,
     const double *beta, double *y, const int *incy);
 
-extern double ddot_(const int *n, const double *dx, const int *incx,
+double ddot_(const int *n, const double *dx, const int *incx,
     const double *dy, const int *incy);
 
-extern void daxpy_(const int *n, const double *da, const double *dx,
-    const int *incx, double *dy, const int *incy);
+void daxpy_(const int *n, const double *da, const double *dx, const int *incx,
+    double *dy, const int *incy);
 
-extern void dscal_(const int *n, const double *da, double *dx, const int *incx);
+void dscal_(const int *n, const double *da, double *dx, const int *incx);
 
-extern void dsyrk_(const char *uplo, const char *trans, const int *n,
+void dsyrk_(const char *uplo, const char *trans, const int *n,
     const int *k, const double *alpha, const double *a, const int *lda,
     const double *beta, double *c, const int *ldc);
 
