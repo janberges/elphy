@@ -1,10 +1,10 @@
 #include "elphy.h"
 
-int dot(const int a[3], const int b[3]) {
+static int dot(const int a[3], const int b[3]) {
     return a[0] * b[0] + a[1] * b[1] + a[2] * b[2];
 }
 
-void cross(const int a[3], const int b[3], int *c) {
+static void cross(const int a[3], const int b[3], int *c) {
     int i;
     for (i = 0; i < 3; i++)
         c[i] = a[(i + 1) % 3] * b[(i + 2) % 3]

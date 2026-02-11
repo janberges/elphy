@@ -1,10 +1,10 @@
 #include "elphy.h"
 
-double fermi(const double x) {
+static double fermi(const double x) {
     return 0.5 - 0.5 * tanh(0.5 * x);
 }
 
-double dirac(const double x) {
+static double dirac(const double x) {
     return 1.0 / (2.0 * cosh(x) + 2.0);
 }
 

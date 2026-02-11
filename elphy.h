@@ -84,10 +84,6 @@ void sread(const int sfd, void *data, const int len);
 
 void swrite(const int sfd, const void *data, const int len);
 
-int dot(const int a[3], const int b[3]);
-
-void cross(const int a[3], const int b[3], int *c);
-
 int map(const struct model m, int ***cr, int ***cells);
 
 void repeat(const struct model m, const int nc, int **cells,
@@ -101,10 +97,6 @@ void perturbation(double **h0, double **h, const struct model m,
 
 void add_forces(const struct model m, double **occ, double *forces,
     const int nc, int **cr);
-
-double fermi(const double x);
-
-double dirac(const double x);
 
 double fermi_level(const int ne, double n, const double *e, const double kt,
     double mu);
