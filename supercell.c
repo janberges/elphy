@@ -137,7 +137,7 @@ void supercell(double **a, const int nb, const int nl, const struct element *l,
 
     for (c = 0; c < nc; c++)
         for (m = l; m - l < nl; m++)
-            a[nb * c + m->a][nb * cr[c][m->r] + m->b] = m->c;
+            a[nb * c + m->a][nb * cr[c][m->r] + m->b] += m->c;
 }
 
 /* add linear electron-lattice coupling to supercell Hamiltonian */
