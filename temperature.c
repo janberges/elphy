@@ -8,7 +8,7 @@ static double dirac(const double x) {
     return 1.0 / (2.0 * cosh(x) + 2.0);
 }
 
-double fermi_level(const int ne, double n, const double *e, const double kt,
+double fermi_level(double n, const int ne, const double *e, const double kt,
     double mu) {
 
     const double eps = 1e-10, tol = 1e-5;
@@ -52,8 +52,8 @@ double grand_potential(const int ne, const double *e, const double kt,
     return kt * grand;
 }
 
-void occupations(const int ne, const int nspin, double **occ,
-    const double *e, double **psi, const double kt, const double mu) {
+void occupations(const int ne, const double *e, const double kt,
+    const double mu, const int nspin, double **psi, double **occ) {
 
     const int inc = 1;
     const double zero = 0.0, one = 1.0;

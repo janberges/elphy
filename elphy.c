@@ -46,12 +46,12 @@ int main(int argc, char **argv) {
     populate(h0, m.nel, m.nt, m.t, nc, cr);
     populate(c, m.nph, m.nk, m.k, nc, cr);
 
-    repeat(m, nc, cells, uc, typ, tau, (double (*)[3]) forces0);
+    repeat(uc, typ, tau, (double (*)[3]) forces0, m, nc, cells);
 
     if (argc == 2)
         while (get_displ(nat, typ, tau, u) != EOF) {
-            energy = step(h0, h, c, m, u, e, occ, forces, forces0, nc, cr,
-                lwork, work);
+            energy = step(h, h0, e, occ, c, u, forces, forces0,
+                m, nc, cr, lwork, work);
 
             put_force(nat, typ, energy, forces);
         }
@@ -60,13 +60,13 @@ int main(int argc, char **argv) {
         random_displacements(nat, u, atof(argv[3]));
         put_displ(argv[2], nat, uc, typ, tau, u);
 
-        energy = step(h0, h, c, m, u, e, occ, forces, forces0, nc, cr,
-            lwork, work);
+        energy = step(h, h0, e, occ, c, u, forces, forces0,
+            m, nc, cr, lwork, work);
 
         put_force(nat, typ, energy, forces);
     } else
-        driver(h0, h, c, m, u, e, occ, forces, forces0, tau, nc, cr,
-            lwork, work, argv[2]);
+        driver(argv[2], h, h0, e, occ, c, u, forces, forces0, tau,
+            m, nc, cr, lwork, work);
 
     free(work);
 
@@ -102,10 +102,10 @@ int main(int argc, char **argv) {
     return 0;
 }
 
-double step(double **h0, double **h, double **c, const struct model m,
-    const double *u, double *e, double **occ, double *forces,
-    const double *forces0, const int nc, int **cr, const int lwork,
-    double *work) {
+double step(double **h, double **h0, double *e, double **occ,
+    double **c, const double *u, double *forces, const double *forces0,
+    const struct model m, const int nc, int **cr,
+    const int lwork, double *work) {
 
     const int inc = 1;
     const double minus = -1.0, zero = 0.0, plus = 1.0;
@@ -118,11 +118,11 @@ double step(double **h0, double **h, double **c, const struct model m,
 
     memcpy(*h, *h0, nel * nel * sizeof **h);
 
-    perturb(h, m, u, nc, cr);
+    perturb(h, u, m, nc, cr);
 
     dsyev_("V", "U", &nel, *h, &nel, e, work, &lwork, &info);
 
-    mu = fermi_level(nel, n / m.nspin, e, m.kt, mu);
+    mu = fermi_level(n / m.nspin, nel, e, m.kt, mu);
 
     dsymv_("U", &nph, &minus, *c, &nph, u, &inc, &zero, forces, &inc);
 
@@ -130,9 +130,9 @@ double step(double **h0, double **h, double **c, const struct model m,
 
     energy += m.nspin * grand_potential(nel, e, m.kt, mu) + n * mu;
 
-    occupations(nel, m.nspin, occ, e, h, m.kt, mu);
+    occupations(nel, e, m.kt, mu, m.nspin, h, occ);
 
-    add_forces(m, occ, forces, nc, cr);
+    add_forces(forces, occ, m, nc, cr);
 
     daxpy_(&nph, &plus, forces0, &inc, forces, &inc);
 

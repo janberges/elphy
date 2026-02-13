@@ -102,8 +102,8 @@ int map(const struct model m, int ***cr, int ***cells) {
 
 /* determine dimensions and basis atoms of supercell */
 
-void repeat(const struct model m, const int nc, int **cells,
-    double uc[3][3], char (*typ)[3], double (*tau)[3], double (*fdc)[3]) {
+void repeat(double uc[3][3], char (*typ)[3], double (*tau)[3], double (*fdc)[3],
+    const struct model m, const int nc, int **cells) {
 
     int i, j, k, c, ci;
 
@@ -142,7 +142,7 @@ void populate(double **a, const int nb, const int nl, const struct element *l,
 
 /* add linear electron-lattice coupling to supercell Hamiltonian */
 
-void perturb(double **h, const struct model m, const double *u,
+void perturb(double **h, const double *u, const struct model m,
     const int nc, int **cr) {
 
     struct vertex *g;
@@ -156,7 +156,7 @@ void perturb(double **h, const struct model m, const double *u,
 
 /* add electronic contribution to supercell forces */
 
-void add_forces(const struct model m, double **occ, double *forces,
+void add_forces(double *forces, double **occ, const struct model m,
     const int nc, int **cr) {
 
     struct vertex *g;

@@ -1,9 +1,9 @@
 #include "elphy.h"
 
-void driver(double **h0, double **h, double **c, const struct model m,
-    double *u, double *e, double **occ, double *forces, const double *forces0,
-    double (*tau)[3], const int nc, int **cr, const int lwork, double *work,
-    char *host) {
+void driver(char *host, double **h, double **h0, double *e, double **occ,
+    double **c, double *u, double *forces, const double *forces0,
+    double (*tau)[3], const struct model m, const int nc, int **cr,
+    const int lwork, double *work) {
 
     int port, sfd, buf, needinit = 0, havedata = 0;
     char *tmp, header[12];
@@ -67,8 +67,8 @@ void driver(double **h0, double **h, double **c, const struct model m,
                 for (j = 0; j < 3; j++)
                     u[3 * i + j] = positions[3 * i + j] - tau[i][j];
 
-            energy = step(h0, h, c, m, u, e, occ, forces, forces0, nc, cr,
-                lwork, work);
+            energy = step(h, h0, e, occ, c, u, forces, forces0,
+                m, nc, cr, lwork, work);
 
             havedata = 1;
         } else if (!strncmp(header, "GETFORCE", 8)) {

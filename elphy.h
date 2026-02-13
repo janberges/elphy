@@ -36,27 +36,29 @@ struct vertex {
 
 struct model {
     double kt, n;
+    int nel, nspin;
     int sc[3][3];
     double uc[3][3];
+    int nph, nat;
+    char (*typ)[3];
     double (*tau)[3];
     double (*fdc)[3];
-    char (*typ)[3];
-    int nspin, nel, nph, nat, nr, nt, nk, ng;
-    int (*r)[3];
+    int nr, (*r)[3];
+    int nt, nk, ng;
     struct element *t;
     struct element *k;
     struct vertex *g;
 };
 
-double step(double **h0, double **h, double **c, const struct model m,
-    const double *u, double *e, double **occ, double *forces,
-    const double *forces0, const int nc, int **cr, const int lwork,
-    double *work);
+double step(double **h, double **h0, double *e, double **occ,
+    double **c, const double *u, double *forces, const double *forces0,
+    const struct model m, const int nc, int **cr,
+    const int lwork, double *work);
 
-void driver(double **h0, double **h, double **c, const struct model m,
-    double *u, double *e, double **occ, double *forces, const double *forces0,
-    double (*tau)[3], const int nc, int **cr, const int lwork, double *work,
-    char *host);
+void driver(char *host, double **h, double **h0, double *e, double **occ,
+    double **c, double *u, double *forces, const double *forces0,
+    double (*tau)[3], const struct model m, const int nc, int **cr,
+    const int lwork, double *work);
 
 void error(char *msg, ...);
 
@@ -86,23 +88,23 @@ void swrite(const int sfd, const void *data, const int len);
 
 int map(const struct model m, int ***cr, int ***cells);
 
-void repeat(const struct model m, const int nc, int **cells,
-    double uc[3][3], char (*typ)[3], double (*tau)[3], double (*fdc)[3]);
+void repeat(double uc[3][3], char (*typ)[3], double (*tau)[3], double (*fdc)[3],
+    const struct model m, const int nc, int **cells);
 
 void populate(double **a, const int nb, const int nl, const struct element *l,
     const int nc, int **cr);
 
-void perturb(double **h, const struct model m, const double *u,
+void perturb(double **h, const double *u, const struct model m,
     const int nc, int **cr);
 
-void add_forces(const struct model m, double **occ, double *forces,
+void add_forces(double *forces, double **occ, const struct model m,
     const int nc, int **cr);
 
-double fermi_level(const int ne, double n, const double *e, const double kt,
+double fermi_level(double n, const int ne, const double *e, const double kt,
     double mu);
 
 double grand_potential(const int ne, const double *e, const double kt,
     const double mu);
 
-void occupations(const int ne, const int nspin, double **occ,
-    const double *e, double **psi, const double kt, const double mu);
+void occupations(const int ne, const double *e, const double kt,
+    const double mu, const int nspin, double **psi, double **occ);
