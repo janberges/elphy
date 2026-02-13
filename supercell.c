@@ -142,13 +142,11 @@ void populate(double **a, const int nb, const int nl, const struct element *l,
 
 /* add linear electron-lattice coupling to supercell Hamiltonian */
 
-void perturb(double **h0, double **h, const struct model m, const double *u,
+void perturb(double **h, const struct model m, const double *u,
     const int nc, int **cr) {
 
     struct vertex *g;
     int c;
-
-    memcpy(*h, *h0, m.nel * m.nel * nc * nc * sizeof **h);
 
     for (c = 0; c < nc; c++)
         for (g = m.g; g - m.g < m.ng; g++)

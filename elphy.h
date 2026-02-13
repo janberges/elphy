@@ -92,7 +92,7 @@ void repeat(const struct model m, const int nc, int **cells,
 void populate(double **a, const int nb, const int nl, const struct element *l,
     const int nc, int **cr);
 
-void perturb(double **h0, double **h, const struct model m, const double *u,
+void perturb(double **h, const struct model m, const double *u,
     const int nc, int **cr);
 
 void add_forces(const struct model m, double **occ, double *forces,

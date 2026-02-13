@@ -116,7 +116,9 @@ double step(double **h0, double **h, double **c, const struct model m,
     const int nph = m.nph * nc;
     int info;
 
-    perturb(h0, h, m, u, nc, cr);
+    memcpy(*h, *h0, nel * nel * sizeof **h);
+
+    perturb(h, m, u, nc, cr);
 
     dsyev_("V", "U", &nel, *h, &nel, e, work, &lwork, &info);
 
