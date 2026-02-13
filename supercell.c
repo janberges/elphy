@@ -11,7 +11,7 @@ static void cross(const int a[3], const int b[3], int *c) {
              - a[(i + 2) % 3] * b[(i + 1) % 3];
 }
 
-/* map lattice vectors from unit cells to supercell */
+/* find unit-cell vectors within supercell and add lattice vectors */
 
 int map(const struct model m, int ***cr, int ***cells) {
     int b[3][3], cell[3], n[3], nc, i, j, c, r, tmp;
@@ -127,9 +127,9 @@ void repeat(const struct model m, const int nc, int **cells,
         }
 }
 
-/* populate matrix using example of supercell tight-binding Hamiltonian */
+/* populate supercell tight-binding Hamiltonian or force-constants matrix */
 
-void supercell(double **a, const int nb, const int nl, const struct element *l,
+void populate(double **a, const int nb, const int nl, const struct element *l,
     const int nc, int **cr) {
 
     const struct element *m;
@@ -142,8 +142,8 @@ void supercell(double **a, const int nb, const int nl, const struct element *l,
 
 /* add linear electron-lattice coupling to supercell Hamiltonian */
 
-void perturbation(double **h0, double **h, const struct model m,
-    const double *u, const int nc, int **cr) {
+void perturb(double **h0, double **h, const struct model m, const double *u,
+    const int nc, int **cr) {
 
     struct vertex *g;
     int c;
@@ -156,7 +156,7 @@ void perturbation(double **h0, double **h, const struct model m,
                 += u[m.nph * cr[c][g->rph] + g->x] * g->c;
 }
 
-/* calculate Jacobian via Hellmann-Feynman theorem */
+/* add electronic contribution to supercell forces */
 
 void add_forces(const struct model m, double **occ, double *forces,
     const int nc, int **cr) {

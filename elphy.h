@@ -89,11 +89,11 @@ int map(const struct model m, int ***cr, int ***cells);
 void repeat(const struct model m, const int nc, int **cells,
     double uc[3][3], char (*typ)[3], double (*tau)[3], double (*fdc)[3]);
 
-void supercell(double **a, const int nb, const int nl, const struct element *l,
+void populate(double **a, const int nb, const int nl, const struct element *l,
     const int nc, int **cr);
 
-void perturbation(double **h0, double **h, const struct model m,
-    const double *u, const int nc, int **cr);
+void perturb(double **h0, double **h, const struct model m, const double *u,
+    const int nc, int **cr);
 
 void add_forces(const struct model m, double **occ, double *forces,
     const int nc, int **cr);

@@ -43,8 +43,8 @@ int main(int argc, char **argv) {
     if (!(work = malloc(lwork * sizeof *work)))
         error("No memory for LAPACK work array.");
 
-    supercell(h0, m.nel, m.nt, m.t, nc, cr);
-    supercell(c, m.nph, m.nk, m.k, nc, cr);
+    populate(h0, m.nel, m.nt, m.t, nc, cr);
+    populate(c, m.nph, m.nk, m.k, nc, cr);
 
     repeat(m, nc, cells, uc, typ, tau, (double (*)[3]) forces0);
 
@@ -116,7 +116,7 @@ double step(double **h0, double **h, double **c, const struct model m,
     const int nph = m.nph * nc;
     int info;
 
-    perturbation(h0, h, m, u, nc, cr);
+    perturb(h0, h, m, u, nc, cr);
 
     dsyev_("V", "U", &nel, *h, &nel, e, work, &lwork, &info);
 
