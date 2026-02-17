@@ -62,7 +62,7 @@ void get_model(const char *filename, struct model *m) {
         error("No memory for force correction.");
 
     for (i = 0; i < m->nat; i++) {
-        if (fscanf(fp, "%s", m->typ[i]) != 1)
+        if (fscanf(fp, "%2s", m->typ[i]) != 1)
             error("Invalid atom type in %s.", filename);
 
         for (j = 0; j < 3; j++)
@@ -136,7 +136,7 @@ int get_displ(const int nat, char (*typ)[3], double (*tau)[3], double *u) {
         error("Invalid comment line.");
 
     for (i = 0; i < nat; i++) {
-        if (scanf("%s", c) != 1)
+        if (scanf("%2s", c) != 1)
             error("Invalid atom type.");
 
         if (strcmp(c, typ[i]))
