@@ -5,22 +5,12 @@ void driver(char *host, double **h, double **h0, double *e, double **occ,
     double (*tau)[3], const struct model m, const int nc, int **cr,
     const int lwork, double *work) {
 
+    double energy, cell[3][3];
+    const double virial[3][3] = {0};
     int port, sfd, buf, needinit = 0, havedata = 0;
     char *tmp, header[12];
     const int nat = m.nat * nc;
-    int chalen = sizeof(char);
-    int intlen = sizeof(int);
-    int dbllen = sizeof(double);
-    int msglen = 12 * chalen;
-    int poslen = 3 * nat * dbllen;
-    int matlen = 9 * dbllen;
-    double energy, *cell, *virial;
     int i, j;
-
-    if (!(cell = malloc(matlen)))
-        error("No memory for primitive vectors.");
-    if (!(virial = calloc(9, sizeof *virial)))
-        error("No memory for virial tensor.");
 
     tmp = strchr(host, ':');
 
@@ -36,18 +26,18 @@ void driver(char *host, double **h, double **h0, double *e, double **occ,
         sfd = open_unix_socket(host, "/tmp/ipi_");
 
     for (;;) {
-        sread(sfd, header, msglen);
+        sread(sfd, header, sizeof header);
 
         if (!strncmp(header, "STATUS", 6)) {
             if (needinit)
-                swrite(sfd, "NEEDINIT    ", msglen);
+                swrite(sfd, "NEEDINIT    ", sizeof header);
             else if (havedata)
-                swrite(sfd, "HAVEDATA    ", msglen);
+                swrite(sfd, "HAVEDATA    ", sizeof header);
             else
-                swrite(sfd, "READY       ", msglen);
+                swrite(sfd, "READY       ", sizeof header);
         } else if (!strncmp(header, "INIT", 4)) {
-            sread(sfd, &buf, intlen); /* replica index */
-            sread(sfd, &buf, intlen); /* size of init string */
+            sread(sfd, &buf, sizeof buf); /* replica index */
+            sread(sfd, &buf, sizeof buf); /* size of init string */
 
             if (!(tmp = malloc(buf)))
                 error("No memory for init string.");
@@ -56,10 +46,10 @@ void driver(char *host, double **h, double **h0, double *e, double **occ,
 
             needinit = 0;
         } else if (!strncmp(header, "POSDATA", 7)) {
-            sread(sfd, cell, matlen); /* cell */
-            sread(sfd, cell, matlen); /* inverse cell */
-            sread(sfd, &buf, intlen); /* number of atoms */
-            sread(sfd, u, poslen); /* positions */
+            sread(sfd, cell, sizeof cell); /* cell */
+            sread(sfd, cell, sizeof cell); /* inverse cell */
+            sread(sfd, &buf, sizeof buf); /* number of atoms */
+            sread(sfd, u, nat * sizeof *tau); /* positions */
 
             for (i = 0; i < nat; i++)
                 for (j = 0; j < 3; j++)
@@ -70,22 +60,19 @@ void driver(char *host, double **h, double **h0, double *e, double **occ,
 
             havedata = 1;
         } else if (!strncmp(header, "GETFORCE", 8)) {
-            swrite(sfd, "FORCEREADY  ", msglen);
+            swrite(sfd, "FORCEREADY  ", sizeof header);
 
-            swrite(sfd, &energy, dbllen); /* potential */
-            swrite(sfd, &nat, intlen); /* number of atoms */
-            swrite(sfd, forces, poslen); /* forces */
-            swrite(sfd, virial, matlen); /* virial tensor */
+            swrite(sfd, &energy, sizeof energy); /* potential */
+            swrite(sfd, &nat, sizeof nat); /* number of atoms */
+            swrite(sfd, forces, nat * sizeof *tau); /* forces */
+            swrite(sfd, virial, sizeof virial); /* virial tensor */
 
             buf = 1;
-            swrite(sfd, &buf, intlen); /* size of extras */
-            swrite(sfd, " ", chalen); /* extras */
+            swrite(sfd, &buf, sizeof buf); /* size of extras */
+            swrite(sfd, " ", sizeof(char)); /* extras */
 
             havedata = 0;
         } else if (!strncmp(header, "EXIT", 4))
             break;
     }
-
-    free(virial);
-    free(cell);
 }
