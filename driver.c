@@ -14,13 +14,11 @@ void driver(char *host, double **h, double **h0, double *e, double **occ,
     int msglen = 12 * chalen;
     int poslen = 3 * nat * dbllen;
     int matlen = 9 * dbllen;
-    double energy, *cell, *positions, *virial;
+    double energy, *cell, *virial;
     int i, j;
 
     if (!(cell = malloc(matlen)))
         error("No memory for primitive vectors.");
-    if (!(positions = malloc(poslen)))
-        error("No memory for atomic positions.");
     if (!(virial = calloc(9, sizeof *virial)))
         error("No memory for virial tensor.");
 
@@ -61,11 +59,11 @@ void driver(char *host, double **h, double **h0, double *e, double **occ,
             sread(sfd, cell, matlen); /* cell */
             sread(sfd, cell, matlen); /* inverse cell */
             sread(sfd, &buf, intlen); /* number of atoms */
-            sread(sfd, positions, poslen); /* positions */
+            sread(sfd, u, poslen); /* positions */
 
             for (i = 0; i < nat; i++)
                 for (j = 0; j < 3; j++)
-                    u[3 * i + j] = positions[3 * i + j] - tau[i][j];
+                    u[3 * i + j] -= tau[i][j];
 
             energy = step(h, h0, e, occ, c, u, forces, forces0,
                 m, nc, cr, lwork, work);
@@ -89,6 +87,5 @@ void driver(char *host, double **h, double **h0, double *e, double **occ,
     }
 
     free(virial);
-    free(positions);
     free(cell);
 }
