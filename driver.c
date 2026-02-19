@@ -7,7 +7,7 @@ void driver(char *host, double **h, double **h0, double *e, double **occ,
 
     double energy, cell[3][3];
     const double virial[3][3] = {0};
-    int port, sfd, buf, needinit = 0, havedata = 0;
+    int sfd, buf, needinit = 0, havedata = 0;
     char *tmp, header[12];
     const int nat = m.nat * nc;
     int i, j;
@@ -16,13 +16,8 @@ void driver(char *host, double **h, double **h0, double *e, double **occ,
 
     if (tmp) {
         *tmp = '\0';
-        port = atoi(tmp + 1);
+        sfd = open_inet_socket(host, tmp + 1);
     } else
-        port = 0;
-
-    if (port)
-        sfd = open_inet_socket(host, port);
-    else
         sfd = open_unix_socket(host, "/tmp/ipi_");
 
     for (;;) {

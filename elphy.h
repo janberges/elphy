@@ -78,7 +78,7 @@ int **array_2d(const int rows, const int cols);
 
 void random_displacements(const int nat, double *u, double umax);
 
-int open_inet_socket(const char *host, int port);
+int open_inet_socket(const char *host, const char *port);
 
 int open_unix_socket(const char *host, const char *prefix);
 

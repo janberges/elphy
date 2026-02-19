@@ -11,10 +11,9 @@
 #include <netinet/tcp.h> /* TCP_NODELAY */
 #include "elphy.h"
 
-int open_inet_socket(const char *host, int port) {
+int open_inet_socket(const char *host, const char *port) {
     const char yes = 1;
     struct addrinfo hints = {0}, *res, *r;
-    char service[64];
     int sfd;
 
     hints.ai_family = AF_UNSPEC; /* IPv4 or IPv6 */
@@ -22,9 +21,7 @@ int open_inet_socket(const char *host, int port) {
     hints.ai_flags = AI_PASSIVE;
     hints.ai_protocol = 0; /* any protocol */
 
-    sprintf(service, "%d", port);
-
-    if (getaddrinfo(host, service, &hints, &res))
+    if (getaddrinfo(host, port, &hints, &res))
         error("Cannot get address info.");
 
     for (r = res; r; r = r->ai_next) {
