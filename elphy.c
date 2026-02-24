@@ -93,7 +93,7 @@ int main(int argc, char **argv) {
     free(m.tau);
     free(m.typ);
 
-    return 0;
+    return EXIT_SUCCESS;
 }
 
 double step(double **h, double **h0, double *e, double **occ,
