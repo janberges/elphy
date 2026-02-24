@@ -70,13 +70,9 @@ int main(int argc, char **argv) {
 
     free(work);
 
-    free(*c);
     free(c);
-    free(*occ);
     free(occ);
-    free(*h);
     free(h);
-    free(*h0);
     free(h0);
 
     free(forces0);
@@ -86,9 +82,7 @@ int main(int argc, char **argv) {
     free(tau);
     free(typ);
 
-    free(*cr);
     free(cr);
-    free(*cells);
     free(cells);
 
     free(m.g);
