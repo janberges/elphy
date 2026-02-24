@@ -44,7 +44,7 @@ The `<data file>` is defined below:
     <temperature kT>
     <number of electrons per unit cell>
     <number of orbitals per unit cell>
-    <maximum number of electrons per orbital>
+    <number of spins per orbital>
     A₀₀ A₀₁ A₀₂
     A₁₀ A₁₁ A₁₂
     A₂₀ A₂₁ A₂₂
@@ -79,6 +79,7 @@ The `<data file>` is defined below:
 
 The indices `i, j, k, l` run over lattice vectors, `α, β, γ, δ` over orbitals,
 and `x, y, z` over the three Cartesian displacement directions for all atoms.
+All indices are zero-based. All matrix elements `<…>` are single real numbers.
 The primitive, position, and force vectors `a, r, F` are given in Cartesian,
 the supercell and lattice vectors `A, R` in integer crystal coordinates.
 
