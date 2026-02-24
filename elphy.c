@@ -4,7 +4,7 @@ int main(int argc, char **argv) {
     double **h0, **h, **c, *e, *u, energy, *forces, *forces0, **occ, tmp, *work;
     struct model m = {0};
     int nc, nel, nph, nat, **cr, **cells, lwork, info;
-    char (*typ)[3];
+    char **typ;
     double (*tau)[3], uc[3][3];
 
     if (argc > 1 && argc < 5)

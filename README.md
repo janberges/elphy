@@ -83,7 +83,8 @@ The primitive, position, and force vectors `a, r, F` are given in Cartesian,
 the supercell and lattice vectors `A, R` in integer crystal coordinates.
 
 No unit conversions are performed, so any consistent energy and length units can
-be used. However, i-PI expects energies and forces in Hartree atomic units.
+be used. However, i-PI expects energies and forces in Hartree atomic units. The
+atom labels `X` are copied to the `<init file>` and define the default masses.
 
 Note that the interatomic force constants are assumed to be partially screened:
 They shall exclude the harmonic term of the electronic potential-energy surface.

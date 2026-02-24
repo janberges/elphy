@@ -40,7 +40,7 @@ struct model {
     int sc[3][3];
     double uc[3][3];
     int nph, nat;
-    char (*typ)[3];
+    char (*typ)[64];
     double (*tau)[3];
     double (*fdc)[3];
     int nr, (*r)[3];
@@ -64,12 +64,12 @@ void error(char *msg, ...);
 
 void get_model(const char *filename, struct model *m);
 
-int get_displ(const int nat, char (*typ)[3], double (*tau)[3], double *u);
+int get_displ(const int nat, char **typ, double (*tau)[3], double *u);
 
 void put_displ(const char *filename, const int nat, double uc[3][3],
-    char (*typ)[3], double (*tau)[3], double *u);
+    char **typ, double (*tau)[3], double *u);
 
-void put_force(const int nat, char (*typ)[3],
+void put_force(const int nat, char **typ,
     const double energy, const double *forces);
 
 double **matrix(const int n);
@@ -88,7 +88,7 @@ void swrite(const int sfd, const void *data, const int len);
 
 int map(const struct model m, int ***cr, int ***cells);
 
-void repeat(double uc[3][3], char (*typ)[3], double (*tau)[3], double (*fdc)[3],
+void repeat(double uc[3][3], char **typ, double (*tau)[3], double (*fdc)[3],
     const struct model m, const int nc, int **cells);
 
 void populate(double **a, const int nb, const int nl, const struct element *l,

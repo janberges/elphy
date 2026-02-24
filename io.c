@@ -62,7 +62,7 @@ void get_model(const char *filename, struct model *m) {
         error("No memory for force correction.");
 
     for (i = 0; i < m->nat; i++) {
-        if (fscanf(fp, "%2s", m->typ[i]) != 1)
+        if (fscanf(fp, "%63s", m->typ[i]) != 1)
             error("Invalid atom type in %s.", filename);
 
         for (j = 0; j < 3; j++)
@@ -118,10 +118,10 @@ void get_model(const char *filename, struct model *m) {
 
 /* input atomic positions in XYZ format and calculate displacements */
 
-int get_displ(const int nat, char (*typ)[3], double (*tau)[3], double *u) {
+int get_displ(const int nat, char **typ, double (*tau)[3], double *u) {
     int i, j, status;
     double r;
-    char c[3];
+    char c[64];
 
     if ((status = scanf("%d", &i)) == EOF)
         return EOF;
@@ -136,7 +136,7 @@ int get_displ(const int nat, char (*typ)[3], double (*tau)[3], double *u) {
         error("Invalid comment line.");
 
     for (i = 0; i < nat; i++) {
-        if (scanf("%2s", c) != 1)
+        if (scanf("%63s", c) != 1)
             error("Invalid atom type.");
 
         if (strcmp(c, typ[i]))
@@ -156,10 +156,10 @@ int get_displ(const int nat, char (*typ)[3], double (*tau)[3], double *u) {
 /* store positions of displaced atoms in file in XYZ format */
 
 void put_displ(const char *filename, const int nat, double uc[3][3],
-    char (*typ)[3], double (*tau)[3], double *u) {
+    char **typ, double (*tau)[3], double *u) {
 
     FILE *fp;
-    int i, j;
+    int i, j, width;
     char a[64], *c;
 
     fp = fopen(filename, "w");
@@ -181,8 +181,13 @@ void put_displ(const char *filename, const int nat, double uc[3][3],
 
     fprintf(fp, "\n");
 
+    width = 0;
+    for (i = 0; i < nat; i++)
+        if (width < (j = strlen(typ[i])))
+            width = j;
+
     for (i = 0; i < nat; i++) {
-        fprintf(fp, "%-2s", typ[i]);
+        fprintf(fp, "%-*s", width, typ[i]);
         for (j = 0; j < 3; j++)
             fprintf(fp, " %15.9f", tau[i][j] + u[3 * i + j]);
         fprintf(fp, "\n");
@@ -193,15 +198,20 @@ void put_displ(const char *filename, const int nat, double uc[3][3],
 
 /* output free energy and forces in XYZ format */
 
-void put_force(const int nat, char (*typ)[3],
+void put_force(const int nat, char **typ,
     const double energy, const double *forces) {
 
-    int i, j;
+    int i, j, width;
 
     printf("%d\nfree energy (Ha): %.9f; forces (Ha/bohr):\n", nat, energy);
 
+    width = 0;
+    for (i = 0; i < nat; i++)
+        if (width < (j = strlen(typ[i])))
+            width = j;
+
     for (i = 0; i < nat; i++) {
-        printf("%-2s", typ[i]);
+        printf("%-*s", width, typ[i]);
         for (j = 0; j < 3; j++)
             printf(" %13.9f", forces[3 * i + j]);
         printf("\n");

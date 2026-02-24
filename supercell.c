@@ -102,7 +102,7 @@ int map(const struct model m, int ***cr, int ***cells) {
 
 /* determine dimensions and basis atoms of supercell */
 
-void repeat(double uc[3][3], char (*typ)[3], double (*tau)[3], double (*fdc)[3],
+void repeat(double uc[3][3], char **typ, double (*tau)[3], double (*fdc)[3],
     const struct model m, const int nc, int **cells) {
 
     int i, j, k, c, ci;
@@ -117,8 +117,8 @@ void repeat(double uc[3][3], char (*typ)[3], double (*tau)[3], double (*fdc)[3],
     for (c = 0; c < nc; c++)
         for (i = 0; i < m.nat; i++) {
             ci = m.nat * c + i;
+            typ[ci] = m.typ[i];
             for (j = 0; j < 3; j++) {
-                typ[ci][j] = m.typ[i][j];
                 tau[ci][j] = m.tau[i][j];
                 fdc[ci][j] = m.fdc[i][j];
                 for (k = 0; k < 3; k++)
