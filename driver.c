@@ -6,11 +6,12 @@ void driver(char *host, double **h, const double **h0, double *e, double **occ,
     const int lwork, double *work) {
 
     double energy, cell[3][3];
-    const double virial[3][3] = {0};
+    const double virial[3][3] = {0}, minus = -1.0;
     int sfd, buf, needinit = 0, havedata = 0;
     char *tmp, header[12];
     const int nat = m.nat * nc;
-    int i, j;
+    const int nph = m.nph * nc;
+    const int inc = 1;
 
     tmp = strchr(host, ':');
 
@@ -45,11 +46,9 @@ void driver(char *host, double **h, const double **h0, double *e, double **occ,
             sread(sfd, cell, sizeof cell); /* cell */
             sread(sfd, cell, sizeof cell); /* inverse cell */
             sread(sfd, &buf, sizeof buf); /* number of atoms */
-            sread(sfd, u, nat * sizeof *tau); /* positions */
+            sread(sfd, u, nph * sizeof *u); /* positions */
 
-            for (i = 0; i < nat; i++)
-                for (j = 0; j < 3; j++)
-                    u[3 * i + j] -= tau[i][j];
+            daxpy_(&nph, &minus, *tau, &inc, u, &inc);
 
             energy = step(h, h0, e, occ, c, u, forces, forces0,
                 m, nc, cr, lwork, work);
@@ -60,7 +59,7 @@ void driver(char *host, double **h, const double **h0, double *e, double **occ,
 
             swrite(sfd, &energy, sizeof energy); /* potential */
             swrite(sfd, &nat, sizeof nat); /* number of atoms */
-            swrite(sfd, forces, nat * sizeof *tau); /* forces */
+            swrite(sfd, forces, nph * sizeof *forces); /* forces */
             swrite(sfd, virial, sizeof virial); /* virial tensor */
 
             buf = 1;
