@@ -147,7 +147,9 @@ void get_model(const char *filename, struct model *m) {
 
 /* input atomic positions in XYZ format and calculate displacements */
 
-int get_displ(const int nat, char **typ, double (*tau)[3], double *u) {
+int get_displ(const int nat, const char **typ, const double (*tau)[3],
+    double *u) {
+
     int i, j, status;
     double r;
     char c[64];
@@ -184,8 +186,8 @@ int get_displ(const int nat, char **typ, double (*tau)[3], double *u) {
 
 /* store positions of displaced atoms in file in XYZ format */
 
-void put_displ(const char *filename, const int nat, double uc[3][3],
-    char **typ, double (*tau)[3], const double *u) {
+void put_displ(const char *filename, const int nat, const double uc[3][3],
+    const char **typ, const double (*tau)[3], const double *u) {
 
     FILE *fp;
     int i, j, width;
@@ -227,7 +229,7 @@ void put_displ(const char *filename, const int nat, double uc[3][3],
 
 /* output free energy and forces in XYZ format */
 
-void put_force(const int nat, char **typ,
+void put_force(const int nat, const char **typ,
     const double energy, const double *forces) {
 
     int i, j, width;

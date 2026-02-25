@@ -103,7 +103,7 @@ int map(const struct model m, int ***cr, int ***cells) {
 /* determine dimensions and basis atoms of supercell */
 
 void repeat(double uc[3][3], char **typ, double (*tau)[3], double (*fdc)[3],
-    const struct model m, const int nc, int **cells) {
+    const struct model m, const int nc, const int **cells) {
 
     int i, j, k, c, ci;
 
@@ -130,7 +130,7 @@ void repeat(double uc[3][3], char **typ, double (*tau)[3], double (*fdc)[3],
 /* populate supercell tight-binding Hamiltonian or force-constants matrix */
 
 void populate(double **a, const int nb, const int nl, const struct element *l,
-    const int nc, int **cr) {
+    const int nc, const int **cr) {
 
     const struct element *m;
     int c;
@@ -143,7 +143,7 @@ void populate(double **a, const int nb, const int nl, const struct element *l,
 /* add linear electron-lattice coupling to supercell Hamiltonian */
 
 void perturb(double **h, const double *u, const struct model m,
-    const int nc, int **cr) {
+    const int nc, const int **cr) {
 
     struct vertex *g;
     int c;
@@ -156,8 +156,8 @@ void perturb(double **h, const double *u, const struct model m,
 
 /* add electronic contribution to supercell forces */
 
-void add_forces(double *forces, double **occ, const struct model m,
-    const int nc, int **cr) {
+void add_forces(double *forces, const double **occ, const struct model m,
+    const int nc, const int **cr) {
 
     struct vertex *g;
     int c;

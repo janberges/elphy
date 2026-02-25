@@ -1,5 +1,10 @@
 #include "elphy.h"
 
+#define CC (const char **)
+#define CI (const int **)
+#define CD (const double **)
+#define C3 (const double (*)[3])
+
 int main(const int argc, char **argv) {
     double **h0, **h, **c, *e, *u, energy, *forces, *forces0, **occ, tmp, *work;
     struct model m = {0};
@@ -43,30 +48,30 @@ int main(const int argc, char **argv) {
     if (!(work = malloc(lwork * sizeof *work)))
         error("No memory for LAPACK work array.");
 
-    populate(h0, m.nel, m.nt, m.t, nc, cr);
-    populate(c, m.nph, m.nk, m.k, nc, cr);
+    populate(h0, m.nel, m.nt, m.t, nc, CI cr);
+    populate(c, m.nph, m.nk, m.k, nc, CI cr);
 
-    repeat(uc, typ, tau, (double (*)[3]) forces0, m, nc, cells);
+    repeat(uc, typ, tau, (double (*)[3]) forces0, m, nc, CI cells);
 
     if (argc == 2)
-        while (get_displ(nat, typ, tau, u) != EOF) {
-            energy = step(h, h0, e, occ, c, u, forces, forces0,
-                m, nc, cr, lwork, work);
+        while (get_displ(nat, CC typ, C3 tau, u) != EOF) {
+            energy = step(h, CD h0, e, occ, CD c, u, forces, forces0,
+                m, nc, CI cr, lwork, work);
 
-            put_force(nat, typ, energy, forces);
+            put_force(nat, CC typ, energy, forces);
         }
     else if (argc == 4) {
         srand(time(NULL));
         random_displacements(nat, u, atof(argv[3]));
-        put_displ(argv[2], nat, uc, typ, tau, u);
+        put_displ(argv[2], nat, C3 uc, CC typ, C3 tau, u);
 
-        energy = step(h, h0, e, occ, c, u, forces, forces0,
-            m, nc, cr, lwork, work);
+        energy = step(h, CD h0, e, occ, CD c, u, forces, forces0,
+            m, nc, CI cr, lwork, work);
 
-        put_force(nat, typ, energy, forces);
+        put_force(nat, CC typ, energy, forces);
     } else
-        driver(argv[2], h, h0, e, occ, c, u, forces, forces0, tau,
-            m, nc, cr, lwork, work);
+        driver(argv[2], h, CD h0, e, occ, CD c, u, forces, forces0, C3 tau,
+            m, nc, CI cr, lwork, work);
 
     free(work);
 
@@ -96,9 +101,9 @@ int main(const int argc, char **argv) {
     return EXIT_SUCCESS;
 }
 
-double step(double **h, double **h0, double *e, double **occ,
-    double **c, const double *u, double *forces, const double *forces0,
-    const struct model m, const int nc, int **cr,
+double step(double **h, const double **h0, double *e, double **occ,
+    const double **c, const double *u, double *forces, const double *forces0,
+    const struct model m, const int nc, const int **cr,
     const int lwork, double *work) {
 
     const int inc = 1;
@@ -126,7 +131,7 @@ double step(double **h, double **h0, double *e, double **occ,
 
     occupations(nel, e, m.kt, mu, m.nspin, h, occ);
 
-    add_forces(forces, occ, m, nc, cr);
+    add_forces(forces, CD occ, m, nc, cr);
 
     daxpy_(&nph, &plus, forces0, &inc, forces, &inc);
 

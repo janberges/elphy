@@ -50,26 +50,27 @@ struct model {
     struct vertex *g;
 };
 
-double step(double **h, double **h0, double *e, double **occ,
-    double **c, const double *u, double *forces, const double *forces0,
-    const struct model m, const int nc, int **cr,
+double step(double **h, const double **h0, double *e, double **occ,
+    const double **c, const double *u, double *forces, const double *forces0,
+    const struct model m, const int nc, const int **cr,
     const int lwork, double *work);
 
-void driver(char *host, double **h, double **h0, double *e, double **occ,
-    double **c, double *u, double *forces, const double *forces0,
-    double (*tau)[3], const struct model m, const int nc, int **cr,
+void driver(char *host, double **h, const double **h0, double *e, double **occ,
+    const double **c, double *u, double *forces, const double *forces0,
+    const double (*tau)[3], const struct model m, const int nc, const int **cr,
     const int lwork, double *work);
 
 void error(const char *msg, ...);
 
 void get_model(const char *filename, struct model *m);
 
-int get_displ(const int nat, char **typ, double (*tau)[3], double *u);
+int get_displ(const int nat, const char **typ, const double (*tau)[3],
+    double *u);
 
-void put_displ(const char *filename, const int nat, double uc[3][3],
-    char **typ, double (*tau)[3], const double *u);
+void put_displ(const char *filename, const int nat, const double uc[3][3],
+    const char **typ, const double (*tau)[3], const double *u);
 
-void put_force(const int nat, char **typ,
+void put_force(const int nat, const char **typ,
     const double energy, const double *forces);
 
 double **matrix(const int n);
@@ -89,16 +90,16 @@ void swrite(const int sfd, const void *data, const int len);
 int map(const struct model m, int ***cr, int ***cells);
 
 void repeat(double uc[3][3], char **typ, double (*tau)[3], double (*fdc)[3],
-    const struct model m, const int nc, int **cells);
+    const struct model m, const int nc, const int **cells);
 
 void populate(double **a, const int nb, const int nl, const struct element *l,
-    const int nc, int **cr);
+    const int nc, const int **cr);
 
 void perturb(double **h, const double *u, const struct model m,
-    const int nc, int **cr);
+    const int nc, const int **cr);
 
-void add_forces(double *forces, double **occ, const struct model m,
-    const int nc, int **cr);
+void add_forces(double *forces, const double **occ, const struct model m,
+    const int nc, const int **cr);
 
 double fermi_level(const double n, const int ne, const double *e,
     const double kt, double mu);

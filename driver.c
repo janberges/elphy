@@ -1,8 +1,8 @@
 #include "elphy.h"
 
-void driver(char *host, double **h, double **h0, double *e, double **occ,
-    double **c, double *u, double *forces, const double *forces0,
-    double (*tau)[3], const struct model m, const int nc, int **cr,
+void driver(char *host, double **h, const double **h0, double *e, double **occ,
+    const double **c, double *u, double *forces, const double *forces0,
+    const double (*tau)[3], const struct model m, const int nc, const int **cr,
     const int lwork, double *work) {
 
     double energy, cell[3][3];
