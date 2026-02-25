@@ -27,18 +27,20 @@ void get_model(const char *filename, struct model *m) {
     if (!fp)
         error("Cannot open %s.", filename);
 
-    if (fscanf(fp, "%lf", &m->kt) != 1)
+    if (fscanf(fp, "%lf", &m->kt) != 1 || m->kt <= 0.0)
         error("Invalid temperature in %s.", filename);
 
-    if (fscanf(fp, "%lf", &m->n) != 1)
+    if (fscanf(fp, "%lf", &m->n) != 1 || m->n < 0.0)
         error("Invalid number of electrons per unit cell in %s.", filename);
 
-    if (fscanf(fp, "%d", &m->nel) != 1)
+    if (fscanf(fp, "%d", &m->nel) != 1 || m->nel < 1)
         error("Invalid number of orbitals per unit cell in %s.", filename);
 
-    if (fscanf(fp, "%d", &m->nspin) != 1)
-        error("Invalid maximum number of electrons per orbital in %s.",
-            filename);
+    if (fscanf(fp, "%d", &m->nspin) != 1 || m->nspin < 1 || m->nspin > 2)
+        error("Invalid number of spins per orbital in %s.", filename);
+
+    if (m->n > m->nspin * m->nel)
+        error("Electron number too large in %s.", filename);
 
     for (i = 0; i < 3; i++)
         for (j = 0; j < 3; j++)
@@ -50,7 +52,7 @@ void get_model(const char *filename, struct model *m) {
             if (fscanf(fp, "%lf", &m->uc[i][j]) != 1)
                 error("Invalid primitive vector in %s.", filename);
 
-    if (fscanf(fp, "%d", &m->nat) != 1)
+    if (fscanf(fp, "%d", &m->nat) != 1 || m->nat < 1)
         error("Invalid number of atoms per unit cell in %s", filename);
     m->nph = 3 * m->nat;
 
@@ -74,7 +76,7 @@ void get_model(const char *filename, struct model *m) {
                 error("Invalid force vector in %s.", filename);
     }
 
-    if (fscanf(fp, "%d", &m->nr) != 1)
+    if (fscanf(fp, "%d", &m->nr) != 1 || m->nr < 0)
         error("Invalid number of lattice vectors in %s.", filename);
     if (!(m->r = malloc(m->nr * sizeof *r)))
         if (m->nr)
@@ -84,38 +86,61 @@ void get_model(const char *filename, struct model *m) {
         if (fscanf(fp, "%d %d %d", *r, *r + 1, *r + 2) != 3)
             error("Invalid lattice vector in %s.", filename);
 
-    if (fscanf(fp, "%d", &m->nt) != 1)
+    if (fscanf(fp, "%d", &m->nt) != 1 || m->nt < 0)
         error("Invalid number of hopping parameters in %s.", filename);
     if (!(m->t = malloc(m->nt * sizeof *t)))
         if (m->nt)
            error("No memory for hopping parameters.");
 
-    for (t = m->t; t - m->t < m->nt; t++)
-        if (fscanf(fp, "%d %d %d %lf", &t->r, &t->a, &t->b, &t->c) != 4)
+    for (t = m->t; t - m->t < m->nt; t++) {
+        if (fscanf(fp, "%d", &t->r) != 1 || t->r < 0 || t->r >= m->nr)
+            error("Invalid lattice-vector index in %s.", filename);
+        if (fscanf(fp, "%d", &t->a) != 1 || t->a < 0 || t->a >= m->nel)
+            error("Invalid left orbital index in %s.", filename);
+        if (fscanf(fp, "%d", &t->b) != 1 || t->b < 0 || t->b >= m->nel)
+            error("Invalid right orbital index in %s.", filename);
+        if (fscanf(fp, "%lf", &t->c) != 1)
             error("Invalid hopping parameter in %s.", filename);
+    }
 
-    if (fscanf(fp, "%d", &m->nk) != 1)
+    if (fscanf(fp, "%d", &m->nk) != 1 || m->nk < 0)
         error("Invalid number of interatomic force constants in %s.", filename);
     if (!(m->k = malloc(m->nk * sizeof *k)))
         if (m->nk)
             error("No memory for interatomic force constants.");
 
-    for (k = m->k; k - m->k < m->nk; k++)
-        if (fscanf(fp, "%d %d %d %lf", &k->r, &k->a, &k->b, &k->c) != 4)
+    for (k = m->k; k - m->k < m->nk; k++) {
+        if (fscanf(fp, "%d", &k->r) != 1 || k->r < 0 || k->r >= m->nr)
+            error("Invalid lattice-vector index in %s.", filename);
+        if (fscanf(fp, "%d", &k->a) != 1 || k->a < 0 || k->a >= m->nph)
+            error("Invalid left displacement index in %s.", filename);
+        if (fscanf(fp, "%d", &k->b) != 1 || k->b < 0 || k->b >= m->nph)
+            error("Invalid right displacement index in %s.", filename);
+        if (fscanf(fp, "%lf", &k->c) != 1)
             error("Invalid interatomic force constant in %s.", filename);
+    }
 
-    if (fscanf(fp, "%d", &m->ng) != 1)
+    if (fscanf(fp, "%d", &m->ng) != 1 || m->ng < 0)
         error("Invalid number of electron-phonon matrix elements in %s.",
             filename);
     if (!(m->g = malloc(m->ng * sizeof *g)))
         if (m->ng)
             error("No memory for electron-phonon matrix elements.");
 
-    for (g = m->g; g - m->g < m->ng; g++)
-        if (fscanf(fp, "%d %d %d %d %d %lf",
-            &g->rph, &g->x, &g->rel, &g->a, &g->b, &g->c) != 6)
-                error("Invalid electron-phonon matrix element in %s.",
-                    filename);
+    for (g = m->g; g - m->g < m->ng; g++) {
+        if (fscanf(fp, "%d", &g->rph) != 1 || g->rph < 0 || g->rph >= m->nr)
+            error("Invalid lattice-vector index in %s.", filename);
+        if (fscanf(fp, "%d", &g->x) != 1 || g->x < 0 || g->x >= m->nph)
+            error("Invalid displacement index in %s.", filename);
+        if (fscanf(fp, "%d", &g->rel) != 1 || g->rel < 0 || g->rel >= m->nr)
+            error("Invalid lattice-vector index in %s.", filename);
+        if (fscanf(fp, "%d", &g->a) != 1 || g->a < 0 || g->a >= m->nel)
+            error("Invalid left orbital index in %s.", filename);
+        if (fscanf(fp, "%d", &g->b) != 1 || g->b < 0 || g->b >= m->nel)
+            error("Invalid right orbital index in %s.", filename);
+        if (fscanf(fp, "%lf", &g->c) != 1)
+            error("Invalid electron-phonon matrix element in %s.", filename);
+    }
 
     fclose(fp);
 }
