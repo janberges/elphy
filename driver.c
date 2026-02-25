@@ -35,7 +35,8 @@ void driver(char *host, double **h, double **h0, double *e, double **occ,
             sread(sfd, &buf, sizeof buf); /* size of init string */
 
             if (!(tmp = malloc(buf)))
-                error("No memory for init string.");
+                if (buf)
+                    error("No memory for init string.");
             sread(sfd, tmp, buf); /* init string */
             free(tmp);
 
