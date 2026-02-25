@@ -8,8 +8,8 @@ static double dirac(const double x) {
     return 1.0 / (2.0 * cosh(x) + 2.0);
 }
 
-double fermi_level(double n, const int ne, const double *e, const double kt,
-    double mu) {
+double fermi_level(const double n, const int ne, const double *e,
+    const double kt, double mu) {
 
     const double eps = 1e-10, tol = 1e-5;
     const double f0 = fermi(0.0);

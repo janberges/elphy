@@ -1,6 +1,6 @@
 #include "elphy.h"
 
-void error(char *msg, ...) {
+void error(const char *msg, ...) {
     va_list args;
     char fmt[256] = "elphy error: ";
 
@@ -185,7 +185,7 @@ int get_displ(const int nat, char **typ, double (*tau)[3], double *u) {
 /* store positions of displaced atoms in file in XYZ format */
 
 void put_displ(const char *filename, const int nat, double uc[3][3],
-    char **typ, double (*tau)[3], double *u) {
+    char **typ, double (*tau)[3], const double *u) {
 
     FILE *fp;
     int i, j, width;

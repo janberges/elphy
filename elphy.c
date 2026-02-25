@@ -1,6 +1,6 @@
 #include "elphy.h"
 
-int main(int argc, char **argv) {
+int main(const int argc, char **argv) {
     double **h0, **h, **c, *e, *u, energy, *forces, *forces0, **occ, tmp, *work;
     struct model m = {0};
     int nc, nel, nph, nat, **cr, **cells, lwork, info;

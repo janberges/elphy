@@ -60,14 +60,14 @@ void driver(char *host, double **h, double **h0, double *e, double **occ,
     double (*tau)[3], const struct model m, const int nc, int **cr,
     const int lwork, double *work);
 
-void error(char *msg, ...);
+void error(const char *msg, ...);
 
 void get_model(const char *filename, struct model *m);
 
 int get_displ(const int nat, char **typ, double (*tau)[3], double *u);
 
 void put_displ(const char *filename, const int nat, double uc[3][3],
-    char **typ, double (*tau)[3], double *u);
+    char **typ, double (*tau)[3], const double *u);
 
 void put_force(const int nat, char **typ,
     const double energy, const double *forces);
@@ -76,7 +76,7 @@ double **matrix(const int n);
 
 int **array_2d(const int rows, const int cols);
 
-void random_displacements(const int nat, double *u, double umax);
+void random_displacements(const int nat, double *u, const double umax);
 
 int open_inet_socket(const char *host, const char *port);
 
@@ -100,8 +100,8 @@ void perturb(double **h, const double *u, const struct model m,
 void add_forces(double *forces, double **occ, const struct model m,
     const int nc, int **cr);
 
-double fermi_level(double n, const int ne, const double *e, const double kt,
-    double mu);
+double fermi_level(const double n, const int ne, const double *e,
+    const double kt, double mu);
 
 double grand_potential(const int ne, const double *e, const double kt,
     const double mu);

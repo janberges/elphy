@@ -1,6 +1,6 @@
 #include "elphy.h"
 
-void random_displacements(const int nat, double *u, double umax) {
+void random_displacements(const int nat, double *u, const double umax) {
     double rho, norm, avg;
     int i, j;
 
