@@ -16,7 +16,7 @@ Different compilers and optimization flags can be selected:
 
     make CC=icx CFLAGS=-O2
 
-LAPACK and BLAS are required.
+LAPACK and BLAS with the standard LP64 interface are required.
 
 ## Usage
 
