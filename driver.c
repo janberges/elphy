@@ -9,8 +9,8 @@ void driver(char *host, double **h, const double **h0, double *e, double **occ,
     const double virial[3][3] = {0}, minus = -1.0;
     int sfd, buf, needinit = 0, havedata = 0;
     char *tmp, header[12];
-    const int nat = m.nat * nc;
     const int nph = m.nph * nc;
+    const int nat = m.nat * nc;
     const int inc = 1;
 
     tmp = strchr(host, ':');

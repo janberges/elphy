@@ -6,7 +6,7 @@
 #define C3 (const double (*)[3])
 
 int main(const int argc, char **argv) {
-    double **h0, **h, **c, *e, *u, energy, *forces, *forces0, **occ, tmp, *work;
+    double energy, **h, **h0, *e, **occ, **c, *u, *forces, *forces0, *work, tmp;
     struct model m = {0};
     int nc, nel, nph, nat, **cr, **cells, lwork, info;
     char **typ;
@@ -23,21 +23,21 @@ int main(const int argc, char **argv) {
     nph = m.nph * nc;
     nat = m.nat * nc;
 
-    if (!(typ = malloc(nat * sizeof *typ)))
-        error("No memory for atom types.");
-    if (!(tau = malloc(nat * sizeof *tau)))
-        error("No memory for atomic positions.");
-    if (!(u = malloc(nph * sizeof *u)))
-        error("No memory for atomic displacements.");
     if (!(e = malloc(nel * sizeof *e)))
         error("No memory for electron energies.");
+    if (!(u = malloc(nph * sizeof *u)))
+        error("No memory for atomic displacements.");
     if (!(forces = malloc(nph * sizeof *forces)))
         error("No memory for forces.");
     if (!(forces0 = malloc(nph * sizeof *forces0)))
         error("No memory for force correction.");
+    if (!(typ = malloc(nat * sizeof *typ)))
+        error("No memory for atom types.");
+    if (!(tau = malloc(nat * sizeof *tau)))
+        error("No memory for atomic positions.");
 
-    h0 = matrix(nel);
     h = matrix(nel);
+    h0 = matrix(nel);
     occ = matrix(nel);
     c = matrix(nph);
 
@@ -77,15 +77,15 @@ int main(const int argc, char **argv) {
 
     free(c);
     free(occ);
-    free(h);
     free(h0);
+    free(h);
 
-    free(forces0);
-    free(forces);
-    free(e);
-    free(u);
     free(tau);
     free(typ);
+    free(forces0);
+    free(forces);
+    free(u);
+    free(e);
 
     free(cr);
     free(cells);
