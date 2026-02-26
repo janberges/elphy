@@ -106,14 +106,20 @@ double step(double **h, const double **h0, double *e, double **occ,
     const struct model m, const int nc, const int **cr,
     const int lwork, double *work) {
 
-    const int inc = 1;
-    const double minus = -1.0, zero = 0.0, plus = 1.0;
-    static double mu = 0.0;
     double energy;
+    static double mu = 0.0;
     const double n = m.n * nc;
     const int nel = m.nel * nc;
     const int nph = m.nph * nc;
+    const int inc = 1;
+    const double minus = -1.0, zero = 0.0, plus = 1.0;
     int info;
+
+    dsymv_("U", &nph, &minus, *c, &nph, u, &inc, &zero, forces, &inc);
+
+    energy = -0.5 * ddot_(&nph, u, &inc, forces, &inc);
+
+    daxpy_(&nph, &plus, forces0, &inc, forces, &inc);
 
     memcpy(*h, *h0, nel * nel * sizeof **h);
 
@@ -123,17 +129,11 @@ double step(double **h, const double **h0, double *e, double **occ,
 
     mu = fermi_level(n / m.nspin, nel, e, m.kt, mu);
 
-    dsymv_("U", &nph, &minus, *c, &nph, u, &inc, &zero, forces, &inc);
-
-    energy = -0.5 * ddot_(&nph, u, &inc, forces, &inc);
-
     energy += m.nspin * grand_potential(nel, e, m.kt, mu) + n * mu;
 
     occupations(nel, e, m.kt, mu, m.nspin, h, occ);
 
     add_forces(forces, CD occ, m, nc, cr);
-
-    daxpy_(&nph, &plus, forces0, &inc, forces, &inc);
 
     return energy;
 }
