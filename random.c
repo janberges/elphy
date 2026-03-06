@@ -1,12 +1,10 @@
 #include "elphy.h"
 
 void random_displacements(const int nat, double *u, const double umax) {
-    double rho, norm, avg;
+    double norm, scale, avg;
     int i, j;
 
     for (i = 0; i < nat; i++) {
-        rho = umax * (double) rand() / (double) RAND_MAX;
-
         norm = 0.0;
 
         for (j = 3 * i; j < 3 * i + 3; j++) {
@@ -16,9 +14,12 @@ void random_displacements(const int nat, double *u, const double umax) {
 
         norm = sqrt(norm);
 
-        if (norm != 0.0)
+        if (norm != 0.0) {
+            scale = umax / norm * (double) rand() / (double) RAND_MAX;
+
             for (j = 0; j < 3; j++)
-                u[3 * i + j] *= rho / norm;
+                u[3 * i + j] *= scale;
+        }
     }
 
     for (j = 0; j < 3; j++) {
