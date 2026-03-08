@@ -1,11 +1,13 @@
 #include "elphy.h"
 
+#define XMAX 88.0 /* floor(log(FLT_MAX)) */
+
 static double fermi(const double x) {
     return 0.5 - 0.5 * tanh(0.5 * x);
 }
 
 static double dirac(const double x) {
-    return 1.0 / (2.0 * cosh(x) + 2.0);
+    return fabs(x) > XMAX ? 0.0 : 0.5 / (cosh(x) + 1.0);
 }
 
 double fermi_level(const double n, const int ne, const double *e,
@@ -46,7 +48,7 @@ double grand_potential(const int ne, const double *e, const double kt,
 
     for (i = 0; i < ne; i++) {
         x = (mu - e[i]) / kt;
-        grand -= x > 709.0 ? x : log(exp(x) + 1.0);
+        grand -= x > XMAX ? x : log(exp(x) + 1.0);
     }
 
     return kt * grand;
