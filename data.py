@@ -46,20 +46,20 @@ def put_model(filename, el, ph, elph, A, kT, n, nspin=2, eps=1e-10):
     with open(filename, 'w') as dat:
         dat.write(f'{kT * Ry2Ha}\n')
         dat.write(f'{n}\n')
-        dat.write(f'{elph.el.size}\n')
+        dat.write(f'{el.size}\n')
         dat.write(f'{nspin}\n')
 
         for i in range(3):
             dat.write('%2d %2d %2d\n' % tuple(A[i]))
 
         for i in range(3):
-            dat.write('%12.9f %12.9f %12.9f\n' % tuple(elph.ph.a[i]))
+            dat.write('%12.9f %12.9f %12.9f\n' % tuple(ph.a[i]))
 
-        dat.write(f'{elph.ph.nat}\n')
+        dat.write(f'{ph.nat}\n')
 
-        for i in range(elph.ph.nat):
+        for i in range(ph.nat):
             dat.write('%2s %12.9f %12.9f %12.9f 0 0 0\n'
-                % (elph.ph.atom_order[i], *elph.ph.r[i]))
+                % (ph.atom_order[i], *ph.r[i]))
 
         dat.write(f'{len(R)}\n')
 
