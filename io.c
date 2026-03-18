@@ -186,7 +186,7 @@ int get_displ(const int nat, const char **typ, const double (*tau)[3],
 
 /* store positions of displaced atoms in file in XYZ format */
 
-void put_displ(const char *filename, const int nat, const double uc[3][3],
+void put_displ(const char *filename, const int nat, const double (*uc)[3],
     const char **typ, const double (*tau)[3], const double *u) {
 
     FILE *fp;

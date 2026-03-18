@@ -67,7 +67,7 @@ void get_model(const char *filename, struct model *m);
 int get_displ(const int nat, const char **typ, const double (*tau)[3],
     double *u);
 
-void put_displ(const char *filename, const int nat, const double uc[3][3],
+void put_displ(const char *filename, const int nat, const double (*uc)[3],
     const char **typ, const double (*tau)[3], const double *u);
 
 void put_force(const int nat, const char **typ,
@@ -89,7 +89,7 @@ void swrite(const int sfd, const void *data, const int len);
 
 int map(const struct model m, int ***cr, int ***cells);
 
-void repeat(double uc[3][3], char **typ, double (*tau)[3], double (*fdc)[3],
+void repeat(double (*uc)[3], char **typ, double (*tau)[3], double (*fdc)[3],
     const struct model m, const int nc, const int **cells);
 
 void populate(double **a, const int nb, const int nl, const struct element *l,

@@ -1,10 +1,10 @@
 #include "elphy.h"
 
-static int dot(const int a[3], const int b[3]) {
+static int dot(const int *a, const int *b) {
     return a[0] * b[0] + a[1] * b[1] + a[2] * b[2];
 }
 
-static void cross(const int a[3], const int b[3], int *c) {
+static void cross(const int *a, const int *b, int *c) {
     int i;
     for (i = 0; i < 3; i++)
         c[i] = a[(i + 1) % 3] * b[(i + 2) % 3]
@@ -102,7 +102,7 @@ int map(const struct model m, int ***cr, int ***cells) {
 
 /* determine dimensions and basis atoms of supercell */
 
-void repeat(double uc[3][3], char **typ, double (*tau)[3], double (*fdc)[3],
+void repeat(double (*uc)[3], char **typ, double (*tau)[3], double (*fdc)[3],
     const struct model m, const int nc, const int **cells) {
 
     int i, j, k, c, ci;
