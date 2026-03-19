@@ -1,5 +1,6 @@
 import copy
 import elphmod
+import numpy as np
 
 def put_model(filename, el, ph, elph, A, kT, n, nspin=2, strain=0.0, eps=1e-10):
     Ry2Ha = 0.5
@@ -78,20 +79,22 @@ def put_model(filename, el, ph, elph, A, kT, n, nspin=2, strain=0.0, eps=1e-10):
         for r in R:
             dat.write('%2d %2d %2d\n' % r)
 
+        f = f'% .{max(0, -int(np.floor(np.log10(2 * eps))))}f'
+
         dat.write(f'{len(hoppings)}\n')
 
         for t in sorted(hoppings):
-            dat.write('%d %d %d %12.9f\n' % t)
+            dat.write(f'%d %d %d {f}\n' % t)
 
         dat.write(f'{len(springs)}\n')
 
         for k in sorted(springs):
-            dat.write('%d %d %d %12.9f\n' % k)
+            dat.write(f'%d %d %d {f}\n' % k)
 
         dat.write(f'{len(couplings)}\n')
 
         for g in sorted(couplings):
-            dat.write('%d %d %d %d %d %12.9f\n' % g)
+            dat.write(f'%d %d %d %d %d {f}\n' % g)
 
 if __name__ == '__main__':
     import sys
