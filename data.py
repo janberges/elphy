@@ -2,21 +2,19 @@ import copy
 import elphmod
 import numpy as np
 
-def put_model(filename, el, ph, elph, A, kT, n, nspin=2, strain=0.0, eps=1e-10):
+def put_model(filename, elph, A, kT, n, nspin=2, strain=0.0, eps=1e-10):
     Ry2Ha = 0.5
 
     A = elphmod.bravais.supercell(*A)[1]
 
-    el = copy.deepcopy(el)
-    ph = copy.deepcopy(ph)
     elph = copy.deepcopy(elph)
 
-    el.standardize(eps=eps / Ry2Ha / abs(el.data).max())
-    ph.standardize(eps=eps / Ry2Ha / abs(ph.data).max())
+    elph.el.standardize(eps=eps / Ry2Ha / abs(elph.el.data).max())
+    elph.ph.standardize(eps=eps / Ry2Ha / abs(elph.ph.data).max())
     elph.standardize(eps=eps / Ry2Ha / abs(elph.data).max())
 
-    Ri = list(map(tuple, el.R))
-    Rj = list(map(tuple, ph.R))
+    Ri = list(map(tuple, elph.el.R))
+    Rj = list(map(tuple, elph.ph.R))
     Rk = list(map(tuple, elph.Rk))
     Rl = list(map(tuple, elph.Rk))
 
@@ -26,9 +24,9 @@ def put_model(filename, el, ph, elph, A, kT, n, nspin=2, strain=0.0, eps=1e-10):
 
     for ri in range(len(Ri)):
         i = R.index(Ri[ri])
-        for a in range(el.size):
-            for b in range(el.size):
-                t = el.data[ri, a, b].real * Ry2Ha
+        for a in range(elph.el.size):
+            for b in range(elph.el.size):
+                t = elph.el.data[ri, a, b].real * Ry2Ha
                 if t:
                     hoppings.append((i, a, b, t))
 
@@ -36,9 +34,9 @@ def put_model(filename, el, ph, elph, A, kT, n, nspin=2, strain=0.0, eps=1e-10):
 
     for rj in range(len(Rj)):
         j = R.index(Rj[rj])
-        for x in range(ph.size):
-            for y in range(ph.size):
-                k = ph.data[rj, x, y].real * Ry2Ha
+        for x in range(elph.ph.size):
+            for y in range(elph.ph.size):
+                k = elph.ph.data[rj, x, y].real * Ry2Ha
                 if k:
                     springs.append((j, x, y, k))
 
@@ -46,11 +44,11 @@ def put_model(filename, el, ph, elph, A, kT, n, nspin=2, strain=0.0, eps=1e-10):
 
     for rk in range(len(Rk)):
         k = R.index(Rk[rk])
-        for z in range(ph.size):
+        for z in range(elph.ph.size):
             for rl in range(len(Rl)):
                 l = R.index(Rl[rl])
-                for c in range(el.size):
-                    for d in range(el.size):
+                for c in range(elph.el.size):
+                    for d in range(elph.el.size):
                         g = elph.data[rk, z, rl, c, d].real * Ry2Ha
                         if g:
                             couplings.append((k, z, l, c, d, g))
@@ -58,7 +56,7 @@ def put_model(filename, el, ph, elph, A, kT, n, nspin=2, strain=0.0, eps=1e-10):
     with open(filename, 'w') as dat:
         dat.write(f'{kT * Ry2Ha}\n')
         dat.write(f'{n}\n')
-        dat.write(f'{el.size}\n')
+        dat.write(f'{elph.el.size}\n')
         dat.write(f'{nspin}\n')
         dat.write(f'{strain}\n')
 
@@ -66,13 +64,13 @@ def put_model(filename, el, ph, elph, A, kT, n, nspin=2, strain=0.0, eps=1e-10):
             dat.write('%2d %2d %2d\n' % tuple(A[i]))
 
         for i in range(3):
-            dat.write('%15.9f %15.9f %15.9f\n' % tuple(ph.a[i]))
+            dat.write('%15.9f %15.9f %15.9f\n' % tuple(elph.ph.a[i]))
 
-        dat.write(f'{ph.nat}\n')
+        dat.write(f'{elph.ph.nat}\n')
 
-        for i in range(ph.nat):
+        for i in range(elph.ph.nat):
             dat.write('%2s %15.9f %15.9f %15.9f 0 0 0\n'
-                % (ph.atom_order[i], *ph.r[i]))
+                % (elph.ph.atom_order[i], *elph.ph.r[i]))
 
         dat.write(f'{len(R)}\n')
 
@@ -132,5 +130,5 @@ if __name__ == '__main__':
 
     driver = elphmod.md.Driver(elph, kT, 'fd', n, supercell=A, unscreen=False)
 
-    put_model('input.dat', el, ph, elph, A, kT, n)
+    put_model('input.dat', elph, A, kT, n)
     driver.save('driver.pickle')
