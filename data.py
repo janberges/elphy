@@ -3,6 +3,27 @@ import elphmod
 import numpy as np
 
 def put_model(filename, elph, A, kT, n, nspin=2, strain=0.0, eps=1e-10):
+    """Export electron-phonon model from `elphmod` to input file for `elphy`.
+
+    Parameters
+    ----------
+    filename : str
+        Name of input file for `elphy`.
+    elph : obj
+        Localized model for electron-phonon coupling.
+    A : ndarray
+        Supercell lattice vectors in units of primitive lattice vectors.
+    kT : float
+        Smearing temperature in Ry.
+    n : float
+        Number of electrons per primitive cell.
+    nspin : int, default 2
+        Number of spins per orbital.
+    strain : int, default 0.0
+        Isotropic strain.
+    eps : float, defailt 1e-10
+        Matrix-element threshold in Hartree atomic units.
+    """
     Ry2Ha = 0.5
 
     A = elphmod.bravais.supercell(*A)[1]
