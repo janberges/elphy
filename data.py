@@ -42,39 +42,6 @@ def put_model(filename, elph, A, kT, n, nspin=2, strain=0.0, eps=1e-10):
 
     R = sorted(set(Ri + Rj + Rk + Rl))
 
-    hoppings = []
-
-    for ri in range(len(Ri)):
-        i = R.index(Ri[ri])
-        for a in range(elph.el.size):
-            for b in range(elph.el.size):
-                t = elph.el.data[ri, a, b].real * Ry2Ha
-                if t:
-                    hoppings.append((i, a, b, t))
-
-    springs = []
-
-    for rj in range(len(Rj)):
-        j = R.index(Rj[rj])
-        for x in range(elph.ph.size):
-            for y in range(elph.ph.size):
-                k = elph.ph.data[rj, x, y].real * Ry2Ha
-                if k:
-                    springs.append((j, x, y, k))
-
-    couplings = []
-
-    for rk in range(len(Rk)):
-        k = R.index(Rk[rk])
-        for z in range(elph.ph.size):
-            for rl in range(len(Rl)):
-                l = R.index(Rl[rl])
-                for c in range(elph.el.size):
-                    for d in range(elph.el.size):
-                        g = elph.data[rk, z, rl, c, d].real * Ry2Ha
-                        if g:
-                            couplings.append((k, z, l, c, d, g))
-
     with open(filename, 'w') as dat:
         dat.write(f'{kT * Ry2Ha}\n')
         dat.write(f'{n}\n')
@@ -101,20 +68,39 @@ def put_model(filename, elph, A, kT, n, nspin=2, strain=0.0, eps=1e-10):
 
         f = f'% .{max(0, -int(np.floor(np.log10(2 * eps))))}f'
 
-        dat.write(f'{len(hoppings)}\n')
+        dat.write(f'{np.sum(elph.el.data.real != 0)}\n')
 
-        for t in sorted(hoppings):
-            dat.write(f'%d %d %d {f}\n' % t)
+        for ri in range(len(Ri)):
+            i = R.index(Ri[ri])
+            for a in range(elph.el.size):
+                for b in range(elph.el.size):
+                    t = elph.el.data[ri, a, b].real
+                    if t:
+                        dat.write(f'{i} {a} {b} {f}\n' % (t * Ry2Ha))
 
-        dat.write(f'{len(springs)}\n')
+        dat.write(f'{np.sum(elph.ph.data.real != 0)}\n')
 
-        for k in sorted(springs):
-            dat.write(f'%d %d %d {f}\n' % k)
+        for rj in range(len(Rj)):
+            j = R.index(Rj[rj])
+            for x in range(elph.ph.size):
+                for y in range(elph.ph.size):
+                    k = elph.ph.data[rj, x, y].real
+                    if k:
+                        dat.write(f'{j} {x} {y} {f}\n' % (k * Ry2Ha))
 
-        dat.write(f'{len(couplings)}\n')
+        dat.write(f'{np.sum(elph.data.real != 0)}\n')
 
-        for g in sorted(couplings):
-            dat.write(f'%d %d %d %d %d {f}\n' % g)
+        for rk in range(len(Rk)):
+            k = R.index(Rk[rk])
+            for z in range(elph.ph.size):
+                for rl in range(len(Rl)):
+                    l = R.index(Rl[rl])
+                    for c in range(elph.el.size):
+                        for d in range(elph.el.size):
+                            g = elph.data[rk, z, rl, c, d].real
+                            if g:
+                                dat.write(f'{k} {z} {l} {c} {d} {f}\n'
+                                    % (g * Ry2Ha))
 
 if __name__ == '__main__':
     import sys
