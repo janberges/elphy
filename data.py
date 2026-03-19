@@ -66,12 +66,12 @@ def put_model(filename, el, ph, elph, A, kT, n, nspin=2, strain=0.0, eps=1e-10):
             dat.write('%2d %2d %2d\n' % tuple(A[i]))
 
         for i in range(3):
-            dat.write('%12.9f %12.9f %12.9f\n' % tuple(ph.a[i]))
+            dat.write('%15.9f %15.9f %15.9f\n' % tuple(ph.a[i]))
 
         dat.write(f'{ph.nat}\n')
 
         for i in range(ph.nat):
-            dat.write('%2s %12.9f %12.9f %12.9f 0 0 0\n'
+            dat.write('%2s %15.9f %15.9f %15.9f 0 0 0\n'
                 % (ph.atom_order[i], *ph.r[i]))
 
         dat.write(f'{len(R)}\n')
