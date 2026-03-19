@@ -1,4 +1,3 @@
-import copy
 import elphmod
 import numpy as np
 
@@ -10,7 +9,8 @@ def put_model(filename, elph, A, kT, n, nspin=2, strain=0.0, eps=1e-10):
     filename : str
         Name of input file for `elphy`.
     elph : obj
-        Localized model for electron-phonon coupling.
+        Localized model for electron-phonon coupling. Matrix elements smaller
+        than `eps` are discarded in the original object.
     A : ndarray
         Supercell lattice vectors in units of primitive lattice vectors.
     kT : float
@@ -28,11 +28,12 @@ def put_model(filename, elph, A, kT, n, nspin=2, strain=0.0, eps=1e-10):
 
     A = elphmod.bravais.supercell(*A)[1]
 
-    elph = copy.deepcopy(elph)
-
     elph.el.standardize(eps=eps / Ry2Ha / abs(elph.el.data).max())
     elph.ph.standardize(eps=eps / Ry2Ha / abs(elph.ph.data).max())
     elph.standardize(eps=eps / Ry2Ha / abs(elph.data).max())
+
+    if elphmod.MPI.comm.rank != 0:
+        return
 
     Ri = list(map(tuple, elph.el.R))
     Rj = list(map(tuple, elph.ph.R))
@@ -147,9 +148,10 @@ if __name__ == '__main__':
         elphmod.ph.q2r(ph, nq=driver.nq, D_full=driver.C0, divide_mass=False)
 
     else:
-        sys.exit(f'Usage: python3 {sys.argv[0]} graphene|TaS2')
-
-    driver = elphmod.md.Driver(elph, kT, 'fd', n, supercell=A, unscreen=False)
+        elphmod.MPI.info(f'Usage: python3 {sys.argv[0]} graphene|TaS2',
+            error=True)
 
     put_model('input.dat', elph, A, kT, n)
+
+    driver = elphmod.md.Driver(elph, kT, 'fd', n, supercell=A, unscreen=False)
     driver.save('driver.pickle')
