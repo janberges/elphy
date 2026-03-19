@@ -1,9 +1,18 @@
+import copy
 import elphmod
 
 def put_model(filename, el, ph, elph, A, kT, n, nspin=2, strain=0.0, eps=1e-10):
     Ry2Ha = 0.5
 
     A = elphmod.bravais.supercell(*A)[1]
+
+    el = copy.deepcopy(el)
+    ph = copy.deepcopy(ph)
+    elph = copy.deepcopy(elph)
+
+    el.standardize(eps=eps / Ry2Ha / abs(el.data).max())
+    ph.standardize(eps=eps / Ry2Ha / abs(ph.data).max())
+    elph.standardize(eps=eps / Ry2Ha / abs(elph.data).max())
 
     Ri = list(map(tuple, el.R))
     Rj = list(map(tuple, ph.R))
@@ -19,7 +28,7 @@ def put_model(filename, el, ph, elph, A, kT, n, nspin=2, strain=0.0, eps=1e-10):
         for a in range(el.size):
             for b in range(el.size):
                 t = el.data[ri, a, b].real * Ry2Ha
-                if abs(t) > eps:
+                if t:
                     hoppings.append((i, a, b, t))
 
     springs = []
@@ -29,7 +38,7 @@ def put_model(filename, el, ph, elph, A, kT, n, nspin=2, strain=0.0, eps=1e-10):
         for x in range(ph.size):
             for y in range(ph.size):
                 k = ph.data[rj, x, y].real * Ry2Ha
-                if abs(k) > eps:
+                if k:
                     springs.append((j, x, y, k))
 
     couplings = []
@@ -42,7 +51,7 @@ def put_model(filename, el, ph, elph, A, kT, n, nspin=2, strain=0.0, eps=1e-10):
                 for c in range(el.size):
                     for d in range(el.size):
                         g = elph.data[rk, z, rl, c, d].real * Ry2Ha
-                        if abs(g) > eps:
+                        if g:
                             couplings.append((k, z, l, c, d, g))
 
     with open(filename, 'w') as dat:
