@@ -37,6 +37,7 @@ struct vertex {
 struct model {
     double kt, n;
     int nel, nspin;
+    double strain;
     int sc[3][3];
     double uc[3][3];
     int nph, nat;
@@ -52,13 +53,13 @@ struct model {
 
 double step(double **h, const double **h0, double *e, double **occ,
     const double **c, const double *u, double *forces, const double *forces0,
-    const struct model m, const int nc, const int **cr,
+    const double energy0, const struct model m, const int nc, const int **cr,
     const int lwork, double *work);
 
 void driver(char *host, double **h, const double **h0, double *e, double **occ,
     const double **c, double *u, double *forces, const double *forces0,
-    const double (*tau)[3], const struct model m, const int nc, const int **cr,
-    const int lwork, double *work);
+    const double energy0, const struct model m, const int nc, const int **cr,
+    const int lwork, double *work, const double (*tau)[3]);
 
 void error(const char *msg, ...);
 
@@ -87,6 +88,8 @@ void sread(const int sfd, void *data, const int len);
 
 void swrite(const int sfd, const void *data, const int len);
 
+double strain_energy(const struct model m);
+
 int map(const struct model m, int ***cr, int ***cells);
 
 void repeat(double (*uc)[3], char **typ, double (*tau)[3], double (*fdc)[3],
@@ -94,6 +97,8 @@ void repeat(double (*uc)[3], char **typ, double (*tau)[3], double (*fdc)[3],
 
 void populate(double **a, const int nb, const int nl, const struct element *l,
     const int nc, const int **cr);
+
+void strain(double **h, const struct model m, const int nc, const int **cr);
 
 void perturb(double **h, const double *u, const struct model m,
     const int nc, const int **cr);

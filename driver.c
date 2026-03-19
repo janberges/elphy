@@ -2,8 +2,8 @@
 
 void driver(char *host, double **h, const double **h0, double *e, double **occ,
     const double **c, double *u, double *forces, const double *forces0,
-    const double (*tau)[3], const struct model m, const int nc, const int **cr,
-    const int lwork, double *work) {
+    const double energy0, const struct model m, const int nc, const int **cr,
+    const int lwork, double *work, const double (*tau)[3]) {
 
     double energy, cell[3][3];
     const double virial[3][3] = {0}, minus = -1.0;
@@ -50,7 +50,7 @@ void driver(char *host, double **h, const double **h0, double *e, double **occ,
 
             daxpy_(&nph, &minus, *tau, &inc, u, &inc);
 
-            energy = step(h, h0, e, occ, c, u, forces, forces0,
+            energy = step(h, h0, e, occ, c, u, forces, forces0, energy0,
                 m, nc, cr, lwork, work);
 
             havedata = 1;

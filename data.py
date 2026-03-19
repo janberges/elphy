@@ -1,4 +1,4 @@
-def put_model(filename, el, ph, elph, A, kT, n, nspin=2, eps=1e-10):
+def put_model(filename, el, ph, elph, A, kT, n, nspin=2, strain=0.0, eps=1e-10):
     Ry2Ha = 0.5
 
     A = elphmod.bravais.supercell(*A)[1]
@@ -48,6 +48,7 @@ def put_model(filename, el, ph, elph, A, kT, n, nspin=2, eps=1e-10):
         dat.write(f'{n}\n')
         dat.write(f'{el.size}\n')
         dat.write(f'{nspin}\n')
+        dat.write(f'{strain}\n')
 
         for i in range(3):
             dat.write('%2d %2d %2d\n' % tuple(A[i]))

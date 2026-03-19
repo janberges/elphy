@@ -45,6 +45,7 @@ The `<data file>` is defined below:
     <number of electrons per unit cell>
     <number of orbitals per unit cell>
     <number of spins per orbital>
+    <strain>
     A₀₀ A₀₁ A₀₂
     A₁₀ A₁₁ A₁₂
     A₂₀ A₂₁ A₂₂
@@ -91,6 +92,9 @@ Note that the interatomic force constants are assumed to be partially screened:
 They shall exclude the harmonic term of the electronic potential-energy surface.
 Any forces that the model may generate at zero displacements can be compensated
 by adding a force correction specified next to the atomic positions.
+
+Lattice vectors and atomic positions are multiplied by 1 + `<strain>` and the
+zero-displacement hopping parameters and lattice energy adjusted accordingly.
 
 ## Tests and examples
 

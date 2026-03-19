@@ -42,6 +42,9 @@ void get_model(const char *filename, struct model *m) {
     if (m->n > m->nspin * m->nel)
         error("Electron number too large in %s.", filename);
 
+    if (fscanf(fp, "%lf", &m->strain) != 1)
+        error("Invalid strain in %s.", filename);
+
     for (i = 0; i < 3; i++)
         for (j = 0; j < 3; j++)
             if (fscanf(fp, "%d", &m->sc[i][j]) != 1)

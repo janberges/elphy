@@ -6,11 +6,12 @@
 #define C3 (const double (*)[3])
 
 int main(const int argc, char **argv) {
-    double energy, **h, **h0, *e, **occ, **c, *u, *forces, *forces0, *work, tmp;
+    const int inc = 1;
+    double energy, energy0, **h, **h0, *e, **occ, **c, *u, *forces, *forces0;
     struct model m = {0};
     int nc, nel, nph, nat, **cr, **cells, lwork, info;
     char **typ;
-    double (*tau)[3], uc[3][3];
+    double (*tau)[3], uc[3][3], *work, tmp;
 
     if (argc > 1 && argc < 5)
         get_model(argv[1], &m);
@@ -53,9 +54,21 @@ int main(const int argc, char **argv) {
 
     repeat(uc, typ, tau, (double (*)[3]) forces0, m, nc, CI cells);
 
+    if (m.strain) {
+        tmp = 1.0 + m.strain;
+        info = sizeof uc / sizeof **uc;
+        dscal_(&info, &tmp, *uc, &inc);
+        dscal_(&nph, &tmp, *tau, &inc);
+
+        strain(h0, m, nc, CI cr);
+
+        energy0 = nc * strain_energy(m);
+    } else
+        energy0 = 0.0;
+
     if (argc == 2)
         while (get_displ(nat, CC typ, C3 tau, u) != EOF) {
-            energy = step(h, CD h0, e, occ, CD c, u, forces, forces0,
+            energy = step(h, CD h0, e, occ, CD c, u, forces, forces0, energy0,
                 m, nc, CI cr, lwork, work);
 
             put_force(nat, CC typ, energy, forces);
@@ -65,13 +78,13 @@ int main(const int argc, char **argv) {
         random_displacements(nat, u, atof(argv[3]));
         put_displ(argv[2], nat, C3 uc, CC typ, C3 tau, u);
 
-        energy = step(h, CD h0, e, occ, CD c, u, forces, forces0,
+        energy = step(h, CD h0, e, occ, CD c, u, forces, forces0, energy0,
             m, nc, CI cr, lwork, work);
 
         put_force(nat, CC typ, energy, forces);
     } else
-        driver(argv[2], h, CD h0, e, occ, CD c, u, forces, forces0, C3 tau,
-            m, nc, CI cr, lwork, work);
+        driver(argv[2], h, CD h0, e, occ, CD c, u, forces, forces0, energy0,
+            m, nc, CI cr, lwork, work, C3 tau);
 
     free(work);
 
@@ -103,7 +116,7 @@ int main(const int argc, char **argv) {
 
 double step(double **h, const double **h0, double *e, double **occ,
     const double **c, const double *u, double *forces, const double *forces0,
-    const struct model m, const int nc, const int **cr,
+    const double energy0, const struct model m, const int nc, const int **cr,
     const int lwork, double *work) {
 
     double energy;
@@ -117,7 +130,7 @@ double step(double **h, const double **h0, double *e, double **occ,
 
     dsymv_("U", &nph, &minus, *c, &nph, u, &inc, &zero, forces, &inc);
 
-    energy = -0.5 * ddot_(&nph, u, &inc, forces, &inc);
+    energy = energy0 - 0.5 * ddot_(&nph, u, &inc, forces, &inc);
 
     daxpy_(&nph, &plus, forces0, &inc, forces, &inc);
 
