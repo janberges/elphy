@@ -1,3 +1,5 @@
+import elphmod
+
 def put_model(filename, el, ph, elph, A, kT, n, nspin=2, strain=0.0, eps=1e-10):
     Ry2Ha = 0.5
 
