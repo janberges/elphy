@@ -21,7 +21,7 @@ def put_model(filename, elph, A, kT, n, nspin=2, strain=0.0, eps=1e-10):
         Number of spins per orbital.
     strain : int, default 0.0
         Isotropic strain.
-    eps : float, defailt 1e-10
+    eps : float, default 1e-10
         Matrix-element threshold in Hartree atomic units.
     """
     Ry2Ha = 0.5
