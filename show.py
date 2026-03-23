@@ -1,12 +1,14 @@
 import elphmod
+import subprocess
 
-driver = elphmod.md.Driver.load('driver.pickle')
+subprocess.check_output('./elphy input.dat symmetric.xyz 0'.split())
 
-with open('input.dat') as lines:
-    for _ in range(4):
-        next(lines)
+typ, tau0 = next(elphmod.misc.read_xyz('symmetric.xyz'))
 
-    driver.elph.ph.r *= 1.0 + float(next(lines))
+plot = elphmod.plot.AtomsPlot(tau0, typ)
+plot.plot(interactive=True, scale=10, pause=0.1)
 
-driver.plot(interactive=True, scale=10, pause=0.1)
-driver.from_xyz('ipi.pos_0.xyz')
+for typ, tau in elphmod.misc.read_xyz('ipi.pos_0.xyz'):
+    plot.set_positions(tau)
+    plot.set_displacements(tau - tau0)
+    plot.update()
