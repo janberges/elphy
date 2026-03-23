@@ -37,7 +37,7 @@ def put_model(filename, elph, A, kT, n, nspin=2, strain=0.0, eps=1e-10):
 
     Ri = list(map(tuple, elph.el.R))
     Rj = list(map(tuple, elph.ph.R))
-    Rk = list(map(tuple, elph.Rk))
+    Rk = list(map(tuple, elph.Rg))
     Rl = list(map(tuple, elph.Rk))
 
     R = sorted(set(Ri + Rj + Rk + Rl))
