@@ -1,4 +1,4 @@
-.PHONY: test ipi ipi_elphmod show clean clean_dat clean_ipi clean_all
+.PHONY: doc test ipi ipi_elphmod show clean clean_dat clean_ipi clean_all
 
 CC = gcc
 CFLAGS = -std=c89 -pedantic -Wall
@@ -11,6 +11,9 @@ elphy: elphy.o driver.o io.o matrix.o random.o sockets.o strain.o supercell.o te
 
 %.o: %.c elphy.h
 	$(CC) $(CFLAGS) -o $@ -c $<
+
+doc: README.md
+	pandoc -s -M pagetitle="elphy" -o index.html $<
 
 input.dat driver.pickle: data.py
 	python3 $< $(model)

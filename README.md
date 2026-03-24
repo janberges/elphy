@@ -1,4 +1,4 @@
-# elphy
+# ![elphy](logo.svg)
 
 `elphy`, short for electron-phonon anharmonicity, is a C program to calculate
 free energies and forces for tight-binding models on supercells, complemented

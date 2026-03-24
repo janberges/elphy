@@ -1,0 +1,24 @@
+<?xml version='1.0'?>
+<svg
+    xmlns='http://www.w3.org/2000/svg'
+    width='300'
+    height='140'
+    viewBox='0 0 15 7'
+>
+    <path
+        fill='none'
+        stroke='black'
+        stroke-linecap='butt'
+        stroke-linejoin='miter'
+        stroke-width='0.7'
+        d='
+            M 1 4 H 3 A 1 1 0 1 0 2.707107 4.707107
+            M 4 1 V 4 A 1 1 0 0 0 5 5
+            M 6 5 H 7 A 1 1 0 0 0 7 3 H 6 V 6
+            M 9 1 V 5
+            M 11 5 V 4 A 1 1 0 0 0 10 3 H 9
+            M 12 3 V 4 A 1 1 0 0 0 13 5 H 14
+            M 14 3 V 5 A 1 1 0 0 1 13 6 H 1
+        '
+    />
+</svg>
