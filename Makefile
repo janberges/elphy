@@ -1,4 +1,4 @@
-.PHONY: doc test ipi show clean distclean
+.PHONY: test ipi show doc clean distclean
 
 CC = gcc
 CFLAGS = -std=c89 -pedantic -Wall
@@ -11,9 +11,6 @@ elphy: elphy.o driver.o io.o matrix.o random.o sockets.o strain.o supercell.o te
 
 %.o: %.c elphy.h
 	$(CC) $(CFLAGS) -o $@ -c $<
-
-doc: README.md
-	pandoc -s -M pagetitle="elphy" -o index.html $<
 
 test input.dat input.xyz: test.py elphy
 	python3 $< $(model) input.dat input.xyz
@@ -28,6 +25,9 @@ symmetric.xyz: elphy input.dat
 
 show: symmetric.xyz ipi.pos_0.xyz
 	python3 show.py $^
+
+doc:
+	pandoc -s -M pagetitle="elphy" -o index.html README.md
 
 clean:
 	rm -f elphy *.o
