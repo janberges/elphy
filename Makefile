@@ -16,7 +16,7 @@ doc: README.md
 	pandoc -s -M pagetitle="elphy" -o index.html $<
 
 test input.dat input.xyz: test.py elphy
-	python3 $< $(model)
+	python3 $< $(model) input.dat input.xyz
 
 ipi ipi.pos_0.xyz: input.xml elphy input.dat input.xyz
 	i-pi $< &
@@ -24,7 +24,7 @@ ipi ipi.pos_0.xyz: input.xml elphy input.dat input.xyz
 	./elphy input.dat localhost:31415
 
 show: ipi.pos_0.xyz
-	python3 show.py
+	python3 show.py symmetric.xyz $<
 
 clean:
 	rm -f elphy *.o
