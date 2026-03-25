@@ -1,4 +1,4 @@
-.PHONY: doc test ipi show clean clean_dat clean_ipi clean_all
+.PHONY: doc test ipi show clean distclean
 
 CC = gcc
 CFLAGS = -std=c89 -pedantic -Wall
@@ -29,10 +29,5 @@ show: ipi.pos_0.xyz
 clean:
 	rm -f elphy *.o
 
-clean_dat:
-	rm -f *.dat *.xyz
-
-clean_ipi:
-	rm -f RESTART \#* ipi.*
-
-clean_all: clean clean_dat clean_ipi
+distclean:
+	rm -f $$(cat .gitignore)

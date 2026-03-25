@@ -1,8 +1,9 @@
-*.dat
-*.html
 *.o
-*.xyz
 RESTART
 \#*
 elphy
+index.html
+input.dat
+input.xyz
 ipi.*
+symmetric.xyz
