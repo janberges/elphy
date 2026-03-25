@@ -1,7 +1,6 @@
 *.dat
 *.html
 *.o
-*.pickle
 *.xyz
 RESTART
 \#*

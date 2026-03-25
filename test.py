@@ -26,8 +26,6 @@ elif model == 'TaS2':
 else:
     elphmod.MPI.info(f'Usage: python3 {sys.argv[0]} graphene|TaS2', error=True)
 
-driver.save('driver.pickle')
-
 res = np.array([float(x.rstrip(';'))
     for x in subprocess.check_output('./elphy input.dat input.xyz 0.1'.split(),
         universal_newlines=True).split() if '.' in x])
