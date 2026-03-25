@@ -15,14 +15,8 @@ elphy: elphy.o driver.o io.o matrix.o random.o sockets.o strain.o supercell.o te
 doc: README.md
 	pandoc -s -M pagetitle="elphy" -o index.html $<
 
-input.dat driver.pickle: data.py
+test input.dat input.xyz driver.pickle: test.py elphy
 	python3 $< $(model)
-
-test: elphy input.dat driver.pickle
-	python3 test.py
-
-input.xyz: elphy input.dat
-	./$^ $@ 0.1
 
 ipi ipi.pos_0.xyz: input.xml elphy input.dat input.xyz
 	i-pi $< &
