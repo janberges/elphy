@@ -1,11 +1,8 @@
 import elphmod
-import subprocess
 import sys
 
 ref = sys.argv[1] if len(sys.argv) > 1 else 'symmetric.xyz'
 xyz = sys.argv[2] if len(sys.argv) > 2 else 'ipi.pos_0.xyz'
-
-subprocess.check_output(f'./elphy input.dat {ref} 0'.split())
 
 typ, tau0 = next(elphmod.misc.read_xyz(ref))
 

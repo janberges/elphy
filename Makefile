@@ -23,8 +23,11 @@ ipi ipi.pos_0.xyz: input.xml elphy input.dat input.xyz
 	sleep 3
 	./elphy input.dat localhost:31415
 
-show: ipi.pos_0.xyz
-	python3 show.py symmetric.xyz $<
+symmetric.xyz: elphy input.dat
+	./$^ $@ 0
+
+show: symmetric.xyz ipi.pos_0.xyz
+	python3 show.py $^
 
 clean:
 	rm -f elphy *.o
