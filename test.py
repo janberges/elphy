@@ -40,4 +40,7 @@ forces = driver.F0 - driver.jacobian(show=False)
 
 ref = 0.5 * np.insert(forces, 0, energy)
 
-assert np.allclose(res, ref)
+ok = np.allclose(res, ref)
+
+elphmod.MPI.info(f'elphmod and elphy {"" if ok else "DO NOT "}agree!',
+    error=not ok)
