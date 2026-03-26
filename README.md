@@ -6,6 +6,8 @@ with linear electron-phonon coupling and a harmonic potential. It is a faster
 rewrite of the Python module `elphmod.md` and thus primarily a driver for the
 path-integral molecular-dynamics code i-PI. It is written in ANSI C (C89/C99).
 
+The source-code repository is located at https://codeberg.org/janberges/elphy.
+
 ## Installation
 
 The following command compiles the program using GCC without optimization:
