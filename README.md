@@ -100,6 +100,8 @@ zero-displacement hopping parameters and lattice energy adjusted accordingly.
 
 ## Tests and examples
 
+The makefile provides some recipes that exemplify the usage of the program:
+
 - `make test model=TaS2` (or `graphene`) creates `<data file>` and `<init file>`
   for a model and verifies that the computed free energy and forces are correct.
 - `make ipi` lets  `elphy` and i-PI perform a structural relaxation together.
