@@ -25,5 +25,5 @@ double strain_energy(const struct model m) {
         energy += ux * k->c * uy;
     }
 
-    return 0.5 * m.strain * m.strain * energy;
+    return 0.25 * m.strain * m.strain * energy;
 }
