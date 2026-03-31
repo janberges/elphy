@@ -1,6 +1,6 @@
 #include "elphy.h"
 
-/* calculate lattice energy due to uniform strain */
+/* calculate energy of strained interatomic springs per unit cell */
 
 double strain_energy(const struct model m) {
     struct element *k;
