@@ -13,10 +13,16 @@ if model == 'graphene':
     el, ph, elph, elel = elphmod.models.graphene.create(rydberg=True,
         divide_mass=False)
 
-    elph.data *= 1.5 # otherwise the system is stable
+    parameters = dict(kT=0.0019, n=2.0, supercell=(12, (6, 12, 0)))
+    strain = 0.3
 
-    driver = elphmod.md.Driver(elph, kT=0.0019, f='fd', n=2.0,
-        supercell=(12, (6, 12, 0)), unscreen=False, export=dat)
+    elph.export(dat, strain=strain, **parameters)
+
+    el.data *= 1 - elphmod.models.graphene.beta * strain
+    ph.a *= 1 + strain
+    ph.r *= 1 + strain
+
+    driver = elphmod.md.Driver(elph, f='fd', unscreen=False, **parameters)
 
 elif model == 'TaS2':
     import elphmod.models.tas2
@@ -29,16 +35,20 @@ else:
     elphmod.MPI.info(f'Usage: python3 {sys.argv[0]} '
         '[(graphene|TaS2) [<data file> [<xyz file>]]]', error=True)
 
-res = np.array([float(x.rstrip(';'))
-    for x in subprocess.check_output(f'./elphy {dat} {xyz} 0.1'.split(),
-        universal_newlines=True).split() if '.' in x])
+res = np.diff([[float(x.rstrip(';'))
+    for x in subprocess.check_output(f'./elphy {dat} {xyz} {radius}'.split(),
+        universal_newlines=True).split() if '.' in x] for radius in [0.0, 0.1]],
+    axis=0)
+
+energy0 = driver.free_energy(show=False)
+forces0 = -driver.jacobian(show=False)
 
 driver.from_xyz(xyz)
 
 energy = driver.free_energy(show=False)
-forces = driver.F0 - driver.jacobian(show=False)
+forces = -driver.jacobian(show=False)
 
-ref = 0.5 * np.insert(forces, 0, energy)
+ref = 0.5 * np.insert(forces - forces0, 0, energy - energy0)
 
 ok = np.allclose(res, ref)
 
