@@ -90,6 +90,8 @@ void swrite(const int sfd, const void *data, const int len);
 
 double strain_energy(const struct model m);
 
+void strain(double **h, const struct model m, const int nc, const int **cr);
+
 int map(const struct model m, int ***cr, int ***cells);
 
 void repeat(double (*uc)[3], char **typ, double (*tau)[3], double (*fdc)[3],
@@ -97,8 +99,6 @@ void repeat(double (*uc)[3], char **typ, double (*tau)[3], double (*fdc)[3],
 
 void populate(double **a, const int nb, const int nl, const struct element *l,
     const int nc, const int **cr);
-
-void strain(double **h, const struct model m, const int nc, const int **cr);
 
 void perturb(double **h, const double *u, const struct model m,
     const int nc, const int **cr);

@@ -27,3 +27,26 @@ double strain_energy(const struct model m) {
 
     return -0.25 * m.strain * m.strain * energy;
 }
+
+/* add change of hopping and on-site energies due to uniform strain */
+
+void strain(double **h, const struct model m, const int nc, const int **cr) {
+    struct vertex *g;
+    double gu;
+    div_t x;
+    int i, c;
+
+    for (g = m.g; g - m.g < m.ng; g++) {
+        x = div(g->x, 3);
+
+        gu = m.tau[x.quot][x.rem];
+
+        for (i = 0; i < 3; i++)
+            gu += m.r[g->rph][i] * m.uc[i][x.rem];
+
+        gu *= m.strain * g->c;
+
+        for (c = 0; c < nc; c++)
+            h[m.nel * c + g->a][m.nel * cr[c][g->rel] + g->b] += gu;
+    }
+}
