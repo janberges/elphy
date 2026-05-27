@@ -35,22 +35,24 @@ else:
     elphmod.MPI.info(f'Usage: python3 {sys.argv[0]} '
         '[(graphene|TaS2) [<data file> [<xyz file>]]]', error=True)
 
-res = np.diff([[float(x.rstrip(';'))
-    for x in subprocess.check_output(f'./elphy {dat} {xyz} {radius}'.split(),
-        universal_newlines=True).split() if '.' in x] for radius in [0.0, 0.1]],
-    axis=0)
+def run(radius):
+    out = subprocess.check_output(f'./elphy {dat} {xyz} {radius}'.split(),
+        universal_newlines=True).split('\n')
 
-energy0 = driver.free_energy(show=False)
-forces0 = -driver.jacobian(show=False)
+    energy = float(out[1].split()[-1].split('=')[1].strip('"'))
+    forces = np.array([float(x) for line in out[2:] for x in line.split()[-3:]])
 
-driver.from_xyz(xyz)
+    driver.from_xyz(xyz)
 
-energy = driver.free_energy(show=False)
-forces = -driver.jacobian(show=False)
+    energy_elphmod = 0.5 * driver.free_energy(show=False)
+    forces_elphmod = -0.5 * driver.jacobian(show=False)
 
-ref = 0.5 * np.insert(forces - forces0, 0, energy - energy0)
+    return energy, forces, energy_elphmod, forces_elphmod
 
-ok = np.allclose(res, ref)
+e0a, f0a, e0b, f0b = run(0.0)
+e1a, f1a, e1b, f1b = run(0.1)
+
+ok = np.allclose(f1a - f0a, f1b - f0b) and np.allclose(e1a - e0a, e1b - e0b)
 
 elphmod.MPI.info(f'elphmod and elphy {"" if ok else "DO NOT "}agree!',
     error=not ok)

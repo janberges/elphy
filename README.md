@@ -28,8 +28,9 @@ The program accepts one, two, or three arguments:
     elphy <data file> <socket>
     elphy <data file> <init file> <radius>
 
-With one argument, it alternately reads atomic positions from standard input and
-writes energies and forces to standard output, both using the XYZ format.
+With one argument, it alternately reads atomic positions in the XYZ format from
+standard input and writes the supercell vectors, atomic positions, free energy,
+and forces in ASE's extended XYZ format to standard output.
 
 With two arguments, it exchanges these quantities with i-PI through its socket
 interface. `<socket>` is a host name optionally followed by a colon and a port

@@ -71,7 +71,7 @@ int main(const int argc, char **argv) {
             energy = step(h, CD h0, e, occ, CD c, u, forces, forces0, energy0,
                 m, nc, CI cr, lwork, work);
 
-            put_force(nat, CC typ, energy, forces);
+            put_force(nat, C3 uc, CC typ, C3 tau, u, energy, forces);
         }
     else if (argc == 4) {
         srand(time(NULL));
@@ -81,7 +81,7 @@ int main(const int argc, char **argv) {
         energy = step(h, CD h0, e, occ, CD c, u, forces, forces0, energy0,
             m, nc, CI cr, lwork, work);
 
-        put_force(nat, CC typ, energy, forces);
+        put_force(nat, C3 uc, CC typ, C3 tau, u, energy, forces);
     } else
         driver(argv[2], h, CD h0, e, occ, CD c, u, forces, forces0, energy0,
             m, nc, CI cr, lwork, work, C3 tau);

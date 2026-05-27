@@ -230,14 +230,29 @@ void put_displ(const char *filename, const int nat, const double (*uc)[3],
     fclose(fp);
 }
 
-/* output free energy and forces in XYZ format */
+/* output free energy and forces in ASE's extended XYZ format */
 
-void put_force(const int nat, const char **typ,
+void put_force(const int nat, const double (*uc)[3],
+    const char **typ, const double (*tau)[3], const double *u,
     const double energy, const double *forces) {
 
     int i, j, width;
+    char a[64], *c;
 
-    printf("%d\nfree energy (Ha): %.9f; forces (Ha/bohr):\n", nat, energy);
+    printf("%d\n", nat);
+
+    printf("Lattice=\"");
+    for (i = 0; i < 3; i++)
+        for (j = 0; j < 3; j++) {
+            sprintf(a, "%.7f", uc[i][j]);
+            for (c = a + strlen(a) - 1; c > a && (*c == '0' || *c == '.'); c--)
+                *c = '\0';
+            printf("%s%c", a, i == 2 && j == 2 ? '"' : ' ');
+        }
+
+    printf(" Properties=\"species:S:1:pos:R:3:forces:R:3\"");
+    printf(" pbc=\"T T T\"");
+    printf(" energy=\"%.9f\"\n", energy);
 
     width = 0;
     for (i = 0; i < nat; i++)
@@ -246,6 +261,8 @@ void put_force(const int nat, const char **typ,
 
     for (i = 0; i < nat; i++) {
         printf("%-*s", width, typ[i]);
+        for (j = 0; j < 3; j++)
+            printf(" %15.9f", tau[i][j] + u[3 * i + j]);
         for (j = 0; j < 3; j++)
             printf(" %13.9f", forces[3 * i + j]);
         printf("\n");
