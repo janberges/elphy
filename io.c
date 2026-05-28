@@ -182,8 +182,8 @@ int get_displ(const int nat, const char **typ, const double (*tau)[3],
     if (i != nat)
         error("%d instead of %d atoms.", i, nat);
 
-    if (scanf(" %*[^\n]") != 0)
-        error("Invalid comment line.");
+    for (i = 0; i < 2; i++)
+        do j = getchar(); while (j != '\n' && j != EOF);
 
     for (i = 0; i < nat; i++) {
         if (scanf("%63s", c) != 1)
@@ -198,6 +198,8 @@ int get_displ(const int nat, const char **typ, const double (*tau)[3],
 
             u[3 * i + j] = r - tau[i][j];
         }
+
+        do j = getchar(); while (j != '\n' && j != EOF);
     }
 
     return 0;
