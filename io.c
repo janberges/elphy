@@ -1,5 +1,18 @@
 #include "elphy.h"
 
+static char *format(const double x) {
+    static char a[64];
+    char *p, *c;
+
+    sprintf(a, "%.7f", x);
+
+    p = strchr(a, '.');
+    for (c = a + strlen(a) - 1; c > p && *c == '0' || c == p; c--)
+        *c = '\0';
+
+    return a;
+}
+
 void error(const char *msg, ...) {
     va_list args;
     char fmt[256] = "elphy error: ";
@@ -194,7 +207,6 @@ void put_displ(const char *filename, const int nat, const double (*uc)[3],
 
     FILE *fp;
     int i, j, width;
-    char a[64], *p, *c;
 
     fp = fopen(filename, "w");
 
@@ -206,13 +218,8 @@ void put_displ(const char *filename, const int nat, const double (*uc)[3],
     fprintf(fp, "# CELL{H}:");
 
     for (i = 0; i < 3; i++)
-        for (j = 0; j < 3; j++) {
-            sprintf(a, "%.7f", uc[j][i]);
-            p = strchr(a, '.');
-            for (c = a + strlen(a) - 1; c > p && *c == '0' || c == p; c--)
-                *c = '\0';
-            fprintf(fp, " %s", a);
-        }
+        for (j = 0; j < 3; j++)
+            fprintf(fp, " %s", format(uc[j][i]));
 
     fprintf(fp, "\n");
 
@@ -238,18 +245,13 @@ void put_force(const int nat, const double (*uc)[3],
     const double energy, const double *forces) {
 
     int i, j, width;
-    char a[64], *p, *c;
 
     printf("%d\n", nat);
 
     printf("Lattice=\"");
     for (i = 0; i < 3; i++)
         for (j = 0; j < 3; j++) {
-            sprintf(a, "%.7f", uc[i][j]);
-            p = strchr(a, '.');
-            for (c = a + strlen(a) - 1; c > p && *c == '0' || c == p; c--)
-                *c = '\0';
-            printf("%s%c", a, i == 2 && j == 2 ? '"' : ' ');
+            printf("%s%c", format(uc[i][j]), i == 2 && j == 2 ? '"' : ' ');
         }
 
     printf(" Properties=\"species:S:1:pos:R:3:forces:R:3\"");
