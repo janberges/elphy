@@ -1,7 +1,7 @@
 .PHONY: test ipi show doc clean distclean
 
 CC = gcc
-CFLAGS = -std=c89 -pedantic -Wall
+CFLAGS = -std=c89 -pedantic -Wall -Wno-parentheses
 LDLIBS = -llapack -lblas -lm
 
 model = graphene
