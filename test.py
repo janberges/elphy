@@ -5,12 +5,11 @@ import sys
 
 model = sys.argv[1] if len(sys.argv) > 1 else 'graphene'
 dat = sys.argv[2] if len(sys.argv) > 2 else 'input.dat'
-xyz = sys.argv[3] if len(sys.argv) > 3 else 'input.xyz'
-units = sys.argv[4] if len(sys.argv) > 4 else 'Ha'
+units = sys.argv[3] if len(sys.argv) > 3 else 'Ha'
 
 def error():
     elphmod.MPI.info(f'Usage: python3 {sys.argv[0]} '
-        '[(graphene|TaS2) [<data file> [<xyz file> [(Ha|Ry|eV)]]]', error=True)
+        '[(graphene|TaS2) [<data file> [(Ha|Ry|eV)]]]', error=True)
 
 if units == 'Ha':
     econv = 0.5
@@ -53,16 +52,14 @@ else:
     error()
 
 def run(radius):
-    out = subprocess.check_output(f'./elphy {dat} {xyz} {radius}'.split(),
+    out = subprocess.check_output(f'./elphy {dat} 1 {radius}'.split(),
         universal_newlines=True).split('\n')
 
     energy = float(out[1].split()[-1].split('=')[1].strip('"'))
-    forces = np.array([float(x) for line in out[2:] for x in line.split()[-3:]])
+    rows = np.array([list(map(float, line.split()[1:])) for line in out[2:-1]])
 
-    driver.elph.ph.r *= lconv
-    driver.from_xyz(xyz)
-    driver.elph.ph.r /= lconv
-    driver.u /= lconv
+    driver.u = (rows[:, :3] / lconv - driver.elph.ph.r).ravel()
+    forces = rows[:, 3:].ravel()
 
     energy_elphmod = econv * driver.free_energy(show=False)
     forces_elphmod = -econv / lconv * driver.jacobian(show=False)

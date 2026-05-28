@@ -207,26 +207,20 @@ int get_displ(const int nat, const char **typ, const double (*tau)[3],
 
 /* store positions of displaced atoms in file in XYZ format */
 
-void put_displ(const char *filename, const int nat, const double (*uc)[3],
+void put_displ(const int nat, const double (*uc)[3],
     const char **typ, const double (*tau)[3], const double *u) {
 
-    FILE *fp;
     int i, j, width;
 
-    fp = fopen(filename, "w");
+    printf("%d\n", nat);
 
-    if (!fp)
-        error("Cannot open %s.", filename);
-
-    fprintf(fp, "%d\n", nat);
-
-    fprintf(fp, "# CELL{H}:");
+    printf("# CELL{H}:");
 
     for (i = 0; i < 3; i++)
         for (j = 0; j < 3; j++)
-            fprintf(fp, " %s", format(uc[j][i]));
+            printf(" %s", format(uc[j][i]));
 
-    fprintf(fp, "\n");
+    printf("\n");
 
     width = 0;
     for (i = 0; i < nat; i++)
@@ -234,13 +228,11 @@ void put_displ(const char *filename, const int nat, const double (*uc)[3],
             width = j;
 
     for (i = 0; i < nat; i++) {
-        fprintf(fp, "%-*s", width, typ[i]);
+        printf("%-*s", width, typ[i]);
         for (j = 0; j < 3; j++)
-            fprintf(fp, FMT, tau[i][j] + u[3 * i + j]);
-        fprintf(fp, "\n");
+            printf(FMT, tau[i][j] + u[3 * i + j]);
+        printf("\n");
     }
-
-    fclose(fp);
 }
 
 /* output free energy and forces in ASE's extended XYZ format */

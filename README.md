@@ -26,7 +26,7 @@ The program accepts one, two, or three arguments:
 
     elphy <data file>
     elphy <data file> <socket>
-    elphy <data file> <init file> <radius>
+    elphy <data file> <number> <radius>
 
 With one argument, it alternately reads atomic positions in the XYZ format from
 standard input and writes the supercell vectors, atomic positions, free energy,
@@ -38,9 +38,10 @@ number, e.g., `localhost:31415`. If the port number is omitted or zero, a UNIX
 socket is used for communication, otherwise an internet socket. The address must
 match the information in the i-PI input file `input.xml`.
 
-With three arguments, it creates an `<init file>` with initial atomic positions
-in the XYZ format for i-PI, adding random displacements smaller than `<radius>`,
-and prints the corresponding energies and forces.
+With three arguments, it prints `<number>` sets of atomic positions with random
+displacements smaller than `<radius>` and the corresponding energies and forces
+in ASE's extended XYZ format. If `<number>` is negative, only the positions are
+output using i-PI's standard XYZ format.
 
 The `<data file>` is defined below:
 

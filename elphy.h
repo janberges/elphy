@@ -68,7 +68,7 @@ void get_model(const char *filename, struct model *m);
 int get_displ(const int nat, const char **typ, const double (*tau)[3],
     double *u);
 
-void put_displ(const char *filename, const int nat, const double (*uc)[3],
+void put_displ(const int nat, const double (*uc)[3],
     const char **typ, const double (*tau)[3], const double *u);
 
 void put_force(const int nat, const double (*uc)[3],

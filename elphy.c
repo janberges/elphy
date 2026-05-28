@@ -9,7 +9,7 @@ int main(const int argc, char **argv) {
     const int inc = 1;
     double energy, energy0, **h, **h0, *e, **occ, **c, *u, *forces, *forces0;
     struct model m = {0};
-    int nc, nel, nph, nat, **cr, **cells, lwork, info;
+    int i, n, nc, nel, nph, nat, **cr, **cells, lwork, info;
     char **typ;
     double (*tau)[3], uc[3][3], *work, tmp;
 
@@ -75,13 +75,21 @@ int main(const int argc, char **argv) {
         }
     else if (argc == 4) {
         srand(time(NULL));
-        random_displacements(nat, u, atof(argv[3]));
-        put_displ(argv[2], nat, C3 uc, CC typ, C3 tau, u);
+        n = atoi(argv[2]);
 
-        energy = step(h, CD h0, e, occ, CD c, u, forces, forces0, energy0,
-            m, nc, CI cr, lwork, work);
+        for (i = 0; i < abs(n); i++) {
+            random_displacements(nat, u, atof(argv[3]));
 
-        put_force(nat, C3 uc, CC typ, C3 tau, u, energy, forces);
+            if (n < 0) {
+                put_displ(nat, C3 uc, CC typ, C3 tau, u);
+                continue;
+            }
+
+            energy = step(h, CD h0, e, occ, CD c, u, forces, forces0, energy0,
+                m, nc, CI cr, lwork, work);
+
+            put_force(nat, C3 uc, CC typ, C3 tau, u, energy, forces);
+        }
     } else
         driver(argv[2], h, CD h0, e, occ, CD c, u, forces, forces0, energy0,
             m, nc, CI cr, lwork, work, C3 tau);
