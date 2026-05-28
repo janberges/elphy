@@ -194,7 +194,7 @@ void put_displ(const char *filename, const int nat, const double (*uc)[3],
 
     FILE *fp;
     int i, j, width;
-    char a[64], *c;
+    char a[64], *p, *c;
 
     fp = fopen(filename, "w");
 
@@ -208,7 +208,8 @@ void put_displ(const char *filename, const int nat, const double (*uc)[3],
     for (i = 0; i < 3; i++)
         for (j = 0; j < 3; j++) {
             sprintf(a, "%.7f", uc[j][i]);
-            for (c = a + strlen(a) - 1; c > a && (*c == '0' || *c == '.'); c--)
+            p = strchr(a, '.');
+            for (c = a + strlen(a) - 1; c > p && *c == '0' || c == p; c--)
                 *c = '\0';
             fprintf(fp, " %s", a);
         }
@@ -237,7 +238,7 @@ void put_force(const int nat, const double (*uc)[3],
     const double energy, const double *forces) {
 
     int i, j, width;
-    char a[64], *c;
+    char a[64], *p, *c;
 
     printf("%d\n", nat);
 
@@ -245,7 +246,8 @@ void put_force(const int nat, const double (*uc)[3],
     for (i = 0; i < 3; i++)
         for (j = 0; j < 3; j++) {
             sprintf(a, "%.7f", uc[i][j]);
-            for (c = a + strlen(a) - 1; c > a && (*c == '0' || *c == '.'); c--)
+            p = strchr(a, '.');
+            for (c = a + strlen(a) - 1; c > p && *c == '0' || c == p; c--)
                 *c = '\0';
             printf("%s%c", a, i == 2 && j == 2 ? '"' : ' ');
         }
