@@ -1,16 +1,19 @@
 #include "elphy.h"
 
+#define FMT " %18.12f"
+
 static char *format(const double x) {
     static char a[64];
     char *p, *c;
 
-    sprintf(a, "%.7f", x);
+    sprintf(a, FMT, x);
 
     p = strchr(a, '.');
     for (c = a + strlen(a) - 1; c > p && *c == '0' || c == p; c--)
         *c = '\0';
+    for (c = a; *c == ' '; c++);
 
-    return a;
+    return c;
 }
 
 void error(const char *msg, ...) {
@@ -231,7 +234,7 @@ void put_displ(const char *filename, const int nat, const double (*uc)[3],
     for (i = 0; i < nat; i++) {
         fprintf(fp, "%-*s", width, typ[i]);
         for (j = 0; j < 3; j++)
-            fprintf(fp, " %15.9f", tau[i][j] + u[3 * i + j]);
+            fprintf(fp, FMT, tau[i][j] + u[3 * i + j]);
         fprintf(fp, "\n");
     }
 
@@ -256,7 +259,7 @@ void put_force(const int nat, const double (*uc)[3],
 
     printf(" Properties=\"species:S:1:pos:R:3:forces:R:3\"");
     printf(" pbc=\"T T T\"");
-    printf(" energy=\"%.9f\"\n", energy);
+    printf(" energy=\"%s\"\n", format(energy));
 
     width = 0;
     for (i = 0; i < nat; i++)
@@ -266,9 +269,9 @@ void put_force(const int nat, const double (*uc)[3],
     for (i = 0; i < nat; i++) {
         printf("%-*s", width, typ[i]);
         for (j = 0; j < 3; j++)
-            printf(" %15.9f", tau[i][j] + u[3 * i + j]);
+            printf(FMT, tau[i][j] + u[3 * i + j]);
         for (j = 0; j < 3; j++)
-            printf(" %13.9f", forces[3 * i + j]);
+            printf(FMT, forces[3 * i + j]);
         printf("\n");
     }
 }
