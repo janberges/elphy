@@ -5,6 +5,7 @@ CFLAGS = -std=c89 -pedantic -Wall -Wno-parentheses
 LDLIBS = -llapack -lblas -lm
 
 model = graphene
+units = Ha
 
 elphy: elphy.o driver.o io.o matrix.o random.o sockets.o strain.o supercell.o temperature.o
 	${CC} ${CFLAGS} -o $@ $^ ${LDLIBS}
@@ -13,7 +14,7 @@ elphy: elphy.o driver.o io.o matrix.o random.o sockets.o strain.o supercell.o te
 	$(CC) $(CFLAGS) -o $@ -c $<
 
 test input.dat input.xyz: test.py elphy
-	python3 $< $(model) input.dat input.xyz
+	python3 $< $(model) input.dat input.xyz $(units)
 
 ipi ipi.pos_0.xyz: input.xml elphy input.dat input.xyz
 	i-pi $< &

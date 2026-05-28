@@ -6,6 +6,23 @@ import sys
 model = sys.argv[1] if len(sys.argv) > 1 else 'graphene'
 dat = sys.argv[2] if len(sys.argv) > 2 else 'input.dat'
 xyz = sys.argv[3] if len(sys.argv) > 3 else 'input.xyz'
+units = sys.argv[4] if len(sys.argv) > 4 else 'Ha'
+
+def error():
+    elphmod.MPI.info(f'Usage: python3 {sys.argv[0]} '
+        '[(graphene|TaS2) [<data file> [<xyz file> [(Ha|Ry|eV)]]]', error=True)
+
+if units == 'Ha':
+    econv = 0.5
+    lconv = 1.0
+elif units == 'Ry':
+    econv = 1.0
+    lconv = 1.0
+elif units == 'eV':
+    econv = elphmod.misc.Ry
+    lconv = elphmod.misc.a0
+else:
+    error()
 
 if model == 'graphene':
     import elphmod.models.graphene
@@ -16,7 +33,7 @@ if model == 'graphene':
     parameters = dict(kT=0.0019, n=2.0, supercell=(12, (6, 12, 0)))
     strain = 0.3
 
-    elph.export(dat, strain=strain, **parameters)
+    elph.export(dat, strain=strain, econv=econv, lconv=lconv, **parameters)
 
     el.data *= 1 - elphmod.models.graphene.beta * strain
     ph.a *= 1 + strain
@@ -30,10 +47,10 @@ elif model == 'TaS2':
     el, ph, elph = elphmod.models.tas2.create(rydberg=True, divide_mass=False)
 
     driver = elphmod.md.Driver(elph, kT=0.005, f='fd', n=1.0,
-        nk=(12, 12), nq=(2, 2), supercell=(9, 9), kT0=0.02, f0='mv', export=dat)
+        nk=(12, 12), nq=(2, 2), supercell=(9, 9), kT0=0.02, f0='mv',
+        export=dat, econv=econv, lconv=lconv)
 else:
-    elphmod.MPI.info(f'Usage: python3 {sys.argv[0]} '
-        '[(graphene|TaS2) [<data file> [<xyz file>]]]', error=True)
+    error()
 
 def run(radius):
     out = subprocess.check_output(f'./elphy {dat} {xyz} {radius}'.split(),
@@ -42,10 +59,13 @@ def run(radius):
     energy = float(out[1].split()[-1].split('=')[1].strip('"'))
     forces = np.array([float(x) for line in out[2:] for x in line.split()[-3:]])
 
+    driver.elph.ph.r *= lconv
     driver.from_xyz(xyz)
+    driver.elph.ph.r /= lconv
+    driver.u /= lconv
 
-    energy_elphmod = 0.5 * driver.free_energy(show=False)
-    forces_elphmod = -0.5 * driver.jacobian(show=False)
+    energy_elphmod = econv * driver.free_energy(show=False)
+    forces_elphmod = -econv / lconv * driver.jacobian(show=False)
 
     return energy, forces, energy_elphmod, forces_elphmod
 
