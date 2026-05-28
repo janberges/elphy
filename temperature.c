@@ -13,7 +13,7 @@ static double dirac(const double x) {
 double fermi_level(const double n, const int ne, const double *e,
     const double kt, double mu) {
 
-    const double eps = 1e-10, tol = 1e-5;
+    const double eps = 1e-10, tol = 1e-7;
     const double f0 = fermi(0.0);
     const double d0 = dirac(0.0) / kt;
     double x, f, w, sum_f, sum_w, sum_e_w;
