@@ -69,7 +69,12 @@ def run(radius):
 e0a, f0a, e0b, f0b = run(0.0)
 e1a, f1a, e1b, f1b = run(0.1)
 
-ok = np.allclose(f1a - f0a, f1b - f0b) and np.allclose(e1a - e0a, e1b - e0b)
+ok = np.allclose(f0a, f0b) and np.allclose(f1a, f1b)
+
+if model == 'graphene':
+    ok = ok and np.allclose(e1a - e0a, e1b - e0b)
+elif model == 'TaS2':
+    ok = ok and np.allclose(e0a, e0b) and np.allclose(e1a, e1b)
 
 elphmod.MPI.info(f'elphmod and elphy {"" if ok else "DO NOT "}agree!',
     error=not ok)
