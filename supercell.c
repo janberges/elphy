@@ -18,9 +18,8 @@ int map(const struct model m, int ***cr, int ***cells) {
     int lower[3] = {0, 0, 0};
     int upper[3] = {0, 0, 0};
 
-    cross(m.sc[1], m.sc[2], b[0]);
-    cross(m.sc[2], m.sc[0], b[1]);
-    cross(m.sc[0], m.sc[1], b[2]);
+    for (i = 0; i < 3; i++)
+        cross(m.sc[(i + 1) % 3], m.sc[(i + 2) % 3], b[i]);
 
     nc = dot(m.sc[0], b[0]);
 
