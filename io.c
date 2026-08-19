@@ -12,6 +12,7 @@ static char *format(const double x) {
     for (c = a + strlen(a) - 1; c > p && *c == '0' || c == p; c--)
         *c = '\0';
     for (c = a; *c == ' '; c++);
+    if (!strcmp(c, "-0")) c++;
 
     return c;
 }
