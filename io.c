@@ -1,6 +1,6 @@
 #include "elphy.h"
 
-#define FMT " %18.12f"
+#define FMT " %15.9f"
 
 static char *format(const double x) {
     static char a[64];
