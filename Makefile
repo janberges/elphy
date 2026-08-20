@@ -33,6 +33,10 @@ show: symmetric.xyz ipi.pos_0.xyz
 doc:
 	pandoc -s -M pagetitle="elphy" -o index.html README.md
 
+%.png: %.svg
+	inkscape -w 600 -o $@ $<
+	python -c "import storylines as sl; sl.save('$@', sl.load('$@'))"
+
 clean:
 	rm -f elphy *.o
 
