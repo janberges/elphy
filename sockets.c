@@ -31,7 +31,7 @@ int open_inet_socket(const char *host, const char *port) {
             continue;
 
         /* see i-PI's sockets.c */
-        if (setsockopt(sfd, IPPROTO_TCP, TCP_NODELAY, &yes, sizeof(int)))
+        if (setsockopt(sfd, IPPROTO_TCP, TCP_NODELAY, &yes, sizeof yes))
             error("Cannot set socket option.");
 
         if (!connect(sfd, r->ai_addr, r->ai_addrlen))
@@ -58,7 +58,7 @@ int open_unix_socket(const char *host, const char *prefix) {
 
     sfd = socket(AF_UNIX, SOCK_STREAM, 0);
 
-    if (sfd == -1 || connect(sfd, (struct sockaddr *) &addr, sizeof(addr)))
+    if (sfd == -1 || connect(sfd, (struct sockaddr *) &addr, sizeof addr))
         error("Cannot connect to UNIX socket.");
 
     return sfd;
