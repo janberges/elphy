@@ -12,7 +12,7 @@
 #include "elphy.h"
 
 int open_inet_socket(const char *host, const char *port) {
-    const char yes = 1;
+    const int yes = 1;
     struct addrinfo hints = {0}, *res, *r;
     int sfd;
 
