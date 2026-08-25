@@ -53,8 +53,8 @@ int open_unix_socket(const char *host, const char *prefix) {
     int sfd;
 
     addr.sun_family = AF_UNIX;
-    strcpy(addr.sun_path, prefix);
-    strcat(addr.sun_path, host);
+    strncat(addr.sun_path, prefix, sizeof addr.sun_path - 1);
+    strncat(addr.sun_path, host, sizeof addr.sun_path - strlen(prefix) - 1);
 
     sfd = socket(AF_UNIX, SOCK_STREAM, 0);
 

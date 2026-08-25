@@ -19,14 +19,14 @@ static char *format(const double x) {
 
 void error(const char *msg, ...) {
     va_list args;
-    char fmt[256] = "elphy error: ";
 
-    strcat(fmt, msg);
-    strcat(fmt, "\n");
+    fprintf(stderr, "elphy error: ");
 
     va_start(args, msg);
-    vfprintf(stderr, fmt, args);
+    vfprintf(stderr, msg, args);
     va_end(args);
+
+    fprintf(stderr, "\n");
 
     exit(EXIT_FAILURE);
 }
