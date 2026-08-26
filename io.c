@@ -98,9 +98,8 @@ void get_model(const char *filename, struct model *m) {
 
     if (fscanf(fp, "%d", &m->nr) != 1 || m->nr < 0)
         error("Invalid number of lattice vectors in %s.", filename);
-    if (!(m->r = malloc(m->nr * sizeof *r)))
-        if (m->nr)
-            error("No memory for lattice vectors.");
+    if (!(m->r = malloc(m->nr * sizeof *r)) && m->nr)
+        error("No memory for lattice vectors.");
 
     for (r = m->r; r - m->r < m->nr; r++)
         if (fscanf(fp, "%d %d %d", *r, *r + 1, *r + 2) != 3)
@@ -108,9 +107,8 @@ void get_model(const char *filename, struct model *m) {
 
     if (fscanf(fp, "%d", &m->nt) != 1 || m->nt < 0)
         error("Invalid number of hopping parameters in %s.", filename);
-    if (!(m->t = malloc(m->nt * sizeof *t)))
-        if (m->nt)
-           error("No memory for hopping parameters.");
+    if (!(m->t = malloc(m->nt * sizeof *t)) && m->nt)
+       error("No memory for hopping parameters.");
 
     for (t = m->t; t - m->t < m->nt; t++) {
         if (fscanf(fp, "%d", &t->r) != 1 || t->r < 0 || t->r >= m->nr)
@@ -125,9 +123,8 @@ void get_model(const char *filename, struct model *m) {
 
     if (fscanf(fp, "%d", &m->nk) != 1 || m->nk < 0)
         error("Invalid number of interatomic force constants in %s.", filename);
-    if (!(m->k = malloc(m->nk * sizeof *k)))
-        if (m->nk)
-            error("No memory for interatomic force constants.");
+    if (!(m->k = malloc(m->nk * sizeof *k)) && m->nk)
+        error("No memory for interatomic force constants.");
 
     for (k = m->k; k - m->k < m->nk; k++) {
         if (fscanf(fp, "%d", &k->r) != 1 || k->r < 0 || k->r >= m->nr)
@@ -143,9 +140,8 @@ void get_model(const char *filename, struct model *m) {
     if (fscanf(fp, "%d", &m->ng) != 1 || m->ng < 0)
         error("Invalid number of electron-phonon matrix elements in %s.",
             filename);
-    if (!(m->g = malloc(m->ng * sizeof *g)))
-        if (m->ng)
-            error("No memory for electron-phonon matrix elements.");
+    if (!(m->g = malloc(m->ng * sizeof *g)) && m->ng)
+        error("No memory for electron-phonon matrix elements.");
 
     for (g = m->g; g - m->g < m->ng; g++) {
         if (fscanf(fp, "%d", &g->rph) != 1 || g->rph < 0 || g->rph >= m->nr)

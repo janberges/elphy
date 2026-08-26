@@ -6,9 +6,8 @@ double **matrix(const int n) {
     double **a, *data;
     int row;
 
-    if (!(a = malloc(n * (sizeof data + n * sizeof *data))))
-        if (n)
-            error("No memory for %d x %d doubles.", n, n);
+    if (!(a = malloc(n * (sizeof data + n * sizeof *data))) && n)
+        error("No memory for %d x %d doubles.", n, n);
 
     data = (double *) (a + n);
 
@@ -26,9 +25,8 @@ int **array_2d(const int rows, const int cols) {
     int **a, *data;
     int row;
 
-    if (!(a = malloc(rows * (sizeof data + cols * sizeof *data))))
-        if (rows)
-            error("No memory for %d x %d integers.", rows, cols);
+    if (!(a = malloc(rows * (sizeof data + cols * sizeof *data))) && rows)
+        error("No memory for %d x %d integers.", rows, cols);
 
     data = (int *) (a + rows);
 
