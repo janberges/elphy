@@ -4,7 +4,7 @@ import subprocess
 import sys
 
 model = sys.argv[1] if len(sys.argv) > 1 else 'graphene'
-dat = sys.argv[2] if len(sys.argv) > 2 else 'input.dat'
+indat = sys.argv[2] if len(sys.argv) > 2 else 'input.dat'
 units = sys.argv[3] if len(sys.argv) > 3 else 'Ha'
 
 def error():
@@ -32,7 +32,7 @@ if model == 'graphene':
     parameters = dict(kT=0.0019, n=2.0, supercell=(12, (6, 12, 0)))
     strain = 0.3
 
-    elph.export(dat, strain=strain, econv=econv, lconv=lconv, **parameters)
+    elph.export(indat, strain=strain, econv=econv, lconv=lconv, **parameters)
 
     el.data *= 1 - elphmod.models.graphene.beta * strain
     ph.a *= 1 + strain
@@ -47,12 +47,12 @@ elif model == 'TaS2':
 
     driver = elphmod.md.Driver(elph, kT=0.005, f='fd', n=1.0,
         nk=(12, 12), nq=(2, 2), supercell=(9, 9), kT0=0.02, f0='mv',
-        export=dat, econv=econv, lconv=lconv)
+        export=indat, econv=econv, lconv=lconv)
 else:
     error()
 
 def run(radius):
-    out = subprocess.check_output(f'./elphy {dat} 1 {radius}'.split(),
+    out = subprocess.check_output(f'./elphy {indat} 1 {radius}'.split(),
         universal_newlines=True).split('\n')
 
     energy = float(out[1].split()[-1].split('=')[1].strip('"'))
