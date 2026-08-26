@@ -3,13 +3,13 @@ import numpy as np
 import subprocess
 import sys
 
-model = sys.argv[1] if len(sys.argv) > 1 else 'graphene'
-indat = sys.argv[2] if len(sys.argv) > 2 else 'input.dat'
+indat = sys.argv[1] if len(sys.argv) > 1 else 'input.dat'
+model = sys.argv[2] if len(sys.argv) > 2 else 'graphene'
 units = sys.argv[3] if len(sys.argv) > 3 else 'Ha'
 
 def error():
     elphmod.MPI.info(f'Usage: python3 {sys.argv[0]} '
-        '[(graphene|TaS2) [<data file> [(Ha|Ry|eV)]]]', error=True)
+        '[<data file> [(graphene|TaS2) [(Ha|Ry|eV)]]]', error=True)
 
 if units == 'Ha':
     econv = 0.5

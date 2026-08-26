@@ -14,7 +14,7 @@ elphy: elphy.o driver.o io.o matrix.o random.o sockets.o strain.o supercell.o te
 	$(CC) $(CFLAGS) -o $@ -c $<
 
 test input.dat: test.py elphy
-	python3 $< $(model) input.dat $(units)
+	python3 $< input.dat $(model) $(units)
 
 input.xyz: elphy input.dat
 	./$^ -1 0.1 > $@
