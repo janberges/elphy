@@ -21,7 +21,8 @@ int map(const struct model m, int ***cr, int ***cells) {
     for (i = 0; i < 3; i++)
         cross(m.sc[(i + 1) % 3], m.sc[(i + 2) % 3], b[i]);
 
-    nc = dot(m.sc[0], b[0]);
+    if (!(nc = dot(m.sc[0], b[0])))
+        error("Vanishing supercell.");
 
     if (nc < 0) {
         nc *= -1;
