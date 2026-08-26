@@ -67,11 +67,11 @@ int main(const int argc, char **argv) {
         energy0 = 0.0;
 
     if (argc == 2)
-        while (get_displ(nat, CC typ, C3 tau, u) != EOF) {
+        while (get_xyz(nat, CC typ, C3 tau, u) != EOF) {
             energy = step(h, CD h0, e, occ, CD c, u, forces, forces0, energy0,
                 m, nc, CI cr, lwork, work);
 
-            put_force(nat, C3 uc, CC typ, C3 tau, u, energy, forces);
+            put_extxyz(nat, C3 uc, CC typ, C3 tau, u, energy, forces);
         }
     else if (argc == 4) {
         srand(time(NULL));
@@ -81,14 +81,14 @@ int main(const int argc, char **argv) {
             random_displacements(nat, u, atof(argv[3]));
 
             if (n < 0) {
-                put_displ(nat, C3 uc, CC typ, C3 tau, u);
+                put_xyz(nat, C3 uc, CC typ, C3 tau, u);
                 continue;
             }
 
             energy = step(h, CD h0, e, occ, CD c, u, forces, forces0, energy0,
                 m, nc, CI cr, lwork, work);
 
-            put_force(nat, C3 uc, CC typ, C3 tau, u, energy, forces);
+            put_extxyz(nat, C3 uc, CC typ, C3 tau, u, energy, forces);
         }
     } else
         driver(argv[2], h, CD h0, e, occ, CD c, u, forces, forces0, energy0,

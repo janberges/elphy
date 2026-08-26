@@ -21,7 +21,7 @@ double **matrix(const int n) {
 
 /* alternative version for non-square integer arrays */
 
-int **array_2d(const int rows, const int cols) {
+int **table(const int rows, const int cols) {
     int **a, *data;
     int row;
 

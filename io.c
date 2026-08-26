@@ -163,7 +163,7 @@ void get_model(const char *filename, struct model *m) {
 
 /* input atomic positions in XYZ format and calculate displacements */
 
-int get_displ(const int nat, const char **typ, const double (*tau)[3],
+int get_xyz(const int nat, const char **typ, const double (*tau)[3],
     double *u) {
 
     int i, j, status;
@@ -202,9 +202,9 @@ int get_displ(const int nat, const char **typ, const double (*tau)[3],
     return 0;
 }
 
-/* store positions of displaced atoms in file in XYZ format */
+/* output positions of displaced atoms in i-PI's standard XYZ format */
 
-void put_displ(const int nat, const double (*uc)[3],
+void put_xyz(const int nat, const double (*uc)[3],
     const char **typ, const double (*tau)[3], const double *u) {
 
     int i, j, width;
@@ -232,9 +232,9 @@ void put_displ(const int nat, const double (*uc)[3],
     }
 }
 
-/* output free energy and forces in ASE's extended XYZ format */
+/* output positions, free energy, and forces in ASE's extended XYZ format */
 
-void put_force(const int nat, const double (*uc)[3],
+void put_extxyz(const int nat, const double (*uc)[3],
     const char **typ, const double (*tau)[3], const double *u,
     const double energy, const double *forces) {
 

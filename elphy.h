@@ -65,19 +65,19 @@ void error(const char *msg, ...);
 
 void get_model(const char *filename, struct model *m);
 
-int get_displ(const int nat, const char **typ, const double (*tau)[3],
+int get_xyz(const int nat, const char **typ, const double (*tau)[3],
     double *u);
 
-void put_displ(const int nat, const double (*uc)[3],
+void put_xyz(const int nat, const double (*uc)[3],
     const char **typ, const double (*tau)[3], const double *u);
 
-void put_force(const int nat, const double (*uc)[3],
+void put_extxyz(const int nat, const double (*uc)[3],
     const char **typ, const double (*tau)[3], const double *u,
     const double energy, const double *forces);
 
 double **matrix(const int n);
 
-int **array_2d(const int rows, const int cols);
+int **table(const int rows, const int cols);
 
 void random_displacements(const int nat, double *u, const double umax);
 

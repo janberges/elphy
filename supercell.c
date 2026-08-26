@@ -44,7 +44,7 @@ int map(const struct model m, int ***cr, int ***cells) {
                         upper[j] = tmp;
                 }
 
-    *cells = array_2d(nc, 3);
+    *cells = table(nc, 3);
 
     c = 0;
     for (n[0] = lower[0]; n[0] < upper[0]; n[0]++)
@@ -64,7 +64,7 @@ int map(const struct model m, int ***cr, int ***cells) {
     if (c != nc)
         error("Problem with supercell.");
 
-    *cr = array_2d(nc, m.nr);
+    *cr = table(nc, m.nr);
 
     for (c = 0; c < nc; c++) {
         for (r = 0; r < m.nr; r++) {
