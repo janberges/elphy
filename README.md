@@ -34,9 +34,9 @@ and forces in ASE's extended XYZ format to standard output.
 
 With two arguments, it exchanges these quantities with i-PI through its socket
 interface. `<socket>` is a host name optionally followed by a colon and a port
-number, e.g., `localhost:31415`. If the port number is omitted or zero, a UNIX
-socket is used for communication, otherwise an internet socket. The address must
-match the information in the i-PI input file `input.xml`.
+number or by `/shm`. If a port number is given, an internet socket is used for
+communication. Otherwise, a UNIX socket and, optionally, shared memory is used.
+The address must match the information in the i-PI input file `input.xml`.
 
 With three arguments, it prints `<number>` sets of atomic positions with random
 displacements smaller than `<radius>` and the corresponding energies and forces

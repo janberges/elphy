@@ -89,6 +89,10 @@ void sread(const int sfd, void *data, const int len);
 
 void swrite(const int sfd, const void *data, const int len);
 
+void *shm_attach(const int sfd, const int len);
+
+void shm_detach(void *addr, const int len);
+
 double strain_energy(const struct model m);
 
 void strain(double **h, const struct model m, const int nc, const int **cr);

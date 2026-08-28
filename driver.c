@@ -7,8 +7,9 @@ void driver(char *host, double **h, const double **h0, double *e, double **occ,
 
     double energy, cell[3][3];
     const double virial[3][3] = {0}, minus = -1.0;
-    int sfd, buf, needinit = 0, havedata = 0;
+    int sfd, buf, needinit = 0, havedata = 0, shm = 0, needaddr = 1;
     char *tmp, header[12];
+    void *addr[6];
     const int nph = m.nph * nc;
     const int nat = m.nat * nc;
     const int inc = 1;
@@ -18,8 +19,16 @@ void driver(char *host, double **h, const double **h0, double *e, double **occ,
     if (tmp) {
         *tmp = '\0';
         sfd = open_inet_socket(host, tmp + 1);
-    } else
+    } else {
+         tmp = strstr(host, "/shm");
+
+         if (tmp) {
+             *tmp = '\0';
+             shm = 1;
+         }
+
         sfd = open_unix_socket(host, "/tmp/ipi_");
+    }
 
     for (;;) {
         sread(sfd, header, sizeof header);
@@ -42,24 +51,49 @@ void driver(char *host, double **h, const double **h0, double *e, double **occ,
 
             needinit = 0;
         } else if (!strncmp(header, "POSDATA", 7)) {
-            sread(sfd, cell, sizeof cell); /* cell */
-            sread(sfd, cell, sizeof cell); /* inverse cell */
+            if (!shm) {
+                sread(sfd, cell, sizeof cell); /* cell */
+                sread(sfd, cell, sizeof cell); /* inverse cell */
+            }
+
             sread(sfd, &buf, sizeof buf); /* number of atoms */
-            sread(sfd, u, nph * sizeof *u); /* positions */
+
+            if (shm) {
+                if (needaddr) {
+                    needaddr = 0;
+                    addr[0] = shm_attach(sfd, nph * sizeof *u);
+                    addr[1] = shm_attach(sfd, sizeof cell);
+                    addr[2] = shm_attach(sfd, sizeof cell);
+                    addr[3] = shm_attach(sfd, sizeof energy);
+                    addr[4] = shm_attach(sfd, nph * sizeof *forces);
+                    addr[5] = shm_attach(sfd, sizeof virial);
+                }
+
+                memcpy(u, addr[0], nph * sizeof *u);
+            } else
+                sread(sfd, u, nph * sizeof *u); /* positions */
 
             daxpy_(&nph, &minus, *tau, &inc, u, &inc);
 
             energy = step(h, h0, e, occ, c, u, forces, forces0, energy0,
                 m, nc, cr, lwork, work);
 
+            if (shm) {
+                memcpy(addr[3], &energy, sizeof energy);
+                memcpy(addr[4], forces, nph * sizeof *forces);
+                memcpy(addr[5], virial, sizeof virial);
+            }
+
             havedata = 1;
         } else if (!strncmp(header, "GETFORCE", 8)) {
             swrite(sfd, "FORCEREADY  ", sizeof header);
 
-            swrite(sfd, &energy, sizeof energy); /* potential */
-            swrite(sfd, &nat, sizeof nat); /* number of atoms */
-            swrite(sfd, forces, nph * sizeof *forces); /* forces */
-            swrite(sfd, virial, sizeof virial); /* virial tensor */
+            if (!shm) {
+                swrite(sfd, &energy, sizeof energy); /* potential */
+                swrite(sfd, &nat, sizeof nat); /* number of atoms */
+                swrite(sfd, forces, nph * sizeof *forces); /* forces */
+                swrite(sfd, virial, sizeof virial); /* virial tensor */
+            }
 
             buf = 1;
             swrite(sfd, &buf, sizeof buf); /* size of extras */
@@ -68,5 +102,14 @@ void driver(char *host, double **h, const double **h0, double *e, double **occ,
             havedata = 0;
         } else if (!strncmp(header, "EXIT", 4))
             break;
+    }
+
+    if (shm) {
+        shm_detach(addr[0], nph * sizeof *u);
+        shm_detach(addr[1], sizeof cell);
+        shm_detach(addr[2], sizeof cell);
+        shm_detach(addr[3], sizeof energy);
+        shm_detach(addr[4], nph * sizeof *forces);
+        shm_detach(addr[5], sizeof virial);
     }
 }

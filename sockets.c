@@ -6,9 +6,11 @@
 #undef _POSIX_C_SOURCE
 
 #include <sys/socket.h>
+#include <sys/mman.h>
 #include <sys/un.h> /* UNIX sockets */
 #include <unistd.h> /* read and write */
 #include <netinet/tcp.h> /* TCP_NODELAY */
+#include <fcntl.h> /* O_RDWR */
 #include "elphy.h"
 
 int open_inet_socket(const char *host, const char *port) {
@@ -78,4 +80,38 @@ void sread(const int sfd, void *data, const int len) {
 void swrite(const int sfd, const void *data, const int len) {
     if (write(sfd, data, len) == -1)
         error("Cannot write to socket.");
+}
+
+static void *shmmap(const char *name, const int len) {
+    void *addr;
+    int mfd;
+
+    mfd = shm_open(name, O_RDWR, 0666);
+
+    if (mfd == -1)
+        error("Cannot open shared memory");
+
+    addr = mmap(NULL, len, PROT_READ | PROT_WRITE, MAP_SHARED, mfd, 0);
+
+    if (addr == MAP_FAILED)
+        error("Cannot map shared memory");
+
+    close(mfd);
+
+    return addr;
+}
+
+void *shm_attach(const int sfd, const int len) {
+    char name[256] = "/";
+    int namelen;
+
+    sread(sfd, &namelen, sizeof namelen);
+    sread(sfd, name + 1, namelen);
+    name[namelen + 1] = '\0';
+
+    return shmmap(name, len);
+}
+
+void shm_detach(void *addr, const int len) {
+    munmap(addr, len);
 }
