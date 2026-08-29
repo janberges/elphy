@@ -5,11 +5,10 @@ void driver(char *host, double **h, const double **h0, double *e, double **occ,
     const double energy0, const struct model m, const int nc, const int **cr,
     const int lwork, double *work, const double (*tau)[3]) {
 
-    double energy, cell[3][3];
+    double energy, *potential = &energy, cell[3][3];
     const double virial[3][3] = {0}, minus = -1.0;
     int sfd, buf, needinit = 0, havedata = 0, shm = 0, needaddr = 1;
     char *tmp, header[12];
-    void *addr[6];
     const int nph = m.nph * nc;
     const int nat = m.nat * nc;
     const int inc = 1;
@@ -58,38 +57,31 @@ void driver(char *host, double **h, const double **h0, double *e, double **occ,
 
             sread(sfd, &buf, sizeof buf); /* number of atoms */
 
-            if (shm) {
-                if (needaddr) {
-                    needaddr = 0;
-                    addr[0] = shm_attach(sfd, nph * sizeof *u);
-                    addr[1] = shm_attach(sfd, sizeof cell);
-                    addr[2] = shm_attach(sfd, sizeof cell);
-                    addr[3] = shm_attach(sfd, sizeof energy);
-                    addr[4] = shm_attach(sfd, nph * sizeof *forces);
-                    addr[5] = shm_attach(sfd, sizeof virial);
-                }
-
-                memcpy(u, addr[0], nph * sizeof *u);
-            } else
+            if (!shm)
                 sread(sfd, u, nph * sizeof *u); /* positions */
+            else if (needaddr) {
+                u = shm_attach(sfd, nph * sizeof *u);
+                shm_detach(shm_attach(sfd, sizeof cell), sizeof cell);
+                shm_detach(shm_attach(sfd, sizeof cell), sizeof cell);
+                potential = shm_attach(sfd, sizeof energy);
+                forces = shm_attach(sfd, nph * sizeof *forces);
+                shm_detach(memset(shm_attach(sfd, sizeof virial), 0,
+                    sizeof virial), sizeof virial);
+
+                needaddr = 0;
+            }
 
             daxpy_(&nph, &minus, *tau, &inc, u, &inc);
 
-            energy = step(h, h0, e, occ, c, u, forces, forces0, energy0,
+            *potential = step(h, h0, e, occ, c, u, forces, forces0, energy0,
                 m, nc, cr, lwork, work);
-
-            if (shm) {
-                memcpy(addr[3], &energy, sizeof energy);
-                memcpy(addr[4], forces, nph * sizeof *forces);
-                memcpy(addr[5], virial, sizeof virial);
-            }
 
             havedata = 1;
         } else if (!strncmp(header, "GETFORCE", 8)) {
             swrite(sfd, "FORCEREADY  ", sizeof header);
 
             if (!shm) {
-                swrite(sfd, &energy, sizeof energy); /* potential */
+                swrite(sfd, potential, sizeof energy); /* potential */
                 swrite(sfd, &nat, sizeof nat); /* number of atoms */
                 swrite(sfd, forces, nph * sizeof *forces); /* forces */
                 swrite(sfd, virial, sizeof virial); /* virial tensor */
@@ -105,11 +97,8 @@ void driver(char *host, double **h, const double **h0, double *e, double **occ,
     }
 
     if (shm) {
-        shm_detach(addr[0], nph * sizeof *u);
-        shm_detach(addr[1], sizeof cell);
-        shm_detach(addr[2], sizeof cell);
-        shm_detach(addr[3], sizeof energy);
-        shm_detach(addr[4], nph * sizeof *forces);
-        shm_detach(addr[5], sizeof virial);
+        shm_detach(u, nph * sizeof *u);
+        shm_detach(potential, sizeof energy);
+        shm_detach(forces, nph * sizeof *forces);
     }
 }
