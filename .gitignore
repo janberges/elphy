@@ -5,6 +5,8 @@ elphy
 index.html
 input.dat
 input.xyz
+input_shm.xml
+input_unix.xml
 ipi.*
 logo.png
 symmetric.xyz
