@@ -81,10 +81,10 @@ void driver(char *host, double **h, const double **h0, double *e, double **occ,
             swrite(sfd, "FORCEREADY  ", sizeof header);
 
             if (!shm) {
-                swrite(sfd, potential, sizeof energy); /* potential */
-                swrite(sfd, &nat, sizeof nat); /* number of atoms */
-                swrite(sfd, forces, nph * sizeof *forces); /* forces */
-                swrite(sfd, virial, sizeof virial); /* virial tensor */
+                swrite(sfd, potential, sizeof energy);
+                swrite(sfd, &nat, sizeof nat);
+                swrite(sfd, forces, nph * sizeof *forces);
+                swrite(sfd, virial, sizeof virial);
             }
 
             buf = 1;
