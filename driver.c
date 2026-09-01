@@ -92,13 +92,14 @@ void driver(char *host, double **h, const double **h0, double *e, double **occ,
             swrite(sfd, " ", sizeof(char)); /* extras */
 
             havedata = 0;
-        } else if (!strncmp(header, "EXIT", 4))
-            break;
-    }
+        } else if (!strncmp(header, "EXIT", 4)) {
+            if (attached) {
+                shm_detach(u, nph * sizeof *u);
+                shm_detach(potential, sizeof energy);
+                shm_detach(forces, nph * sizeof *forces);
+            }
 
-    if (attached) {
-        shm_detach(u, nph * sizeof *u);
-        shm_detach(potential, sizeof energy);
-        shm_detach(forces, nph * sizeof *forces);
+            break;
+        }
     }
 }
