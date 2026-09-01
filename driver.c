@@ -7,7 +7,7 @@ void driver(char *host, double **h, const double **h0, double *e, double **occ,
 
     double energy, *potential = &energy, cell[3][3];
     const double virial[3][3] = {0}, minus = -1.0;
-    int sfd, buf, needinit = 0, havedata = 0, shm = 0, needaddr = 1;
+    int sfd, buf, needinit = 0, havedata = 0, shm = 0, attached = 0;
     char *tmp, header[12];
     const int nph = m.nph * nc;
     const int nat = m.nat * nc;
@@ -59,7 +59,7 @@ void driver(char *host, double **h, const double **h0, double *e, double **occ,
 
             if (!shm)
                 sread(sfd, u, nph * sizeof *u); /* positions */
-            else if (needaddr) {
+            else if (!attached) {
                 u = shm_attach(sfd, nph * sizeof *u);
                 shm_detach(shm_attach(sfd, sizeof cell), sizeof cell);
                 shm_detach(shm_attach(sfd, sizeof cell), sizeof cell);
@@ -68,7 +68,7 @@ void driver(char *host, double **h, const double **h0, double *e, double **occ,
                 shm_detach(memset(shm_attach(sfd, sizeof virial), 0,
                     sizeof virial), sizeof virial);
 
-                needaddr = 0;
+                attached = 1;
             }
 
             daxpy_(&nph, &minus, *tau, &inc, u, &inc);
@@ -96,7 +96,7 @@ void driver(char *host, double **h, const double **h0, double *e, double **occ,
             break;
     }
 
-    if (shm) {
+    if (attached) {
         shm_detach(u, nph * sizeof *u);
         shm_detach(potential, sizeof energy);
         shm_detach(forces, nph * sizeof *forces);
