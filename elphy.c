@@ -67,14 +67,22 @@ int main(const int argc, char **argv) {
     } else
         energy0 = 0.0;
 
-    if (argc == 2)
+    switch (argc) {
+    case (2):
         while (get_xyz(nat, CC typ, C3 tau, u) != EOF) {
             energy = step(h, CD h0, e, occ, CD c, u, forces, forces0, energy0,
                 m, nc, CI cr, lwork, work);
 
             put_extxyz(nat, C3 uc, CC typ, C3 tau, u, energy, forces);
         }
-    else if (argc == 4) {
+        break;
+
+    case (3):
+        driver(argv[2], h, CD h0, e, occ, CD c, u, forces, forces0, energy0,
+            m, nc, CI cr, lwork, work, C3 tau);
+        break;
+
+    case (4):
         srand(time(NULL));
         n = atoi(argv[2]);
 
@@ -91,7 +99,9 @@ int main(const int argc, char **argv) {
 
             put_extxyz(nat, C3 uc, CC typ, C3 tau, u, energy, forces);
         }
-    } else if (argc == 5) {
+        break;
+
+    case (5):
         u1 = forces; /* use otherwise unused memory */
 
         for (i = 0; get_xyz(nat, CC typ, C3 tau, u1) != EOF; i++);
@@ -114,9 +124,8 @@ int main(const int argc, char **argv) {
 
             put_xyz(nat, C3 uc, CC typ, C3 tau, u, 0);
         }
-    } else
-        driver(argv[2], h, CD h0, e, occ, CD c, u, forces, forces0, energy0,
-            m, nc, CI cr, lwork, work, C3 tau);
+        break;
+    }
 
     free(work);
 
