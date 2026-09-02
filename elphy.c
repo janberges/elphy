@@ -11,12 +11,13 @@ int main(const int argc, char **argv) {
     struct model m = {0};
     int i, n, nc, nel, nph, nat, **cr, **cells, lwork, info;
     char **typ;
-    double (*tau)[3], uc[3][3], *work, tmp;
+    double (*tau)[3], uc[3][3], *work, tmp, *u1, a, b;
 
-    if (argc > 1 && argc < 5)
+    if (argc > 1 && argc < 6)
         get_model(argv[1], &m);
     else
-        error("Usage: elphy <data file> [<socket>|<init file> <radius>]");
+        error("Usage: elphy <data file> "
+            "[<socket>|<number> (<radius>|<lower> <upper>)]");
 
     nc = map(m, &cr, &cells);
 
@@ -81,7 +82,7 @@ int main(const int argc, char **argv) {
             random_displacements(nat, u, atof(argv[3]));
 
             if (n < 0) {
-                put_xyz(nat, C3 uc, CC typ, C3 tau, u);
+                put_xyz(nat, C3 uc, CC typ, C3 tau, u, 1);
                 continue;
             }
 
@@ -89,6 +90,29 @@ int main(const int argc, char **argv) {
                 m, nc, CI cr, lwork, work);
 
             put_extxyz(nat, C3 uc, CC typ, C3 tau, u, energy, forces);
+        }
+    } else if (argc == 5) {
+        u1 = forces; /* use otherwise unused memory */
+
+        for (i = 0; get_xyz(nat, CC typ, C3 tau, u1) != EOF; i++);
+
+        if (!i)
+            error("Atomic positions needed.");
+
+        n = atoi(argv[2]);
+        a = atof(argv[3]);
+        b = atof(argv[4]);
+
+        if (n < 2)
+            error("At least two points needed.");
+
+        for (i = 0; i < n; i++) {
+            tmp = (a * (n - 1 - i) + b * i) / (n - 1);
+
+            memcpy(u, u1, nph * sizeof *u);
+            dscal_(&nph, &tmp, u, &inc);
+
+            put_xyz(nat, C3 uc, CC typ, C3 tau, u, 0);
         }
     } else
         driver(argv[2], h, CD h0, e, occ, CD c, u, forces, forces0, energy0,

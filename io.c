@@ -202,22 +202,22 @@ int get_xyz(const int nat, const char **typ, const double (*tau)[3],
     return 0;
 }
 
-/* output positions of displaced atoms in i-PI's standard XYZ format */
+/* output positions of displaced atoms in i-PI's or PLUMED's XYZ format */
 
 void put_xyz(const int nat, const double (*uc)[3],
-    const char **typ, const double (*tau)[3], const double *u) {
+    const char **typ, const double (*tau)[3], const double *u, const int ipi) {
 
     int i, j, width;
 
     printf("%d\n", nat);
 
-    printf("# CELL{H}:");
+    if (ipi)
+        printf("# CELL{H}: ");
 
     for (i = 0; i < 3; i++)
         for (j = 0; j < 3; j++)
-            printf(" %s", format(uc[j][i]));
-
-    printf("\n");
+            printf("%s%c", format(ipi ? uc[j][i] : uc[i][j]),
+                i < 2 || j < 2 ? ' ' : '\n');
 
     width = 0;
     for (i = 0; i < nat; i++)

@@ -69,7 +69,7 @@ int get_xyz(const int nat, const char **typ, const double (*tau)[3],
     double *u);
 
 void put_xyz(const int nat, const double (*uc)[3],
-    const char **typ, const double (*tau)[3], const double *u);
+    const char **typ, const double (*tau)[3], const double *u, const int ipi);
 
 void put_extxyz(const int nat, const double (*uc)[3],
     const char **typ, const double (*tau)[3], const double *u,

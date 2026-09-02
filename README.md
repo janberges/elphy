@@ -22,11 +22,12 @@ LAPACK and BLAS with the standard LP64 interface are required.
 
 ## Usage
 
-The program accepts one, two, or three arguments:
+The program accepts one, two, three, or four arguments:
 
     elphy <data file>
     elphy <data file> <socket>
     elphy <data file> <number> <radius>
+    elphy <data file> <number> <lower> <upper>
 
 With one argument, it alternately reads atomic positions in the XYZ format from
 standard input and writes the supercell vectors, atomic positions, free energy,
@@ -42,6 +43,12 @@ With three arguments, it prints `<number>` sets of atomic positions with random
 displacements smaller than `<radius>` and the corresponding energies and forces
 in ASE's extended XYZ format. If `<number>` is negative, only the positions are
 output using i-PI's standard XYZ format.
+
+With four arguments, it reads atomic positions in XYZ format from standard input
+and, for `<number>` scaling factors between `<lower>` and `<upper>`, scales the
+displacements and writes the result in PLUMED's XYZ format to standard output.
+Only the end point of a given trajectory is considered. This can be used to test
+collective variables with `plumed driver --ixyz scaled.xyz --length-units Bohr`.
 
 The `<data file>` is defined below:
 
