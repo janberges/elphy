@@ -96,10 +96,10 @@ and `x, y, z` over the three Cartesian displacement directions for all atoms.
 All indices are zero-based. All matrix elements `<…>` are single real numbers.
 The primitive, position, and force vectors `a, r, F` are given in Cartesian,
 the supercell and lattice vectors `A, R` in integer crystal coordinates.
+The atom labels `X` are only used to label the supercell atoms in the output.
 
 No unit conversions are performed, so any consistent energy and length units can
-be used. However, i-PI expects energies and forces in Hartree atomic units. The
-atom labels `X` are copied to the `<init file>` and define the default masses.
+be used. However, i-PI expects energies and forces in Hartree atomic units.
 
 Note that the interatomic force constants are assumed to be partially screened:
 They shall exclude the harmonic term of the electronic potential-energy surface.
@@ -113,8 +113,8 @@ zero-displacement hopping parameters and lattice energy adjusted accordingly.
 
 The makefile provides some recipes that exemplify the usage of the program:
 
-- `make test model=TaS2` (or `graphene`) creates `<data file>` and `<init file>`
-  for a model and verifies that the computed free energy and forces are correct.
+- `make test model=TaS2` (or `graphene`) creates `<data file>` for a model and
+  verifies that the computed free energy and forces are correct.
 - `make ipi` lets  `elphy` and i-PI perform a structural relaxation together.
 - `make show` displays an animation of the relaxation process.
 - `make clean` removes compiled files, `make distclean` all generated files.
