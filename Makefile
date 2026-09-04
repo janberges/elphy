@@ -1,4 +1,4 @@
-.PHONY: test ipi ipi_unix ipi_shm show doc clean distclean
+.PHONY: test ipi ipi_unix ipi_shm show clean distclean
 
 CC = gcc
 CFLAGS = -std=c89 -pedantic -Wall -Wno-parentheses
@@ -42,8 +42,8 @@ symmetric.xyz: elphy input.dat
 show: symmetric.xyz ipi.pos_0.xyz
 	python3 show.py $^
 
-doc:
-	pandoc -s -M pagetitle="elphy" -o index.html README.md
+index.html: README.md
+	pandoc -s -M pagetitle="elphy" -o $@ $<
 
 %.png: %.svg
 	inkscape -w 600 -o $@ $<
