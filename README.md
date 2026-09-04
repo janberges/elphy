@@ -18,7 +18,9 @@ Different compilers and optimization flags can be selected:
 
     make CC=icx CFLAGS=-O2
 
-LAPACK and BLAS with the standard LP64 interface are required.
+LAPACK and BLAS with the standard LP64 interface are required. The performance
+depends on the BLAS implementation. For instance, OpenBLAS with multithreading
+should significantly outperform the reference implementation on most machines.
 
 ## Usage
 
