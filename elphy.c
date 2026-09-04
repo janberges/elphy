@@ -5,13 +5,16 @@
 #define CD (const double **)
 #define C3 (const double (*)[3])
 
+static int lwork, liwork, *iwork;
+static double *work;
+
 int main(const int argc, char **argv) {
     const int inc = 1;
     double energy, energy0, **h, **h0, *e, **occ, **c, *u, *forces, *forces0;
     struct model m = {0};
-    int i, n, nc, nel, nph, nat, **cr, **cells, lwork, liwork, *iwork, info;
+    int i, n, nc, nel, nph, nat, **cr, **cells, info;
     char **typ;
-    double (*tau)[3], uc[3][3], *work, tmp, *u1, a, b;
+    double (*tau)[3], uc[3][3], tmp, *u1, a, b;
 
     if (argc > 1 && argc < 6)
         get_model(argv[1], &m);
@@ -75,7 +78,7 @@ int main(const int argc, char **argv) {
     case (2):
         while (get_xyz(nat, CC typ, C3 tau, u) != EOF) {
             energy = step(h, CD h0, e, occ, CD c, u, forces, forces0, energy0,
-                m, nc, CI cr, lwork, work, liwork, iwork);
+                m, nc, CI cr);
 
             put_extxyz(nat, C3 uc, CC typ, C3 tau, u, energy, forces);
         }
@@ -83,7 +86,7 @@ int main(const int argc, char **argv) {
 
     case (3):
         driver(argv[2], h, CD h0, e, occ, CD c, u, forces, forces0, energy0,
-            m, nc, CI cr, lwork, work, liwork, iwork, C3 tau);
+            m, nc, CI cr, C3 tau);
         break;
 
     case (4):
@@ -99,7 +102,7 @@ int main(const int argc, char **argv) {
             }
 
             energy = step(h, CD h0, e, occ, CD c, u, forces, forces0, energy0,
-                m, nc, CI cr, lwork, work, liwork, iwork);
+                m, nc, CI cr);
 
             put_extxyz(nat, C3 uc, CC typ, C3 tau, u, energy, forces);
         }
@@ -162,8 +165,7 @@ int main(const int argc, char **argv) {
 
 double step(double **h, const double **h0, double *e, double **occ,
     const double **c, const double *u, double *forces, const double *forces0,
-    const double energy0, const struct model m, const int nc, const int **cr,
-    const int lwork, double *work, const int liwork, int *iwork) {
+    const double energy0, const struct model m, const int nc, const int **cr) {
 
     double energy;
     static double mu = 0.0;

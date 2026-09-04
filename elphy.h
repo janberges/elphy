@@ -54,13 +54,11 @@ struct model {
 
 double step(double **h, const double **h0, double *e, double **occ,
     const double **c, const double *u, double *forces, const double *forces0,
-    const double energy0, const struct model m, const int nc, const int **cr,
-    const int lwork, double *work, const int liwork, int *iwork);
+    const double energy0, const struct model m, const int nc, const int **cr);
 
 void driver(char *host, double **h, const double **h0, double *e, double **occ,
     const double **c, double *u, double *forces, const double *forces0,
     const double energy0, const struct model m, const int nc, const int **cr,
-    const int lwork, double *work, const int liwork, int *iwork,
     const double (*tau)[3]);
 
 void error(const char *msg, ...);
