@@ -9,7 +9,7 @@ int main(const int argc, char **argv) {
     const int inc = 1;
     double energy, energy0, **h, **h0, *e, **occ, **c, *u, *forces, *forces0;
     struct model m = {0};
-    int i, n, nc, nel, nph, nat, **cr, **cells, lwork, info;
+    int i, n, nc, nel, nph, nat, **cr, **cells, lwork, liwork, *iwork, info;
     char **typ;
     double (*tau)[3], uc[3][3], *work, tmp, *u1, a, b;
 
@@ -44,11 +44,15 @@ int main(const int argc, char **argv) {
     c = matrix(nph);
 
     lwork = -1;
-    dsyev_("V", "U", &nel, *h, &nel, e, &tmp, &lwork, &info);
+    liwork = -1;
+    dsyevd_("V", "U", &nel, *h, &nel, e, &tmp, &lwork, &i, &liwork, &info);
     lwork = (int) tmp;
+    liwork = i;
 
     if (!(work = malloc(lwork * sizeof *work)))
         error("No memory for LAPACK work array.");
+    if (!(iwork = malloc(liwork * sizeof *iwork)))
+        error("No memory for LAPACK integer work array.");
 
     populate(h0, m.nel, m.nt, m.t, nc, CI cr);
     populate(c, m.nph, m.nk, m.k, nc, CI cr);
@@ -71,7 +75,7 @@ int main(const int argc, char **argv) {
     case (2):
         while (get_xyz(nat, CC typ, C3 tau, u) != EOF) {
             energy = step(h, CD h0, e, occ, CD c, u, forces, forces0, energy0,
-                m, nc, CI cr, lwork, work);
+                m, nc, CI cr, lwork, work, liwork, iwork);
 
             put_extxyz(nat, C3 uc, CC typ, C3 tau, u, energy, forces);
         }
@@ -79,7 +83,7 @@ int main(const int argc, char **argv) {
 
     case (3):
         driver(argv[2], h, CD h0, e, occ, CD c, u, forces, forces0, energy0,
-            m, nc, CI cr, lwork, work, C3 tau);
+            m, nc, CI cr, lwork, work, liwork, iwork, C3 tau);
         break;
 
     case (4):
@@ -95,7 +99,7 @@ int main(const int argc, char **argv) {
             }
 
             energy = step(h, CD h0, e, occ, CD c, u, forces, forces0, energy0,
-                m, nc, CI cr, lwork, work);
+                m, nc, CI cr, lwork, work, liwork, iwork);
 
             put_extxyz(nat, C3 uc, CC typ, C3 tau, u, energy, forces);
         }
@@ -127,6 +131,7 @@ int main(const int argc, char **argv) {
         break;
     }
 
+    free(iwork);
     free(work);
 
     free(c);
@@ -158,7 +163,7 @@ int main(const int argc, char **argv) {
 double step(double **h, const double **h0, double *e, double **occ,
     const double **c, const double *u, double *forces, const double *forces0,
     const double energy0, const struct model m, const int nc, const int **cr,
-    const int lwork, double *work) {
+    const int lwork, double *work, const int liwork, int *iwork) {
 
     double energy;
     static double mu = 0.0;
@@ -179,7 +184,7 @@ double step(double **h, const double **h0, double *e, double **occ,
 
     perturb(h, u, m, nc, cr);
 
-    dsyev_("V", "U", &nel, *h, &nel, e, work, &lwork, &info);
+    dsyevd_("V", "U", &nel, *h, &nel, e, work, &lwork, iwork, &liwork, &info);
 
     mu = fermi_level(n / m.nspin, nel, e, m.kt, mu);
 

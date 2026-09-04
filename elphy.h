@@ -5,8 +5,9 @@
 #include <string.h>
 #include <time.h>
 
-void dsyev_(const char *jobz, const char *uplo, const int *n, double *a,
-    const int *lda, double *w, double *work, const int *lwork, int *info);
+void dsyevd_(const char *jobz, const char *uplo, const int *n, double *a,
+    const int *lda, double *w, double *work, const int *lwork, int *iwork,
+    const int *liwork, int *info);
 
 void dsymv_(const char *uplo, const int *n, const double *alpha,
     const double *a, const int *lda, const double *x, const int *incx,
@@ -54,12 +55,13 @@ struct model {
 double step(double **h, const double **h0, double *e, double **occ,
     const double **c, const double *u, double *forces, const double *forces0,
     const double energy0, const struct model m, const int nc, const int **cr,
-    const int lwork, double *work);
+    const int lwork, double *work, const int liwork, int *iwork);
 
 void driver(char *host, double **h, const double **h0, double *e, double **occ,
     const double **c, double *u, double *forces, const double *forces0,
     const double energy0, const struct model m, const int nc, const int **cr,
-    const int lwork, double *work, const double (*tau)[3]);
+    const int lwork, double *work, const int liwork, int *iwork,
+    const double (*tau)[3]);
 
 void error(const char *msg, ...);
 
