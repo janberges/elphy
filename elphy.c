@@ -5,13 +5,12 @@
 #define CD (const double **)
 #define C3 (const double (*)[3])
 
-static const double abstol = 0.0;
-static int nev, *isuppz, lwork, liwork, *iwork;
+static int lwork, liwork, *iwork;
 static double *work;
 
 int main(const int argc, char **argv) {
     const int inc = 1;
-    double **h, **h0, *e, **psi, **occ, **c, *u, *forces, *forces0,
+    double **h, **h0, *e, **occ, **c, *u, *forces, *forces0,
         energy, energy0, (*tau)[3], uc[3][3], tmp, *u1, a, b;
     struct model m = {0};
     int i, n, nc, nel, nph, nat, **cr, **cells, info;
@@ -44,17 +43,12 @@ int main(const int argc, char **argv) {
 
     h = matrix(nel);
     h0 = matrix(nel);
-    psi = matrix(nel);
     occ = matrix(nel);
     c = matrix(nph);
 
-    if (!(isuppz = malloc(2 * nel * sizeof *isuppz)))
-        error("No memory for eigenvector support.");
-
     lwork = -1;
     liwork = -1;
-    dsyevr_("V", "A", "U", &nel, *h, &nel, NULL, NULL, NULL, NULL, &abstol,
-        &nev, e, *psi, &nel, isuppz, &tmp, &lwork, &i, &liwork, &info);
+    dsyevd_("V", "U", &nel, *h, &nel, e, &tmp, &lwork, &i, &liwork, &info);
     lwork = (int) tmp;
     liwork = i;
 
@@ -83,16 +77,16 @@ int main(const int argc, char **argv) {
     switch (argc) {
     case (2):
         while (get_xyz(nat, CC typ, C3 tau, u) != EOF) {
-            energy = step(h, CD h0, e, psi, occ, CD c, u, forces, forces0,
-                energy0, m, nc, CI cr);
+            energy = step(h, CD h0, e, occ, CD c, u, forces, forces0, energy0,
+                m, nc, CI cr);
 
             put_extxyz(nat, C3 uc, CC typ, C3 tau, u, energy, forces);
         }
         break;
 
     case (3):
-        driver(argv[2], h, CD h0, e, psi, occ, CD c, u, forces, forces0,
-            energy0, m, nc, CI cr, C3 tau);
+        driver(argv[2], h, CD h0, e, occ, CD c, u, forces, forces0, energy0,
+            m, nc, CI cr, C3 tau);
         break;
 
     case (4):
@@ -107,8 +101,8 @@ int main(const int argc, char **argv) {
                 continue;
             }
 
-            energy = step(h, CD h0, e, psi, occ, CD c, u, forces, forces0,
-                energy0, m, nc, CI cr);
+            energy = step(h, CD h0, e, occ, CD c, u, forces, forces0, energy0,
+                m, nc, CI cr);
 
             put_extxyz(nat, C3 uc, CC typ, C3 tau, u, energy, forces);
         }
@@ -142,11 +136,9 @@ int main(const int argc, char **argv) {
 
     free(iwork);
     free(work);
-    free(isuppz);
 
     free(c);
     free(occ);
-    free(psi);
     free(h0);
     free(h);
 
@@ -171,8 +163,7 @@ int main(const int argc, char **argv) {
     return EXIT_SUCCESS;
 }
 
-double step(
-    double **h, const double **h0, double *e, double **psi, double **occ,
+double step(double **h, const double **h0, double *e, double **occ,
     const double **c, const double *u, double *forces, const double *forces0,
     const double energy0, const struct model m, const int nc, const int **cr) {
 
@@ -195,14 +186,13 @@ double step(
 
     perturb(h, u, m, nc, cr);
 
-    dsyevr_("V", "A", "U", &nel, *h, &nel, NULL, NULL, NULL, NULL, &abstol,
-        &nev, e, *psi, &nel, isuppz, work, &lwork, iwork, &liwork, &info);
+    dsyevd_("V", "U", &nel, *h, &nel, e, work, &lwork, iwork, &liwork, &info);
 
     mu = fermi_level(n / m.nspin, nel, e, m.kt, mu);
 
     energy += m.nspin * grand_potential(nel, e, m.kt, mu) + n * mu;
 
-    occupations(nel, e, m.kt, mu, m.nspin, psi, occ);
+    occupations(nel, e, m.kt, mu, m.nspin, h, occ);
 
     add_forces(forces, CD occ, m, nc, cr);
 

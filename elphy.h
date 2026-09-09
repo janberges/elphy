@@ -5,11 +5,9 @@
 #include <string.h>
 #include <time.h>
 
-void dsyevr_(const char *jobz, const char *range, const char *uplo,
-    const int *n, double *a, const int *lda, const double *vl, const double *vu,
-    const int *il, const int *iu, const double *abstol, int *m, double *w,
-    double *z, const int *ldz, int *isuppz, double *work, const int *lwork,
-    int *iwork, const int *liwork, int *info);
+void dsyevd_(const char *jobz, const char *uplo, const int *n, double *a,
+    const int *lda, double *w, double *work, const int *lwork, int *iwork,
+    const int *liwork, int *info);
 
 void dsymv_(const char *uplo, const int *n, const double *alpha,
     const double *a, const int *lda, const double *x, const int *incx,
@@ -54,13 +52,11 @@ struct model {
     struct vertex *g;
 };
 
-double step(
-    double **h, const double **h0, double *e, double **psi, double **occ,
+double step(double **h, const double **h0, double *e, double **occ,
     const double **c, const double *u, double *forces, const double *forces0,
     const double energy0, const struct model m, const int nc, const int **cr);
 
-void driver(char *host,
-    double **h, const double **h0, double *e, double **psi, double **occ,
+void driver(char *host, double **h, const double **h0, double *e, double **occ,
     const double **c, double *u, double *forces, const double *forces0,
     const double energy0, const struct model m, const int nc, const int **cr,
     const double (*tau)[3]);
