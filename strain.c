@@ -2,7 +2,7 @@
 
 /* calculate energy of strained interatomic springs per unit cell */
 
-double strain_energy(const struct model m) {
+double strain_energy(struct model m) {
     struct element *k;
     double energy, ux, uy;
     div_t x, y;
@@ -23,6 +23,7 @@ double strain_energy(const struct model m) {
         }
 
         energy += ux * k->c * uy;
+        m.fdc[x.quot][x.rem] -= m.strain * k->c * uy;
     }
 
     return -0.25 * m.strain * m.strain * energy;
