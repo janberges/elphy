@@ -107,7 +107,7 @@ Any forces that the model may generate at zero displacements can be compensated
 by adding a force correction specified next to the atomic positions.
 
 The primitive and position vectors are multiplied by 1 + `<strain>` and the
-zero-displacement hopping parameters and lattice energy adjusted accordingly.
+zero-displacement hoppings, forces, and lattice energy adjusted accordingly.
 
 ## Tests and examples
 
