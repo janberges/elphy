@@ -173,14 +173,14 @@ double step(double **h, const double **h0, double *e, double **occ,
     const int nel = m.nel * nc;
     const int nph = m.nph * nc;
     const int inc = 1;
-    const double minus = -1.0, zero = 0.0, plus = 1.0;
+    const double minus = -1.0, plus = 1.0;
     int info;
 
-    dsymv_("U", &nph, &minus, *c, &nph, u, &inc, &zero, forces, &inc);
+    memcpy(forces, forces0, nph * sizeof *forces);
+
+    dsymv_("U", &nph, &minus, *c, &nph, u, &inc, &plus, forces, &inc);
 
     energy = energy0 - 0.5 * ddot_(&nph, u, &inc, forces, &inc);
-
-    daxpy_(&nph, &plus, forces0, &inc, forces, &inc);
 
     memcpy(*h, *h0, nel * nel * sizeof **h);
 
