@@ -2,31 +2,36 @@
 
 /* calculate energy of strained interatomic springs per unit cell */
 
-double strain_energy(struct model m) {
+double strain_model(struct model *m) {
+    const int inc = 1, length = sizeof m->uc / sizeof **m->uc;
     struct element *k;
-    double energy, ux, uy;
+    double scale, energy, ux, uy;
     div_t x, y;
     int i;
 
     energy = 0.0;
 
-    for (k = m.k; k - m.k < m.nk; k++) {
+    for (k = m->k; k - m->k < m->nk; k++) {
         x = div(k->a, 3);
         y = div(k->b, 3);
 
-        ux = m.tau[y.quot][x.rem] - m.tau[x.quot][x.rem];
-        uy = m.tau[y.quot][y.rem] - m.tau[x.quot][y.rem];
+        ux = m->tau[y.quot][x.rem] - m->tau[x.quot][x.rem];
+        uy = m->tau[y.quot][y.rem] - m->tau[x.quot][y.rem];
 
         for (i = 0; i < 3; i++) {
-            ux += m.r[k->r][i] * m.uc[i][x.rem];
-            uy += m.r[k->r][i] * m.uc[i][y.rem];
+            ux += m->r[k->r][i] * m->uc[i][x.rem];
+            uy += m->r[k->r][i] * m->uc[i][y.rem];
         }
 
         energy += ux * k->c * uy;
-        m.fdc[x.quot][x.rem] -= m.strain * k->c * uy;
+        m->fdc[x.quot][x.rem] -= m->strain * k->c * uy;
     }
 
-    return -0.25 * m.strain * m.strain * energy;
+    scale = 1.0 + m->strain;
+    dscal_(&length, &scale, (double *) m->uc, &inc);
+    dscal_(&m->nph, &scale, (double *) m->tau, &inc);
+
+    return -0.25 * m->strain * m->strain * energy;
 }
 
 /* add change of hopping and on-site energies due to uniform strain */

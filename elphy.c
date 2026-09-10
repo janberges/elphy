@@ -60,21 +60,14 @@ int main(const int argc, char **argv) {
     populate(h0, m.nel, m.nt, m.t, nc, CI cr);
     populate(c, m.nph, m.nk, m.k, nc, CI cr);
 
-    if (m.strain)
-        energy0 = nc * strain_energy(m);
-    else
+    if (m.strain) {
+        strain(h0, m, nc, CI cr);
+
+        energy0 = nc * strain_model(&m);
+    } else
         energy0 = 0.0;
 
     repeat(uc, typ, tau, (double (*)[3]) forces0, m, nc, CI cells);
-
-    if (m.strain) {
-        tmp = 1.0 + m.strain;
-        info = sizeof uc / sizeof **uc;
-        dscal_(&info, &tmp, *uc, &inc);
-        dscal_(&nph, &tmp, *tau, &inc);
-
-        strain(h0, m, nc, CI cr);
-    }
 
     switch (argc) {
     case (2):
