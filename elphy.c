@@ -181,6 +181,7 @@ double step(double **h, const double **h0, double *e, double **occ,
     dsymv_("U", &nph, &minus, *c, &nph, u, &inc, &plus, forces, &inc);
 
     energy = energy0 - 0.5 * ddot_(&nph, u, &inc, forces, &inc);
+    energy = energy - 0.5 * ddot_(&nph, u, &inc, forces0, &inc);
 
     memcpy(*h, *h0, nel * nel * sizeof **h);
 
