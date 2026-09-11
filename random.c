@@ -1,7 +1,7 @@
 #include "elphy.h"
 
 void random_displacements(const int nat, double *u, const double umax) {
-    double norm, scale, avg;
+    double norm, scale;
     int i, j;
 
     for (i = 0; i < nat; i++) {
@@ -21,6 +21,13 @@ void random_displacements(const int nat, double *u, const double umax) {
                 u[3 * i + j] *= scale;
         }
     }
+
+    fixcom(nat, u);
+}
+
+void fixcom(const int nat, double *u) {
+    double avg;
+    int i, j;
 
     for (j = 0; j < 3; j++) {
         avg = 0.0;

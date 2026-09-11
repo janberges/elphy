@@ -166,6 +166,8 @@ int main(const int argc, char **argv) {
             daxpy_(&nph, &a, u, &inc, u1, &inc);
             daxpy_(&nph, &tmp, forces, &inc, u1, &inc);
 
+            fixcom(nat, u1);
+
             swap = u;
             u = u1;
             u1 = swap;

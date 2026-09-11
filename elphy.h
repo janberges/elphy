@@ -82,6 +82,8 @@ int **table(const int rows, const int cols);
 
 void random_displacements(const int nat, double *u, const double umax);
 
+void fixcom(const int nat, double *u);
+
 int open_inet_socket(const char *host, const char *port);
 
 int open_unix_socket(const char *host, const char *prefix);
