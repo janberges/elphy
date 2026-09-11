@@ -1,4 +1,4 @@
-.PHONY: test ipi ipi_unix ipi_shm show clean distclean
+.PHONY: test ipi ipi_unix ipi_shm show_ipi md show_md clean distclean
 
 CC = gcc
 CFLAGS = -std=c89 -pedantic -Wall -Wno-parentheses
@@ -39,7 +39,13 @@ ipi_shm: input.xml elphy input.dat input.xyz
 symmetric.xyz: elphy input.dat
 	./$^ -1 0 > $@
 
-show: symmetric.xyz ipi.pos_0.xyz
+show_ipi: symmetric.xyz ipi.pos_0.xyz
+	python3 show.py $^
+
+md md.xyz: elphy input.dat
+	./$^ 1000:10 40.0 0.0002 0.001 > md.xyz
+
+show_md: symmetric.xyz md.xyz
 	python3 show.py $^
 
 index.html: README.md

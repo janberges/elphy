@@ -11,16 +11,16 @@ static double *work;
 int main(const int argc, char **argv) {
     const int inc = 1;
     double **h, **h0, *e, **occ, **c, *u, *forces, *forces0,
-        energy, energy0, (*tau)[3], uc[3][3], tmp, *u1, a, b;
+        energy, energy0, (*tau)[3], uc[3][3], tmp, *u1, a, b, dt, damp, *swap;
     struct model m = {0};
-    int i, n, nc, nel, nph, nat, **cr, **cells, info;
-    char **typ;
+    int i, j, n, nc, nel, nph, nat, **cr, **cells, info, stride;
+    char **typ, *match;
 
-    if (argc > 1 && argc < 6)
+    if (argc > 1 && argc < 7)
         get_model(argv[1], &m);
     else
-        error("Usage: elphy <data file> "
-            "[<socket>|<number> (<radius>|<lower> <upper>)]");
+        error("Usage: elphy <data file> [<socket>|<number> "
+            "(<radius>|<lower> <upper>|<dt> <damp> <vmax>)]");
 
     nc = map(m, &cr, &cells);
 
@@ -32,6 +32,8 @@ int main(const int argc, char **argv) {
         error("No memory for electron energies.");
     if (!(u = malloc(nph * sizeof *u)))
         error("No memory for atomic displacements.");
+    if (!(u1 = malloc(nph * sizeof *u1)))
+        error("No memory for original displacements.");
     if (!(forces = malloc(nph * sizeof *forces)))
         error("No memory for forces.");
     if (!(forces0 = malloc(nph * sizeof *forces0)))
@@ -104,8 +106,6 @@ int main(const int argc, char **argv) {
         break;
 
     case (5):
-        u1 = forces; /* use otherwise unused memory */
-
         for (i = 0; get_xyz(nat, CC typ, C3 tau, u1) != EOF; i++);
 
         if (!i)
@@ -127,6 +127,49 @@ int main(const int argc, char **argv) {
             put_xyz(nat, C3 uc, CC typ, C3 tau, u, 0);
         }
         break;
+
+    case (6):
+        match = strchr(argv[2], ':');
+
+        if (match) {
+            *match = '\0';
+            if ((stride = atoi(match + 1)) < 1)
+                error("Stride must be at least one.");
+        } else
+            stride = 1;
+
+        n = atoi(argv[2]);
+
+        if (!(dt = atof(argv[3])))
+            error("Time step must be nonzero.");
+
+        damp = 0.5 * atof(argv[4]) * dt;
+
+        memset(u1, 0, nph * sizeof *u1);
+        random_displacements(nat, u, atof(argv[5]) * dt);
+
+        a = 2.0 / (1.0 + damp);
+        b = (damp - 1.0) / (1.0 + damp);
+        tmp = dt * dt / (1.0 + damp);
+
+        for (i = 0; i < n; i++) {
+            energy = step(h, CD h0, e, occ, CD c, u, forces, forces0, energy0,
+                m, nc, CI cr);
+
+            if (!(i % stride))
+                put_extxyz(nat, C3 uc, CC typ, C3 tau, u, energy, forces);
+
+            for (j = 0; j < nph; j++)
+                forces[j] /= m.mass[j / 3 % m.nat];
+
+            dscal_(&nph, &b, u1, &inc);
+            daxpy_(&nph, &a, u, &inc, u1, &inc);
+            daxpy_(&nph, &tmp, forces, &inc, u1, &inc);
+
+            swap = u;
+            u = u1;
+            u1 = swap;
+        }
     }
 
     free(iwork);
@@ -141,6 +184,7 @@ int main(const int argc, char **argv) {
     free(typ);
     free(forces0);
     free(forces);
+    free(u1);
     free(u);
     free(e);
 
@@ -153,6 +197,7 @@ int main(const int argc, char **argv) {
     free(m.r);
     free(m.fdc);
     free(m.tau);
+    free(m.mass);
     free(m.typ);
 
     return EXIT_SUCCESS;

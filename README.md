@@ -24,12 +24,13 @@ should significantly outperform the reference implementation on most machines.
 
 ## Usage
 
-The program accepts one, two, three, or four arguments:
+The program accepts one to five arguments:
 
     elphy <data file>
     elphy <data file> <socket>
     elphy <data file> <number> <radius>
     elphy <data file> <number> <lower> <upper>
+    elphy <data file> <number> <dt> <damp> <vmax>
 
 With one argument, it alternately reads atomic positions in the XYZ format from
 standard input and writes the supercell vectors, atomic positions, free energy,
@@ -51,6 +52,13 @@ and, for `<number>` scaling factors between `<lower>` and `<upper>`, scales the
 displacements and writes the result in PLUMED's XYZ format to standard output.
 Only the end point of a given trajectory is considered. This can be used to test
 collective variables with `plumed driver --ixyz scaled.xyz --length-units Bohr`.
+
+With five arguments, it performs an NVE MD simulation using Verlet integration.
+The step count `<number>` is optionally followed by a colon and a stride (which
+defaults to 1) for writing data in ASE's extended XYZ format to standard output.
+`<dt>` is the time step and `<damp>` a damping coefficient (inverse time units).
+In the first step, the atoms leave their zero-displacement positions in random
+directions with random velocities up to `<vmax>`.
 
 The `<data file>` is defined below:
 
@@ -117,7 +125,8 @@ The makefile provides some recipes that exemplify the usage of the program:
   verifies that the computed free energy and forces are correct.
 - `make ipi` lets  `elphy` and i-PI perform a structural relaxation together.
 - `make ipi_unix` and `make ipi_shm` use the alternative communication modes.
-- `make show` displays an animation of the relaxation process.
+- `make md` lets `elphy` perform a structural relaxation using damped dynamics.
+- `make show_ipi` and `make show_md` animate the relaxation trajectories.
 - `make clean` removes compiled files, `make distclean` all generated files.
 
 The Python packages `elphmod`, `ipi`, and `matplotlib` are required.

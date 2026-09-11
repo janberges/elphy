@@ -78,6 +78,8 @@ void get_model(const char *filename, struct model *m) {
 
     if (!(m->typ = malloc(m->nat * sizeof *m->typ)))
         error("No memory for atom types.");
+    if (!(m->mass = malloc(m->nat * sizeof *m->mass)))
+        error("No memory for atomic masses.");
     if (!(m->tau = malloc(m->nat * sizeof *m->tau)))
         error("No memory for atomic positions.");
     if (!(m->fdc = malloc(m->nat * sizeof *m->fdc)))
@@ -86,6 +88,8 @@ void get_model(const char *filename, struct model *m) {
     for (i = 0; i < m->nat; i++) {
         if (fscanf(fp, "%63s", m->typ[i]) != 1)
             error("Invalid atom type in %s.", filename);
+        if (fscanf(fp, "%lf", &m->mass[i]) != 1)
+            error("Invalid atomic mass in %s.", filename);
 
         for (j = 0; j < 3; j++)
             if (fscanf(fp, "%lf", &m->tau[i][j]) != 1)

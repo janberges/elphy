@@ -43,6 +43,7 @@ struct model {
     double uc[3][3];
     int nph, nat;
     char (*typ)[64];
+    double *mass;
     double (*tau)[3];
     double (*fdc)[3];
     int nr, (*r)[3];

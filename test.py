@@ -14,12 +14,16 @@ def error():
 if units == 'Ha':
     econv = 0.5
     lconv = 1.0
+    mconv = 2.0
 elif units == 'Ry':
     econv = 1.0
     lconv = 1.0
+    mconv = 1.0
 elif units == 'eV':
     econv = elphmod.misc.Ry
     lconv = elphmod.misc.a0
+    mconv = (2 * elphmod.misc.meSI) / ((1e-15 / 1e-10) ** 2 * elphmod.misc.eVSI)
+    # chosen such that time is measured in femtoseconds
 else:
     error()
 
@@ -32,7 +36,8 @@ if model == 'graphene':
     parameters = dict(kT=0.0019, n=2.0, supercell=(12, (6, 12, 0)))
     strain = 0.3
 
-    elph.export(indat, strain=strain, econv=econv, lconv=lconv, **parameters)
+    elph.export(indat, strain=strain, econv=econv, lconv=lconv, mconv=mconv,
+        **parameters)
 
     el.data *= 1 - elphmod.models.graphene.beta * strain
     ph.a *= 1 + strain
@@ -47,7 +52,7 @@ elif model == 'TaS2':
 
     driver = elphmod.md.Driver(elph, kT=0.005, f='fd', n=1.0,
         nk=(12, 12), nq=(2, 2), supercell=(9, 9), kT0=0.02, f0='mv',
-        export=indat, econv=econv, lconv=lconv)
+        export=indat, econv=econv, lconv=lconv, mconv=mconv)
 else:
     error()
 
