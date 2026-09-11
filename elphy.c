@@ -10,8 +10,8 @@ static double *work;
 
 int main(const int argc, char **argv) {
     const int inc = 1;
-    double **h, **h0, *e, **occ, **c, *u, *forces, *forces0,
-        energy, energy0, (*tau)[3], uc[3][3], tmp, *u1, a, b, dt, damp, *swap;
+    double **h, **h0, *e, **occ, **c, *u, *forces, *forces0, energy, energy0,
+        (*tau)[3], uc[3][3], tmp, *u1, a, b, dt, damp, *swap;
     struct model m = {0};
     int i, j, n, nc, nel, nph, nat, **cr, **cells, info, stride;
     char **typ, *match;
