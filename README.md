@@ -74,9 +74,9 @@ The `<data file>` is defined below:
     a₁₀ a₁₁ a₁₂
     a₂₀ a₂₁ a₂₂
     <number of atoms per unit cell>
-    X₀ r₀₀ r₀₁ r₀₂ F₀₀ F₀₁ F₀₂
-    X₁ r₁₀ r₁₁ r₁₂ F₁₀ F₁₁ F₁₂
-    X₂ r₂₀ r₂₁ r₂₂ F₂₀ F₂₁ F₂₂
+    X₀ M₀ r₀₀ r₀₁ r₀₂ F₀₀ F₀₁ F₀₂
+    X₁ M₁ r₁₀ r₁₁ r₁₂ F₁₀ F₁₁ F₁₂
+    X₂ M₂ r₂₀ r₂₁ r₂₂ F₂₀ F₂₁ F₂₂
     ⋮
     <number of lattice vectors>
     R₀₀ R₀₁ R₀₂
@@ -104,7 +104,8 @@ and `x, y, z` over the three Cartesian displacement directions for all atoms.
 All indices are zero-based. All matrix elements `<…>` are single real numbers.
 The primitive, position, and force vectors `a, r, F` are given in Cartesian,
 the supercell and lattice vectors `A, R` in integer crystal coordinates.
-The atom labels `X` are only used to label the supercell atoms in the output.
+The atomic symbols `X` are only used to label the supercell atoms in the output.
+The atomic masses `M` are only used to compute accelerations in MD simulations.
 
 No unit conversions are performed, so any consistent energy and length units can
 be used. However, i-PI expects energies and forces in Hartree atomic units.
