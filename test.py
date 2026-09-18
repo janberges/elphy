@@ -9,7 +9,7 @@ units = sys.argv[3] if len(sys.argv) > 3 else 'Ha'
 
 def error():
     elphmod.MPI.info(f'Usage: python3 {sys.argv[0]} '
-        '[<data file> [(graphene|TaS2) [(Ha|Ry|eV)]]]', error=True)
+        '[<data file> [(graphene|TaS2|chain|Be) [(Ha|Ry|eV)]]]', error=True)
 
 if units == 'Ha':
     econv = 0.5
@@ -53,6 +53,22 @@ elif model == 'TaS2':
     driver = elphmod.md.Driver(elph, kT=0.005, f='fd', n=1.0,
         nk=(12, 12), nq=(2, 2), supercell=(9, 9), kT0=0.02, f0='mv',
         export=indat, econv=econv, lconv=lconv, mconv=mconv)
+
+elif model == 'chain':
+    import elphmod.models.chain
+
+    el, ph, elph = elphmod.models.chain.create(rydberg=True, divide_mass=False)
+
+    driver = elphmod.md.Driver(elph, kT=1e-3, f='fd', n=1.0, supercell=(23,),
+        unscreen=False, export=indat, econv=econv, lconv=lconv, mconv=mconv)
+
+elif model == 'Be':
+    import elphmod.models.be
+
+    el, ph, elph = elphmod.models.be.create(rydberg=True, divide_mass=False)
+
+    driver = elphmod.md.Driver(elph, kT=1e-3, f='fd', n=2.0, supercell=(12, 12),
+        unscreen=False, export=indat, econv=econv, lconv=lconv, mconv=mconv)
 else:
     error()
 
