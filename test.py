@@ -94,7 +94,7 @@ ok = np.allclose(f0a, f0b) and np.allclose(f1a, f1b)
 
 if model == 'graphene':
     ok = ok and np.allclose(e1a - e0a, e1b - e0b)
-elif model == 'TaS2':
+else:
     ok = ok and np.allclose(e0a, e0b) and np.allclose(e1a, e1b)
 
 elphmod.MPI.info(f'elphmod and elphy {"" if ok else "DO NOT "}agree!',
