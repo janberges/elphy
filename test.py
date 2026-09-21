@@ -27,17 +27,19 @@ elif units == 'eV':
 else:
     error()
 
+create = dict(rydberg=True, divide_mass=False)
+export = dict(export=indat, econv=econv, lconv=lconv, mconv=mconv)
+
 if model == 'graphene':
     import elphmod.models.graphene
 
-    el, ph, elph, elel = elphmod.models.graphene.create(rydberg=True,
-        divide_mass=False)
+    el, ph, elph, elel = elphmod.models.graphene.create(**create)
 
     parameters = dict(kT=0.0019, n=2.0, supercell=(12, (6, 12, 0)))
     strain = 0.3
 
-    elph.export(indat, strain=strain, econv=econv, lconv=lconv, mconv=mconv,
-        **parameters)
+    export['filename'] = export.pop('export')
+    elph.export(strain=strain, **parameters, **export)
 
     el.data *= 1 - elphmod.models.graphene.beta * strain
     ph.a *= 1 + strain
@@ -48,27 +50,26 @@ if model == 'graphene':
 elif model == 'TaS2':
     import elphmod.models.tas2
 
-    el, ph, elph = elphmod.models.tas2.create(rydberg=True, divide_mass=False)
+    el, ph, elph = elphmod.models.tas2.create(**create)
 
-    driver = elphmod.md.Driver(elph, kT=0.005, f='fd', n=1.0,
-        nk=(12, 12), nq=(2, 2), supercell=(9, 9), kT0=0.02, f0='mv',
-        export=indat, econv=econv, lconv=lconv, mconv=mconv)
+    driver = elphmod.md.Driver(elph, kT=0.005, f='fd', n=1.0, supercell=(9, 9),
+        nk=(12, 12), nq=(2, 2), kT0=0.02, f0='mv', **export)
 
 elif model == 'chain':
     import elphmod.models.chain
 
-    el, ph, elph = elphmod.models.chain.create(rydberg=True, divide_mass=False)
+    el, ph, elph = elphmod.models.chain.create(**create)
 
     driver = elphmod.md.Driver(elph, kT=1e-3, f='fd', n=1.0, supercell=(23,),
-        unscreen=False, export=indat, econv=econv, lconv=lconv, mconv=mconv)
+        unscreen=False, **export)
 
 elif model == 'Be':
     import elphmod.models.be
 
-    el, ph, elph = elphmod.models.be.create(rydberg=True, divide_mass=False)
+    el, ph, elph = elphmod.models.be.create(**create)
 
     driver = elphmod.md.Driver(elph, kT=1e-3, f='fd', n=2.0, supercell=(12, 12),
-        unscreen=False, export=indat, econv=econv, lconv=lconv, mconv=mconv)
+        unscreen=False, **export)
 else:
     error()
 
