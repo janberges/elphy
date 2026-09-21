@@ -1,5 +1,7 @@
 #include "elphy.h"
 
+/* generate normally distributed random numbers (<x> = 0, <x^2> = 1) */
+
 static double box_muller() {
     const double pi = 4.0 * atan(1.0);
     static double rho, phi;
@@ -16,6 +18,8 @@ static double box_muller() {
     } else
         return rho * sin(phi);
 }
+
+/* generate isotropcially distributed random atomic displacements */
 
 void random_displacements(const int nat, double *u, const double umax) {
     double norm, scale;
@@ -41,6 +45,8 @@ void random_displacements(const int nat, double *u, const double umax) {
 
     fixcom(nat, u);
 }
+
+/* fix center of mass by setting average atomic displacement to zero */
 
 void fixcom(const int nat, double *u) {
     double avg;
