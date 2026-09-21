@@ -1,5 +1,22 @@
 #include "elphy.h"
 
+static double box_muller() {
+    const double pi = 4.0 * atan(1.0);
+    static double rho, phi;
+    static int havedata = 0;
+
+    if (havedata = !havedata) {
+        while (!(rho = (double) rand() / (double) RAND_MAX));
+        while (!(phi = (double) rand() / (double) RAND_MAX));
+
+        rho = sqrt(-2.0 * log(rho));
+        phi *= 2.0 * pi;
+
+        return rho * cos(phi);
+    } else
+        return rho * sin(phi);
+}
+
 void random_displacements(const int nat, double *u, const double umax) {
     double norm, scale;
     int i, j;
@@ -8,7 +25,7 @@ void random_displacements(const int nat, double *u, const double umax) {
         norm = 0.0;
 
         for (j = 3 * i; j < 3 * i + 3; j++) {
-            u[j] = 1.0 - 2.0 * (double) rand() / (double) RAND_MAX;
+            u[j] = box_muller();
             norm += u[j] * u[j];
         }
 
