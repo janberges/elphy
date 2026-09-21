@@ -2,7 +2,7 @@
 
 /* generate normally distributed random numbers (<x> = 0, <x^2> = 1) */
 
-static double box_muller() {
+double box_muller() {
     const double pi = 4.0 * atan(1.0);
     static double rho, phi;
     static int havedata = 0;

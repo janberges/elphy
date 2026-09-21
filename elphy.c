@@ -11,7 +11,7 @@ static double *work;
 int main(const int argc, char **argv) {
     const int inc = 1;
     double **h, **h0, *e, **occ, **c, *u, *forces, *forces0, energy, energy0,
-        (*tau)[3], uc[3][3], tmp, *u1, a, b, dt, damp, *swap;
+        (*tau)[3], uc[3][3], tmp, *u1, a, b, dt, damp, s, *swap;
     struct model m = {0};
     int i, j, n, nc, nel, nph, nat, **cr, **cells, info, stride;
     char **typ, *match;
@@ -145,6 +145,12 @@ int main(const int argc, char **argv) {
 
         damp = 0.5 * atof(argv[4]) * dt;
 
+        if (damp < 0.0) {
+            damp *= -1.0;
+            s = 0.0;
+        } else
+            s = 2.0 / dt * sqrt(damp * m.kt);
+
         memset(u1, 0, nph * sizeof *u1);
         random_displacements(nat, u, atof(argv[5]) * dt);
 
@@ -159,8 +165,12 @@ int main(const int argc, char **argv) {
             if (!(i % stride))
                 put_extxyz(nat, C3 uc, CC typ, C3 tau, u, energy, forces);
 
-            for (j = 0; j < nph; j++)
+            for (j = 0; j < nph; j++) {
+                if (s)
+                    forces[j] += s * sqrt(m.mass[j / 3 % m.nat]) * box_muller();
+
                 forces[j] /= m.mass[j / 3 % m.nat];
+            }
 
             dscal_(&nph, &b, u1, &inc);
             daxpy_(&nph, &a, u, &inc, u1, &inc);

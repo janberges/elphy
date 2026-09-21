@@ -80,6 +80,8 @@ double **matrix(const int n);
 
 int **table(const int rows, const int cols);
 
+double box_muller();
+
 void random_displacements(const int nat, double *u, const double umax);
 
 void fixcom(const int nat, double *u);
