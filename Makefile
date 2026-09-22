@@ -43,7 +43,8 @@ show_ipi: symmetric.xyz ipi.pos_0.xyz
 	python3 show.py $^
 
 md md.xyz: elphy input.dat
-	./$^ 1001:10 40.0 0.0002:0 0.001 > md.xyz
+	@echo "./$$(tail -n 1 input.dat) > md.xyz"
+	@./$$(tail -n 1 input.dat) > md.xyz
 
 show_md: symmetric.xyz md.xyz
 	python3 show.py $^
