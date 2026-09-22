@@ -22,7 +22,7 @@ elif units == 'Ry':
 elif units == 'eV':
     econv = elphmod.misc.Ry
     lconv = elphmod.misc.a0
-    mconv = (2 * elphmod.misc.meSI) / ((1e-15 / 1e-10) ** 2 * elphmod.misc.eVSI)
+    mconv = 2 * elphmod.misc.meSI * (1e-10 / 1e-15) ** 2 / elphmod.misc.eVSI
     # chosen such that time is measured in femtoseconds
 else:
     error()
