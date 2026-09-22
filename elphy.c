@@ -11,7 +11,7 @@ static double *work;
 int main(const int argc, char **argv) {
     const int inc = 1;
     double **h, **h0, *e, **occ, **c, *u, *forces, *forces0, energy, energy0,
-        (*tau)[3], uc[3][3], tmp, *u1, a, b, dt, damp, s, *swap;
+        (*tau)[3], uc[3][3], tmp, *u1, a, b, dt, damp, s, kt, *swap;
     struct model m = {0};
     int i, j, n, nc, nel, nph, nat, **cr, **cells, info, stride;
     char **typ, *match;
@@ -165,8 +165,16 @@ int main(const int argc, char **argv) {
             energy = step(h, CD h0, e, occ, CD c, u, forces, forces0, energy0,
                 m, nc, CI cr);
 
-            if (!(i % stride))
+            if (!(i % stride)) {
                 put_extxyz(nat, C3 uc, CC typ, C3 tau, u, energy, forces);
+
+                kt = 0.0;
+                for (j = 0; j < nph; j++)
+                    kt += m.mass[j / 3 % m.nat] * pow(u[j] - u1[j], 2.0);
+                kt /= dt * dt * (nph - 3);
+
+                fprintf(stderr, "%10d %15.9f\n", i, kt);
+            }
 
             for (j = 0; j < nph; j++) {
                 if (s)
