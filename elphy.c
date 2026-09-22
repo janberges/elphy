@@ -88,6 +88,7 @@ int main(const int argc, char **argv) {
 
     case (4):
         srand(time(NULL));
+
         n = atoi(argv[2]);
 
         for (i = 0; i < abs(n); i++) {
@@ -129,6 +130,8 @@ int main(const int argc, char **argv) {
         break;
 
     case (6):
+        srand(time(NULL));
+
         match = strchr(argv[2], ':');
 
         if (match) {
