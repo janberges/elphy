@@ -43,7 +43,7 @@ show_ipi: symmetric.xyz ipi.pos_0.xyz
 	python3 show.py $^
 
 md md.xyz: elphy input.dat
-	./$^ 1001:10 40.0 -0.0002 0.001 > md.xyz
+	./$^ 1001:10 40.0 0.0002:0 0.001 > md.xyz
 
 show_md: symmetric.xyz md.xyz
 	python3 show.py $^

@@ -145,9 +145,8 @@ int main(const int argc, char **argv) {
 
         damp = 0.5 * atof(argv[4]) * dt;
 
-        if (damp < 0.0) {
-            damp *= -1.0;
-            s = 0.0;
+        if (match = strchr(argv[4], ':')) {
+            s = sqrt(2.0 * atof(match + 1) * m.kt / dt);
         } else
             s = 2.0 / dt * sqrt(damp * m.kt);
 

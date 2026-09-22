@@ -58,8 +58,8 @@ The step count `<number>` is optionally followed by a colon and a stride (which
 defaults to 1) for writing data in ASE's extended XYZ format to standard output.
 The current step and instantaneous temperature are displayed via standard error.
 `<dt>` is the time step and `<damp>` a damping coefficient (inverse time units).
-The temperature is regulated using the Langevin thermostat. A minus sign before
-`<damp>` disables fluctuations but keeps dissipation, enabling damped dynamics.
+The temperature is regulated using the Langevin thermostat. Different values of
+`<damp>` for the dissipation and fluctuation terms can be separated by a colon.
 In the first step, the atoms leave their zero-displacement positions in random
 directions with random velocities up to `<vmax>`.
 
