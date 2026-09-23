@@ -42,11 +42,13 @@ symmetric.xyz: elphy input.dat
 show_ipi: symmetric.xyz ipi.pos_0.xyz
 	python3 show.py $^
 
-cmd = $$(tail -n 2 input.dat | head -n 1) | $$(tail -n 1 input.dat) > md.xyz
-
 md md.xyz: elphy input.dat
-	@echo "$(cmd)"
-	@$(cmd)
+	@echo "$$(tail -n 3 input.dat | head -n 1) < /dev/null > md.xyz"
+	@$$(tail -n 3 input.dat | head -n 1) < /dev/null > md.xyz
+	@echo "$$(tail -n 2 input.dat | head -n 1) < md.xyz >> md.xyz"
+	@$$(tail -n 2 input.dat | head -n 1) < md.xyz >> md.xyz
+	@echo "$$(tail -n 1 input.dat) < md.xyz >> md.xyz"
+	@$$(tail -n 1 input.dat) < md.xyz >> md.xyz
 
 show_md: symmetric.xyz md.xyz
 	python3 show.py $^

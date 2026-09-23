@@ -129,8 +129,8 @@ The makefile provides some recipes that exemplify the usage of the program:
   for a model and verifies that the computed free energy and forces are correct.
 - `make ipi` lets  `elphy` and i-PI perform a structural relaxation together.
 - `make ipi_unix` and `make ipi_shm` use the alternative communication modes.
-- `make md` lets `elphy` perform a structural relaxation using damped dynamics.
-- `make show_ipi` and `make show_md` animate the relaxation trajectories.
+- `make md` lets `elphy` perform NVT, NVE, and damped dynamics simulations.
+- `make show_ipi` and `make show_md` animate the trajectories.
 - `make clean` removes compiled files, `make distclean` all generated files.
 
 The Python packages `elphmod`, `ipi`, and `matplotlib` are required.
