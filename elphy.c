@@ -11,7 +11,7 @@ static double *work;
 int main(const int argc, char **argv) {
     const int inc = 1;
     double **h, **h0, *e, **occ, **c, *u, *forces, *forces0, energy, energy0,
-        (*tau)[3], uc[3][3], tmp, *u1, *u0, a, b, dt, damp, kt, s, ekin, *swap;
+        (*tau)[3], uc[3][3], tmp, *u1, *u0, a, b, dt, damp, s, ekin, *swap;
     struct model m = {0};
     int i, j, n, nc, nel, nph, nat, **cr, **cells, info, stride;
     char **typ, *match;
@@ -150,13 +150,7 @@ int main(const int argc, char **argv) {
 
         damp = 0.5 * atof(argv[4]) * dt;
 
-        if ((kt = atof(argv[5])) <= 0.0)
-            kt = fabs(m.kt);
-
-        if (match = strchr(argv[4], ':')) {
-            s = sqrt(2.0 * atof(match + 1) * kt / dt);
-        } else
-            s = 2.0 / dt * sqrt(damp * kt);
+        s = 2.0 / dt * sqrt(damp * fabs(atof(argv[5])));
 
         memset(u1, 0, nph * sizeof *u1);
         memset(u, 0, nph * sizeof *u);

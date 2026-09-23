@@ -60,10 +60,8 @@ defaults to 1) for writing positions in PLUMED's XYZ format to standard output.
 Total, potential, kinetic, and thermal energies are written to standard error.
 The stride of 1 before the final positions allows for continuing the trajectory.
 `<dt>` is the time step and `<damp>` a damping coefficient (inverse time units).
-The lattice temperature `<kT>`, where zero selects the electronic temperature
-in `<data file>`, is regulated using a Langevin thermostat. Different values of
-`<damp>` for the dissipation and fluctuation terms can be separated by a colon,
-allowing to set not only NVE or NVT but also damped dynamics with this argument.
+The target lattice temperature `<kT>` is regulated using a Langevin thermostat.
+A value of zero disables fluctuations but keeps dissipation.
 
 The `<data file>` is defined below:
 
