@@ -82,7 +82,7 @@ double **matrix(const int n);
 
 int **table(const int rows, const int cols);
 
-double box_muller();
+double box_muller(void);
 
 void random_displacements(const int nat, double *u, const double umax);
 
