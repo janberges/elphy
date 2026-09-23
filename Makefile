@@ -42,13 +42,22 @@ symmetric.xyz: elphy input.dat
 show_ipi: symmetric.xyz ipi.pos_0.xyz
 	python3 show.py $^
 
+nvt = $$(tail -n 3 input.dat | head -n 1) < /dev/null > md.xyz
+nve = $$(tail -n 2 input.dat | head -n 1) < end.xyz >> md.xyz
+dmp = $$(tail -n 1 input.dat) < end.xyz >> md.xyz
+end = tail -n $$((2 * $$(head -n 1 md.xyz) + 4)) md.xyz > end.xyz
+cut = sed -i $$(($$(wc -l < md.xyz) - $$(wc -l < end.xyz) + 1)),\$$d md.xyz
+
 md md.xyz: elphy input.dat
-	@echo "$$(tail -n 3 input.dat | head -n 1) < /dev/null > md.xyz"
-	@$$(tail -n 3 input.dat | head -n 1) < /dev/null > md.xyz
-	@echo "$$(tail -n 2 input.dat | head -n 1) < md.xyz >> md.xyz"
-	@$$(tail -n 2 input.dat | head -n 1) < md.xyz >> md.xyz
-	@echo "$$(tail -n 1 input.dat) < md.xyz >> md.xyz"
-	@$$(tail -n 1 input.dat) < md.xyz >> md.xyz
+	@echo "$(nvt)"; $(nvt)
+	@echo "$(end)"; $(end)
+	@echo "$(cut)"; $(cut)
+	@echo "$(nve)"; $(nve)
+	@echo "$(end)"; $(end)
+	@echo "$(cut)"; $(cut)
+	@echo "$(dmp)"; $(dmp)
+	@echo "$(cut)"; $(cut)
+	rm end.xyz
 
 show_md: symmetric.xyz md.xyz
 	python3 show.py $^
