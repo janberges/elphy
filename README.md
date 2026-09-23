@@ -62,7 +62,8 @@ The temperature is regulated using the Langevin thermostat. Different values of
 `<damp>` for the dissipation and fluctuation terms can be separated by a colon,
 allowing to set not only NVE or NVT but also damped dynamics with this argument.
 In the first step, the atoms leave their zero-displacement positions in random
-directions with random velocities up to `<vmax>`.
+directions with random velocities up to `<vmax>`. If `<vmax>` is `none` instead,
+a trajectory (with the same time step) given on standard input is continued.
 
 The `<data file>` is defined below:
 

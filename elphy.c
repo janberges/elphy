@@ -156,7 +156,17 @@ int main(const int argc, char **argv) {
             s = 2.0 / dt * sqrt(damp * m.kt);
 
         memset(u1, 0, nph * sizeof *u1);
-        random_displacements(nat, u, atof(argv[5]) * dt);
+
+        if (!strcmp(argv[5], "none")) {
+            memset(u, 0, nph * sizeof *u);
+
+            for (i = 0; get_xyz(nat, CC typ, C3 tau, u1) != EOF; i++) {
+                swap = u;
+                u = u1;
+                u1 = swap;
+            }
+        } else
+            random_displacements(nat, u, atof(argv[5]) * dt);
 
         a = 2.0 / (1.0 + damp);
         b = (damp - 1.0) / (1.0 + damp);
