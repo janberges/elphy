@@ -105,6 +105,7 @@ tconv = np.sqrt(mconv / econv) * lconv
 
 if elphmod.MPI.comm.rank == 0:
     with open(indat, 'a') as data:
-        data.write(f"""Example:
-elphy {indat} 1001:10 {20 * tconv} {0.0004 / tconv}:0 {0.002 * lconv / tconv}
+        data.write(f"""Snippets for MD makefile target:
+./elphy {indat} -1 {0.04 * lconv}
+./elphy {indat} 1001:10 {20 * tconv} {0.0004 / tconv}:0 0
 """)

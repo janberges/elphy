@@ -30,7 +30,7 @@ The program accepts one to five arguments:
     elphy <data file> <socket>
     elphy <data file> <number> <radius>
     elphy <data file> <number> <lower> <upper>
-    elphy <data file> <number> <dt> <damp> <vmax>
+    elphy <data file> <number> <dt> <damp> <kT>
 
 With one argument, it alternately reads atomic positions in the XYZ format from
 standard input and writes the supercell vectors, atomic positions, free energy,
@@ -54,17 +54,16 @@ Only the end point of a given trajectory is considered. This can be used to test
 collective variables with `plumed driver --ixyz scaled.xyz --length-units Bohr`.
 
 With five arguments, it performs a dynamics simulation using Verlet integration.
+The trajectory (with the same time step) given on standard input is continued.
 The step count `<number>` is optionally followed by a colon and a stride (which
 defaults to 1) for writing positions in PLUMED's XYZ format to standard output.
 Total, potential, kinetic, and thermal energies are written to standard error.
 The stride of 1 before the final positions allows for continuing the trajectory.
 `<dt>` is the time step and `<damp>` a damping coefficient (inverse time units).
-The temperature is regulated using the Langevin thermostat. Different values of
+The lattice temperature `<kT>`, where zero selects the electronic temperature
+in `<data file>`, is regulated using a Langevin thermostat. Different values of
 `<damp>` for the dissipation and fluctuation terms can be separated by a colon,
 allowing to set not only NVE or NVT but also damped dynamics with this argument.
-In the first step, the atoms leave their zero-displacement positions in random
-directions with random velocities up to `<vmax>`. If `<vmax>` is `none` instead,
-a trajectory (with the same time step) given on standard input is continued.
 
 The `<data file>` is defined below:
 

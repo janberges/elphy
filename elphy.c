@@ -11,7 +11,7 @@ static double *work;
 int main(const int argc, char **argv) {
     const int inc = 1;
     double **h, **h0, *e, **occ, **c, *u, *forces, *forces0, energy, energy0,
-        (*tau)[3], uc[3][3], tmp, *u1, *u0, a, b, dt, damp, s, ekin, *swap;
+        (*tau)[3], uc[3][3], tmp, *u1, *u0, a, b, dt, damp, kt, s, ekin, *swap;
     struct model m = {0};
     int i, j, n, nc, nel, nph, nat, **cr, **cells, info, stride;
     char **typ, *match;
@@ -20,7 +20,7 @@ int main(const int argc, char **argv) {
         get_model(argv[1], &m);
     else
         error("Usage: elphy <data file> [<socket>|<number> "
-            "(<radius>|<lower> <upper>|<dt> <damp> <vmax>)]");
+            "(<radius>|<lower> <upper>|<dt> <damp> <kT>)]");
 
     nc = map(m, &cr, &cells);
 
@@ -150,23 +150,22 @@ int main(const int argc, char **argv) {
 
         damp = 0.5 * atof(argv[4]) * dt;
 
+        if ((kt = atof(argv[5])) <= 0.0)
+            kt = fabs(m.kt);
+
         if (match = strchr(argv[4], ':')) {
-            s = sqrt(2.0 * atof(match + 1) * m.kt / dt);
+            s = sqrt(2.0 * atof(match + 1) * kt / dt);
         } else
-            s = 2.0 / dt * sqrt(damp * m.kt);
+            s = 2.0 / dt * sqrt(damp * kt);
 
         memset(u1, 0, nph * sizeof *u1);
+        memset(u, 0, nph * sizeof *u);
 
-        if (!strcmp(argv[5], "none")) {
-            memset(u, 0, nph * sizeof *u);
-
-            for (i = 0; get_xyz(nat, CC typ, C3 tau, u1) != EOF; i++) {
-                swap = u;
-                u = u1;
-                u1 = swap;
-            }
-        } else
-            random_displacements(nat, u, atof(argv[5]) * dt);
+        for (i = 0; get_xyz(nat, CC typ, C3 tau, u1) != EOF; i++) {
+            swap = u;
+            u = u1;
+            u1 = swap;
+        }
 
         a = 2.0 / (1.0 + damp);
         b = (damp - 1.0) / (1.0 + damp);
