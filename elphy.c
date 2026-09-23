@@ -183,7 +183,7 @@ int main(const int argc, char **argv) {
                 forces[j] /= m.mass[j / 3 % m.nat];
             }
 
-            if (!(i % stride))
+            if (!(i % stride) || i == n - 2)
                 memcpy(u0, u1, nph * sizeof *u0);
 
             dscal_(&nph, &b, u1, &inc);
@@ -192,7 +192,7 @@ int main(const int argc, char **argv) {
 
             fixcom(nat, u1);
 
-            if (!(i % stride)) {
+            if (!(i % stride) || i == n - 2) {
                 ekin = 0.0;
                 for (j = 0; j < nph; j++)
                     ekin += m.mass[j / 3 % m.nat] * pow(u1[j] - u0[j], 2.0);
