@@ -55,8 +55,8 @@ collective variables with `plumed driver --ixyz scaled.xyz --length-units Bohr`.
 
 With five arguments, it performs a dynamics simulation using Verlet integration.
 The step count `<number>` is optionally followed by a colon and a stride (which
-defaults to 1) for writing data in ASE's extended XYZ format to standard output.
-The current step and instantaneous temperature are displayed via standard error.
+defaults to 1) for writing positions in PLUMED's XYZ format to standard output.
+Total, potential, kinetic, and thermal energies are written to standard error.
 `<dt>` is the time step and `<damp>` a damping coefficient (inverse time units).
 The temperature is regulated using the Langevin thermostat. Different values of
 `<damp>` for the dissipation and fluctuation terms can be separated by a colon,
