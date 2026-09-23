@@ -11,7 +11,7 @@ static double *work;
 int main(const int argc, char **argv) {
     const int inc = 1;
     double **h, **h0, *e, **occ, **c, *u, *forces, *forces0, energy, energy0,
-        (*tau)[3], uc[3][3], tmp, *u1, a, b, dt, damp, s, ekin, *swap;
+        (*tau)[3], uc[3][3], tmp, *u1, *u0, a, b, dt, damp, s, ekin, *swap;
     struct model m = {0};
     int i, j, n, nc, nel, nph, nat, **cr, **cells, info, stride;
     char **typ, *match;
@@ -34,6 +34,8 @@ int main(const int argc, char **argv) {
         error("No memory for atomic displacements.");
     if (!(u1 = malloc(nph * sizeof *u1)))
         error("No memory for original displacements.");
+    if (!(u0 = malloc(nph * sizeof *u0)))
+        error("No memory for previous displacements.");
     if (!(forces = malloc(nph * sizeof *forces)))
         error("No memory for forces.");
     if (!(forces0 = malloc(nph * sizeof *forces0)))
@@ -161,11 +163,27 @@ int main(const int argc, char **argv) {
             energy = step(h, CD h0, e, occ, CD c, u, forces, forces0, energy0,
                 m, nc, CI cr);
 
+            for (j = 0; j < nph; j++) {
+                if (s)
+                    forces[j] += s * sqrt(m.mass[j / 3 % m.nat]) * box_muller();
+
+                forces[j] /= m.mass[j / 3 % m.nat];
+            }
+
+            if (!(i % stride))
+                memcpy(u0, u1, nph * sizeof *u0);
+
+            dscal_(&nph, &b, u1, &inc);
+            daxpy_(&nph, &a, u, &inc, u1, &inc);
+            daxpy_(&nph, &tmp, forces, &inc, u1, &inc);
+
+            fixcom(nat, u1);
+
             if (!(i % stride)) {
                 ekin = 0.0;
                 for (j = 0; j < nph; j++)
-                    ekin += m.mass[j / 3 % m.nat] * pow(u[j] - u1[j], 2.0);
-                ekin /= 2.0 * dt * dt;
+                    ekin += m.mass[j / 3 % m.nat] * pow(u1[j] - u0[j], 2.0);
+                ekin /= 8.0 * dt * dt;
 
                 fprintf(stderr, "%10d", i);
                 fprintf(stderr, FMT, energy + ekin);
@@ -176,19 +194,6 @@ int main(const int argc, char **argv) {
 
                 put_xyz(nat, C3 uc, CC typ, C3 tau, u, 0);
             }
-
-            for (j = 0; j < nph; j++) {
-                if (s)
-                    forces[j] += s * sqrt(m.mass[j / 3 % m.nat]) * box_muller();
-
-                forces[j] /= m.mass[j / 3 % m.nat];
-            }
-
-            dscal_(&nph, &b, u1, &inc);
-            daxpy_(&nph, &a, u, &inc, u1, &inc);
-            daxpy_(&nph, &tmp, forces, &inc, u1, &inc);
-
-            fixcom(nat, u1);
 
             swap = u;
             u = u1;
@@ -208,6 +213,7 @@ int main(const int argc, char **argv) {
     free(typ);
     free(forces0);
     free(forces);
+    free(u0);
     free(u1);
     free(u);
     free(e);
