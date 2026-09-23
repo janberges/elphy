@@ -134,13 +134,16 @@ int main(const int argc, char **argv) {
     case (6):
         srand(time(NULL));
 
-        n = atoi(argv[2]);
+        if ((n = atoi(argv[2])) < 1)
+            error("Step count must be at least one.");
 
         if (match = strchr(argv[2], ':')) {
             if ((stride = atoi(match + 1)) < 1)
                 error("Stride must be at least one.");
         } else
             stride = 1;
+
+        n -= (n - 1) % stride;
 
         if (!(dt = atof(argv[3])))
             error("Time step must be nonzero.");
