@@ -42,14 +42,10 @@ symmetric.xyz: elphy input.dat
 show_ipi: symmetric.xyz ipi.pos_0.xyz
 	python3 show.py $^
 
-nvt = $$(tail -n 3 input.dat | head -n 1) < /dev/null > md.xyz 2> nvt.xyz
-nve = $$(tail -n 2 input.dat | head -n 1) < nvt.xyz >> md.xyz 2> nve.xyz
-dmp = $$(tail -n 1 input.dat) < nve.xyz >> md.xyz 2> dmp.xyz
-
 md md.xyz nvt.xyz nve.xyz dmp.xyz: elphy input.dat
-	@echo "$(nvt)"; $(nvt)
-	@echo "$(nve)"; $(nve)
-	@echo "$(dmp)"; $(dmp)
+	./$^ 1000:10 $$(tail -n 1 input.dat) < /dev/null > md.xyz 2> nvt.xyz
+	./$^ 1000:10 $$(tail -n 1 input.dat | awk '$$2=0;1') < nvt.xyz >> md.xyz 2> nve.xyz
+	./$^ 1000:10 $$(tail -n 1 input.dat | awk '$$3=0;1') < nve.xyz >> md.xyz 2> dmp.xyz
 
 show_md: symmetric.xyz md.xyz
 	python3 show.py $^
