@@ -76,7 +76,7 @@ void put_xyz(FILE *fp, const int nat, const double (*uc)[3],
 
 void put_extxyz(FILE *fp, const int nat, const double (*uc)[3],
     const char **typ, const double (*tau)[3], const double *u,
-    const double energy, const double *forces);
+    const double *forces, const int more, ...);
 
 double **matrix(const int n);
 

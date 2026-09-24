@@ -238,9 +238,10 @@ void put_xyz(FILE *fp, const int nat, const double (*uc)[3],
 
 void put_extxyz(FILE *fp, const int nat, const double (*uc)[3],
     const char **typ, const double (*tau)[3], const double *u,
-    const double energy, const double *forces) {
+    const double *forces, const int more, ...) {
 
     int i, j, width;
+    va_list ap;
 
     fprintf(fp, "%d\n", nat);
 
@@ -252,7 +253,16 @@ void put_extxyz(FILE *fp, const int nat, const double (*uc)[3],
 
     fprintf(fp, " Properties=\"species:S:1:pos:R:3:forces:R:3\"");
     fprintf(fp, " pbc=\"T T T\"");
-    fprintf(fp, " energy=\"%s\"\n", format(energy));
+
+    va_start(ap, more);
+
+    for (i = 0; i < more; i++)
+        fprintf(fp, " %s=\"%s\"",
+            va_arg(ap, char *), format(va_arg(ap, double)));
+
+    va_end(ap);
+
+    fprintf(fp, "\n");
 
     width = 0;
     for (i = 0; i < nat; i++)

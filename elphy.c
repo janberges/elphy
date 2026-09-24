@@ -79,7 +79,8 @@ int main(const int argc, char **argv) {
             energy = step(h, CD h0, e, occ, CD c, u, forces, forces0, energy0,
                 m, nc, CI cr);
 
-            put_extxyz(stdout, nat, C3 uc, CC typ, C3 tau, u, energy, forces);
+            put_extxyz(stdout, nat, C3 uc, CC typ, C3 tau, u, forces,
+                1, "energy", energy);
         }
         break;
 
@@ -104,7 +105,8 @@ int main(const int argc, char **argv) {
             energy = step(h, CD h0, e, occ, CD c, u, forces, forces0, energy0,
                 m, nc, CI cr);
 
-            put_extxyz(stdout, nat, C3 uc, CC typ, C3 tau, u, energy, forces);
+            put_extxyz(stdout, nat, C3 uc, CC typ, C3 tau, u, forces,
+                1, "energy", energy);
         }
         break;
 
