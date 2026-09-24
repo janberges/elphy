@@ -55,72 +55,70 @@ struct model {
 
 double step(double **h, const double **h0, double *e, double **occ,
     const double **c, const double *u, double *forces, const double *forces0,
-    const double energy0, const struct model m, const int nc, const int **cr);
+    double energy0, struct model m, int nc, const int **cr);
 
 void driver(char *host, double **h, const double **h0, double *e, double **occ,
     const double **c, double *u, double *forces, const double *forces0,
-    const double energy0, const struct model m, const int nc, const int **cr,
+    double energy0, struct model m, int nc, const int **cr,
     const double (*tau)[3]);
 
 void error(const char *msg, ...);
 
 void get_model(const char *filename, struct model *m);
 
-int get_xyz(FILE *fp, const int nat, const char **typ, const double (*tau)[3],
+int get_xyz(FILE *fp, int nat, const char **typ, const double (*tau)[3],
     double *u);
 
-void put_xyz(FILE *fp, const int nat, const double (*uc)[3],
-    const char **typ, const double (*tau)[3], const double *u, const int ipi);
+void put_xyz(FILE *fp, int nat, const double (*uc)[3],
+    const char **typ, const double (*tau)[3], const double *u, int ipi);
 
-void put_extxyz(FILE *fp, const int nat, const double (*uc)[3],
+void put_extxyz(FILE *fp, int nat, const double (*uc)[3],
     const char **typ, const double (*tau)[3], const double *u,
-    const double *forces, const int more, ...);
+    const double *forces, int more, ...);
 
-double **matrix(const int n);
+double **matrix(int n);
 
-int **table(const int rows, const int cols);
+int **table(int rows, int cols);
 
 double box_muller(void);
 
-void random_displacements(const int nat, double *u, const double umax);
+void random_displacements(int nat, double *u, double umax);
 
-void fixcom(const int nat, double *u);
+void fixcom(int nat, double *u);
 
 int open_inet_socket(const char *host, const char *port);
 
 int open_unix_socket(const char *host, const char *prefix);
 
-void sread(const int sfd, void *data, const int len);
+void sread(int sfd, void *data, int len);
 
-void swrite(const int sfd, const void *data, const int len);
+void swrite(int sfd, const void *data, int len);
 
-void *shm_attach(const int sfd, const int len);
+void *shm_attach(int sfd, int len);
 
-void shm_detach(void *addr, const int len);
+void shm_detach(void *addr, int len);
 
 double strain_model(struct model *m);
 
-void strain(double **h, const struct model m, const int nc, const int **cr);
+void strain(double **h, struct model m, int nc, const int **cr);
 
-int map(const struct model m, int ***cr, int ***cells);
+int map(struct model m, int ***cr, int ***cells);
 
 void repeat(double (*uc)[3], char **typ, double (*tau)[3], double (*fdc)[3],
-    const struct model m, const int nc, const int **cells);
+    struct model m, int nc, const int **cells);
 
-void populate(double **a, const int nb, const int nl, const struct element *l,
-    const int nc, const int **cr);
+void populate(double **a, int nb, int nl, const struct element *l,
+    int nc, const int **cr);
 
-void perturb(double **h, const double *u, const struct model m,
-    const int nc, const int **cr);
+void perturb(double **h, const double *u, struct model m,
+    int nc, const int **cr);
 
-void add_forces(double *forces, const double **occ, const struct model m,
-    const int nc, const int **cr);
+void add_forces(double *forces, const double **occ, struct model m,
+    int nc, const int **cr);
 
-double fermi_level(const double n, const int ne, const double *e,
-    const double kt, double mu);
+double fermi_level(double n, int ne, const double *e, double kt, double mu);
 
-double grand_potential(const int ne, const double *e, const double kt,
-    const double mu);
+double grand_potential(int ne, const double *e, double kt, double mu);
 
-void occupations(const int ne, const double *e, const double kt,
-    const double mu, const int nspin, double **psi, double **occ);
+void occupations(int ne, const double *e, double kt, double mu, int nspin,
+    double **psi, double **occ);
