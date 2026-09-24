@@ -71,7 +71,7 @@ void get_model(const char *filename, struct model *m) {
                 error("Invalid primitive vector in %s.", filename);
 
     if (fscanf(fp, "%d", &m->nat) != 1 || m->nat < 1)
-        error("Invalid number of atoms per unit cell in %s", filename);
+        error("Invalid number of atoms per unit cell in %s.", filename);
     m->nph = 3 * m->nat;
 
     if (!(m->typ = malloc(m->nat * sizeof *m->typ)))
