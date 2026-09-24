@@ -5,8 +5,6 @@
 #include <string.h>
 #include <time.h>
 
-#define FMT " %15.9f"
-
 void dsyevd_(const char *jobz, const char *uplo, const int *n, double *a,
     const int *lda, double *w, double *work, const int *lwork, int *iwork,
     const int *liwork, int *info);

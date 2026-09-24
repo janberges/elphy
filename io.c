@@ -1,5 +1,7 @@
 #include "elphy.h"
 
+#define FMT " %15.9f"
+
 static char *format(const double x) {
     static char a[64];
     char *p, *c;
@@ -251,8 +253,10 @@ void put_extxyz(FILE *fp, const int nat, const double (*uc)[3],
             fprintf(fp, "%s%c", format(uc[i][j]), i == 2 && j == 2 ? '"' : ' ');
         }
 
-    fprintf(fp, " Properties=\"species:S:1:pos:R:3:forces:R:3\"");
-    fprintf(fp, " pbc=\"T T T\"");
+    fprintf(fp, " Properties=\"species:S:1:pos:R:3");
+    if (forces)
+        fprintf(fp, ":forces:R:3");
+    fprintf(fp, "\" pbc=\"T T T\"");
 
     va_start(ap, more);
 
@@ -273,8 +277,9 @@ void put_extxyz(FILE *fp, const int nat, const double (*uc)[3],
         fprintf(fp, "%-*s", width, typ[i]);
         for (j = 0; j < 3; j++)
             fprintf(fp, FMT, tau[i][j] + u[3 * i + j]);
-        for (j = 0; j < 3; j++)
-            fprintf(fp, FMT, forces[3 * i + j]);
+        if (forces)
+            for (j = 0; j < 3; j++)
+                fprintf(fp, FMT, forces[3 * i + j]);
         fprintf(fp, "\n");
     }
 }

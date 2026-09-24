@@ -136,16 +136,13 @@ int main(const int argc, char **argv) {
     case (6):
         srand(time(NULL));
 
-        if ((n = atoi(argv[2])) < 1)
-            error("Step count must be at least one.");
+        n = atoi(argv[2]);
 
         if (match = strchr(argv[2], ':')) {
             if ((stride = atoi(match + 1)) < 1)
                 error("Stride must be at least one.");
         } else
             stride = 1;
-
-        n -= (n - 1) % stride;
 
         if (!(dt = atof(argv[3])))
             error("Time step must be nonzero.");
@@ -178,7 +175,7 @@ int main(const int argc, char **argv) {
                 forces[j] /= m.mass[j / 3 % m.nat];
             }
 
-            if (!(i % stride) || i == n - 2)
+            if (!(i % stride))
                 memcpy(u0, u1, nph * sizeof *u0);
 
             dscal_(&nph, &b, u1, &inc);
@@ -187,26 +184,24 @@ int main(const int argc, char **argv) {
 
             fixcom(nat, u1);
 
-            if (!(i % stride) || i == n - 2) {
+            if (!(i % stride)) {
                 ekin = 0.0;
                 for (j = 0; j < nph; j++)
                     ekin += m.mass[j / 3 % m.nat] * pow(u1[j] - u0[j], 2.0);
                 ekin /= 8.0 * dt * dt;
 
-                fprintf(stderr, "%10d", i);
-                fprintf(stderr, FMT, energy + ekin);
-                fprintf(stderr, FMT, energy);
-                fprintf(stderr, FMT, ekin);
-                fprintf(stderr, FMT, 2.0 * ekin / (nph - 3));
-                fprintf(stderr, "\n");
-
-                put_xyz(stdout, nat, C3 uc, CC typ, C3 tau, u, 0);
+                put_extxyz(stdout, nat, C3 uc, CC typ, C3 tau, u, NULL,
+                    4, "Etot", energy + ekin, "Epot", energy, "Ekin", ekin,
+                    "kT", 2.0 * ekin / (nph - 3));
             }
 
             swap = u;
             u = u1;
             u1 = swap;
         }
+
+        put_xyz(stderr, nat, C3 uc, CC typ, C3 tau, u1, 0);
+        put_xyz(stderr, nat, C3 uc, CC typ, C3 tau, u, 0);
     }
 
     free(iwork);

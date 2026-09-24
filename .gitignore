@@ -1,6 +1,7 @@
 *.o
 RESTART
 \#*
+dmp.xyz
 elphy
 index.html
 input.dat
@@ -10,5 +11,7 @@ input_unix.xml
 ipi.*
 logo.png
 md.xyz
+nve.xyz
+nvt.xyz
 symmetric.xyz
 tags
