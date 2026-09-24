@@ -165,14 +165,14 @@ void get_model(const char *filename, struct model *m) {
 
 /* input atomic positions in XYZ format and calculate displacements */
 
-int get_xyz(const int nat, const char **typ, const double (*tau)[3],
+int get_xyz(FILE *fp, const int nat, const char **typ, const double (*tau)[3],
     double *u) {
 
     int i, j, status;
     double r;
     char c[64];
 
-    if ((status = scanf("%d", &i)) == EOF)
+    if ((status = fscanf(fp, "%d", &i)) == EOF)
         return EOF;
 
     if (status != 1)
@@ -182,23 +182,23 @@ int get_xyz(const int nat, const char **typ, const double (*tau)[3],
         error("%d instead of %d atoms.", i, nat);
 
     for (i = 0; i < 2; i++)
-        do j = getchar(); while (j != '\n' && j != EOF);
+        do j = getc(fp); while (j != '\n' && j != EOF);
 
     for (i = 0; i < nat; i++) {
-        if (scanf("%63s", c) != 1)
+        if (fscanf(fp, "%63s", c) != 1)
             error("Invalid atom type.");
 
         if (strcmp(c, typ[i]))
             error("Wrong atom type.");
 
         for (j = 0; j < 3; j++) {
-            if (scanf("%lf", &r) != 1)
+            if (fscanf(fp, "%lf", &r) != 1)
                 error("Invalid position vector.");
 
             u[3 * i + j] = r - tau[i][j];
         }
 
-        do j = getchar(); while (j != '\n' && j != EOF);
+        do j = getc(fp); while (j != '\n' && j != EOF);
     }
 
     return 0;
@@ -206,19 +206,19 @@ int get_xyz(const int nat, const char **typ, const double (*tau)[3],
 
 /* output positions of displaced atoms in i-PI's or PLUMED's XYZ format */
 
-void put_xyz(const int nat, const double (*uc)[3],
+void put_xyz(FILE *fp, const int nat, const double (*uc)[3],
     const char **typ, const double (*tau)[3], const double *u, const int ipi) {
 
     int i, j, width;
 
-    printf("%d\n", nat);
+    fprintf(fp, "%d\n", nat);
 
     if (ipi)
-        printf("# CELL{H}: ");
+        fprintf(fp, "# CELL{H}: ");
 
     for (i = 0; i < 3; i++)
         for (j = 0; j < 3; j++)
-            printf("%s%c", format(ipi ? uc[j][i] : uc[i][j]),
+            fprintf(fp, "%s%c", format(ipi ? uc[j][i] : uc[i][j]),
                 i < 2 || j < 2 ? ' ' : '\n');
 
     width = 0;
@@ -227,32 +227,32 @@ void put_xyz(const int nat, const double (*uc)[3],
             width = j;
 
     for (i = 0; i < nat; i++) {
-        printf("%-*s", width, typ[i]);
+        fprintf(fp, "%-*s", width, typ[i]);
         for (j = 0; j < 3; j++)
-            printf(FMT, tau[i][j] + u[3 * i + j]);
-        printf("\n");
+            fprintf(fp, FMT, tau[i][j] + u[3 * i + j]);
+        fprintf(fp, "\n");
     }
 }
 
 /* output positions, free energy, and forces in ASE's extended XYZ format */
 
-void put_extxyz(const int nat, const double (*uc)[3],
+void put_extxyz(FILE *fp, const int nat, const double (*uc)[3],
     const char **typ, const double (*tau)[3], const double *u,
     const double energy, const double *forces) {
 
     int i, j, width;
 
-    printf("%d\n", nat);
+    fprintf(fp, "%d\n", nat);
 
-    printf("Lattice=\"");
+    fprintf(fp, "Lattice=\"");
     for (i = 0; i < 3; i++)
         for (j = 0; j < 3; j++) {
-            printf("%s%c", format(uc[i][j]), i == 2 && j == 2 ? '"' : ' ');
+            fprintf(fp, "%s%c", format(uc[i][j]), i == 2 && j == 2 ? '"' : ' ');
         }
 
-    printf(" Properties=\"species:S:1:pos:R:3:forces:R:3\"");
-    printf(" pbc=\"T T T\"");
-    printf(" energy=\"%s\"\n", format(energy));
+    fprintf(fp, " Properties=\"species:S:1:pos:R:3:forces:R:3\"");
+    fprintf(fp, " pbc=\"T T T\"");
+    fprintf(fp, " energy=\"%s\"\n", format(energy));
 
     width = 0;
     for (i = 0; i < nat; i++)
@@ -260,11 +260,11 @@ void put_extxyz(const int nat, const double (*uc)[3],
             width = j;
 
     for (i = 0; i < nat; i++) {
-        printf("%-*s", width, typ[i]);
+        fprintf(fp, "%-*s", width, typ[i]);
         for (j = 0; j < 3; j++)
-            printf(FMT, tau[i][j] + u[3 * i + j]);
+            fprintf(fp, FMT, tau[i][j] + u[3 * i + j]);
         for (j = 0; j < 3; j++)
-            printf(FMT, forces[3 * i + j]);
-        printf("\n");
+            fprintf(fp, FMT, forces[3 * i + j]);
+        fprintf(fp, "\n");
     }
 }

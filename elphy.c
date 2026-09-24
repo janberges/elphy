@@ -75,11 +75,11 @@ int main(const int argc, char **argv) {
 
     switch (argc) {
     case (2):
-        while (get_xyz(nat, CC typ, C3 tau, u) != EOF) {
+        while (get_xyz(stdin, nat, CC typ, C3 tau, u) != EOF) {
             energy = step(h, CD h0, e, occ, CD c, u, forces, forces0, energy0,
                 m, nc, CI cr);
 
-            put_extxyz(nat, C3 uc, CC typ, C3 tau, u, energy, forces);
+            put_extxyz(stdout, nat, C3 uc, CC typ, C3 tau, u, energy, forces);
         }
         break;
 
@@ -97,19 +97,19 @@ int main(const int argc, char **argv) {
             random_displacements(nat, u, atof(argv[3]));
 
             if (n < 0) {
-                put_xyz(nat, C3 uc, CC typ, C3 tau, u, 1);
+                put_xyz(stdout, nat, C3 uc, CC typ, C3 tau, u, 1);
                 continue;
             }
 
             energy = step(h, CD h0, e, occ, CD c, u, forces, forces0, energy0,
                 m, nc, CI cr);
 
-            put_extxyz(nat, C3 uc, CC typ, C3 tau, u, energy, forces);
+            put_extxyz(stdout, nat, C3 uc, CC typ, C3 tau, u, energy, forces);
         }
         break;
 
     case (5):
-        for (i = 0; get_xyz(nat, CC typ, C3 tau, u1) != EOF; i++);
+        for (i = 0; get_xyz(stdin, nat, CC typ, C3 tau, u1) != EOF; i++);
 
         if (!i)
             error("Atomic positions needed.");
@@ -127,7 +127,7 @@ int main(const int argc, char **argv) {
             memcpy(u, u1, nph * sizeof *u);
             dscal_(&nph, &tmp, u, &inc);
 
-            put_xyz(nat, C3 uc, CC typ, C3 tau, u, 0);
+            put_xyz(stdout, nat, C3 uc, CC typ, C3 tau, u, 0);
         }
         break;
 
@@ -155,7 +155,7 @@ int main(const int argc, char **argv) {
         memset(u1, 0, nph * sizeof *u1);
         memset(u, 0, nph * sizeof *u);
 
-        for (i = 0; get_xyz(nat, CC typ, C3 tau, u1) != EOF; i++) {
+        for (i = 0; get_xyz(stdin, nat, CC typ, C3 tau, u1) != EOF; i++) {
             swap = u;
             u = u1;
             u1 = swap;
@@ -198,7 +198,7 @@ int main(const int argc, char **argv) {
                 fprintf(stderr, FMT, 2.0 * ekin / (nph - 3));
                 fprintf(stderr, "\n");
 
-                put_xyz(nat, C3 uc, CC typ, C3 tau, u, 0);
+                put_xyz(stdout, nat, C3 uc, CC typ, C3 tau, u, 0);
             }
 
             swap = u;
