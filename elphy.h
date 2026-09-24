@@ -55,7 +55,7 @@ struct model {
 
 double step(double **h, const double **h0, double *e, double **occ,
     const double **c, const double *u, double *forces, const double *forces0,
-    double energy0, struct model m, int nc, const int **cr);
+    double energy, struct model m, int nc, const int **cr);
 
 void driver(char *host, double **h, const double **h0, double *e, double **occ,
     const double **c, double *u, double *forces, const double *forces0,

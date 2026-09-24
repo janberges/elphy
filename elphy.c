@@ -238,9 +238,8 @@ int main(const int argc, char **argv) {
 
 double step(double **h, const double **h0, double *e, double **occ,
     const double **c, const double *u, double *forces, const double *forces0,
-    const double energy0, const struct model m, const int nc, const int **cr) {
+    double energy, const struct model m, const int nc, const int **cr) {
 
-    double energy;
     static double mu = 0.0;
     const double n = m.n * nc;
     const int nel = m.nel * nc;
@@ -253,8 +252,8 @@ double step(double **h, const double **h0, double *e, double **occ,
 
     dsymv_("U", &nph, &minus, *c, &nph, u, &inc, &plus, forces, &inc);
 
-    energy = energy0 - 0.5 * ddot_(&nph, u, &inc, forces, &inc);
-    energy = energy - 0.5 * ddot_(&nph, u, &inc, forces0, &inc);
+    energy -= 0.5 * ddot_(&nph, u, &inc, forces, &inc);
+    energy -= 0.5 * ddot_(&nph, u, &inc, forces0, &inc);
 
     memcpy(*h, *h0, nel * nel * sizeof **h);
 
