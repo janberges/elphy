@@ -8,7 +8,7 @@ model = graphene
 units = Ha
 
 elphy: elphy.o driver.o io.o matrix.o random.o sockets.o strain.o supercell.o temperature.o
-	${CC} ${CFLAGS} -o $@ $^ ${LDLIBS}
+	$(CC) $(CFLAGS) -o $@ $^ $(LDLIBS)
 
 %.o: %.c elphy.h
 	$(CC) $(CFLAGS) -o $@ -c $<
