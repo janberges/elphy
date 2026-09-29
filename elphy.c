@@ -116,12 +116,11 @@ int main(const int argc, char **argv) {
         if (!i)
             error("Atomic positions needed.");
 
-        n = atoi(argv[2]);
+        if ((n = atoi(argv[2])) < 2)
+            error("At least two points needed.");
+
         a = atof(argv[3]);
         b = atof(argv[4]);
-
-        if (n < 2)
-            error("At least two points needed.");
 
         for (i = 0; i < n; i++) {
             tmp = (a * (n - 1 - i) + b * i) / (n - 1);

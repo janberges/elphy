@@ -33,9 +33,7 @@ void random_displacements(const int nat, double *u, const double umax) {
             norm += u[j] * u[j];
         }
 
-        norm = sqrt(norm);
-
-        if (norm != 0.0) {
+        if (norm = sqrt(norm)) {
             scale = umax / norm * (double) rand() / (double) RAND_MAX;
 
             for (j = 0; j < 3; j++)

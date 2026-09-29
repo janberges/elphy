@@ -39,9 +39,7 @@ void get_model(const char *filename, struct model *m) {
     struct element *t, *k;
     struct vertex *g;
 
-    fp = fopen(filename, "r");
-
-    if (!fp)
+    if (!(fp = fopen(filename, "r")))
         error("Cannot open %s.", filename);
 
     if (fscanf(fp, "%lf", &m->kt) != 1 || m->kt <= 0.0)

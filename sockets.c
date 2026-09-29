@@ -27,9 +27,7 @@ int open_inet_socket(const char *host, const char *port) {
         error("Cannot get address info.");
 
     for (r = res; r; r = r->ai_next) {
-        sfd = socket(r->ai_family, r->ai_socktype, r->ai_protocol);
-
-        if (sfd == -1)
+        if ((sfd = socket(r->ai_family, r->ai_socktype, r->ai_protocol)) == -1)
             continue;
 
         /* see i-PI's sockets.c */
@@ -69,11 +67,9 @@ int open_unix_socket(const char *host, const char *prefix) {
 void sread(const int sfd, void *data, const int len) {
     int all, new;
 
-    for (all = 0; all < len; all += new) {
-        new = read(sfd, (char *) data + all, len - all);
-        if (new < 1)
+    for (all = 0; all < len; all += new)
+        if ((new = read(sfd, (char *) data + all, len - all)) < 1)
             error("Cannot read from socket.");
-    }
 }
 
 void swrite(const int sfd, const void *data, const int len) {
@@ -85,14 +81,11 @@ static void *shmmap(const char *name, const int len) {
     void *addr;
     int mfd;
 
-    mfd = shm_open(name, O_RDWR, 0666);
-
-    if (mfd == -1)
+    if ((mfd = shm_open(name, O_RDWR, 0666)) == -1)
         error("Cannot open shared memory");
 
-    addr = mmap(NULL, len, PROT_READ | PROT_WRITE, MAP_SHARED, mfd, 0);
-
-    if (addr == MAP_FAILED)
+    if ((addr = mmap(NULL, len, PROT_READ | PROT_WRITE, MAP_SHARED, mfd, 0))
+            == MAP_FAILED)
         error("Cannot map shared memory");
 
     close(mfd);
