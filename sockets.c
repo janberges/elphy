@@ -69,9 +69,8 @@ int open_unix_socket(const char *host, const char *prefix) {
 void sread(const int sfd, void *data, const int len) {
     int all, new;
 
-    all = 0;
-    while (all < len) {
-        all += new = read(sfd, (char *) data + all, len - all);
+    for (all = 0; all < len; all += new) {
+        new = read(sfd, (char *) data + all, len - all);
         if (new < 1)
             error("Cannot read from socket.");
     }
