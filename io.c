@@ -248,9 +248,8 @@ void put_extxyz(FILE *fp, const int nat, const double (*uc)[3],
 
     fprintf(fp, "Lattice=\"");
     for (i = 0; i < 3; i++)
-        for (j = 0; j < 3; j++) {
+        for (j = 0; j < 3; j++)
             fprintf(fp, "%s%c", format(uc[i][j]), i == 2 && j == 2 ? '"' : ' ');
-        }
 
     fprintf(fp, " Properties=\"species:S:1:pos:R:3");
     if (forces)
