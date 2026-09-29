@@ -7,8 +7,20 @@ xyz = sys.argv[2] if len(sys.argv) > 2 else 'ipi.pos_0.xyz'
 try:
     import ase.io
     import matplotlib.pyplot as plt
+    import numpy as np
 
-    plt.plot([step.info['Etot'] for step in ase.io.read(xyz, ':')])
+    trajectory = ase.io.read(xyz, ':')
+
+    e = {key: np.array([step.info['E' + key] for step in trajectory])
+        for key in ['kin', 'pot', 'tot']}
+
+    plt.plot(e['kin'], label='kinetic')
+    plt.plot(e['pot'] - e['pot'][0], label='potential')
+    plt.plot(e['tot'] - e['pot'][0], label='total')
+
+    plt.xlabel('steps (stride)')
+    plt.ylabel('energy (a.u.)')
+    plt.legend()
     plt.show()
 except:
     pass
