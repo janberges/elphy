@@ -5,16 +5,16 @@
 #define CD (const double **)
 #define C3 (const double (*)[3])
 
-static int lwork, liwork, *iwork;
+static const int inc = 1;
+static const double minus = -1.0, plus = 1.0;
+static int lwork, liwork, *iwork, info;
 static double *work;
 
 int main(const int argc, char **argv) {
-    const int inc = 1;
-    const double minus = -1.0;
     double **h, **h0, *e, **occ, **phi, *u, *forces, *forces0, energy, energy0,
         (*tau)[3], uc[3][3], tmp, *u1, *v, a, b, c, d, dt, damp, s, ekin, *swap;
     struct model m = {0};
-    int i, j, n, nc, nel, nph, nat, **cr, **cells, info, stride;
+    int i, j, n, nc, nel, nph, nat, **cr, **cells, stride;
     char **typ, *match;
 
     if (argc > 1 && argc < 7)
@@ -248,9 +248,6 @@ double step(double **h, const double **h0, double *e, double **occ,
     const double n = m.n * nc;
     const int nel = m.nel * nc;
     const int nph = m.nph * nc;
-    const int inc = 1;
-    const double minus = -1.0, plus = 1.0;
-    int info;
 
     memcpy(forces, forces0, nph * sizeof *forces);
 
