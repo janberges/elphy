@@ -10,8 +10,9 @@ static double *work;
 
 int main(const int argc, char **argv) {
     const int inc = 1;
+    const double minus = -1.0;
     double **h, **h0, *e, **occ, **phi, *u, *forces, *forces0, energy, energy0,
-        (*tau)[3], uc[3][3], tmp, *u1, *u0, a, b, c, dt, damp, s, ekin, *swap;
+        (*tau)[3], uc[3][3], tmp, *u1, *v, a, b, c, d, dt, damp, s, ekin, *swap;
     struct model m = {0};
     int i, j, n, nc, nel, nph, nat, **cr, **cells, info, stride;
     char **typ, *match;
@@ -34,8 +35,8 @@ int main(const int argc, char **argv) {
         error("No memory for atomic displacements.");
     if (!(u1 = malloc(nph * sizeof *u1)))
         error("No memory for original displacements.");
-    if (!(u0 = malloc(nph * sizeof *u0)))
-        error("No memory for previous displacements.");
+    if (!(v = malloc(nph * sizeof *v)))
+        error("No memory for velocities.");
     if (!(forces = malloc(nph * sizeof *forces)))
         error("No memory for forces.");
     if (!(forces0 = malloc(nph * sizeof *forces0)))
@@ -162,6 +163,7 @@ int main(const int argc, char **argv) {
         a = 2.0 / (1.0 + damp);
         b = (damp - 1.0) / (1.0 + damp);
         c = dt * dt / (1.0 + damp);
+        d = -1.0 / (2.0 * dt);
 
         for (i = 0; i < n; i++) {
             energy = step(h, CD h0, e, occ, CD phi, u, forces, forces0, energy0,
@@ -175,7 +177,7 @@ int main(const int argc, char **argv) {
             }
 
             if (!(i % stride))
-                memcpy(u0, u1, nph * sizeof *u0);
+                memcpy(v, u1, nph * sizeof *v);
 
             dscal_(&nph, &b, u1, &inc);
             daxpy_(&nph, &a, u, &inc, u1, &inc);
@@ -184,10 +186,13 @@ int main(const int argc, char **argv) {
             fixcom(nat, u1);
 
             if (!(i % stride)) {
+                daxpy_(&nph, &minus, u1, &inc, v, &inc);
+                dscal_(&nph, &d, v, &inc);
+
                 ekin = 0.0;
                 for (j = 0; j < nph; j++)
-                    ekin += m.mass[j / 3 % m.nat] * pow(u1[j] - u0[j], 2.0);
-                ekin /= 8.0 * dt * dt;
+                    ekin += m.mass[j / 3 % m.nat] * v[j] * v[j];
+                ekin /= 2.0;
 
                 put_extxyz(stdout, nat, C3 uc, CC typ, C3 tau, u, NULL,
                     4, "Etot", energy + ekin, "Epot", energy, "Ekin", ekin,
@@ -215,7 +220,7 @@ int main(const int argc, char **argv) {
     free(typ);
     free(forces0);
     free(forces);
-    free(u0);
+    free(v);
     free(u1);
     free(u);
     free(e);
