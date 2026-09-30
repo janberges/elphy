@@ -11,7 +11,7 @@ static double *work;
 int main(const int argc, char **argv) {
     const int inc = 1;
     double **h, **h0, *e, **occ, **phi, *u, *forces, *forces0, energy, energy0,
-        (*tau)[3], uc[3][3], tmp, *u1, *u0, a, b, dt, damp, s, ekin, *swap;
+        (*tau)[3], uc[3][3], tmp, *u1, *u0, a, b, c, dt, damp, s, ekin, *swap;
     struct model m = {0};
     int i, j, n, nc, nel, nph, nat, **cr, **cells, info, stride;
     char **typ, *match;
@@ -161,7 +161,7 @@ int main(const int argc, char **argv) {
 
         a = 2.0 / (1.0 + damp);
         b = (damp - 1.0) / (1.0 + damp);
-        tmp = dt * dt / (1.0 + damp);
+        c = dt * dt / (1.0 + damp);
 
         for (i = 0; i < n; i++) {
             energy = step(h, CD h0, e, occ, CD phi, u, forces, forces0, energy0,
@@ -179,7 +179,7 @@ int main(const int argc, char **argv) {
 
             dscal_(&nph, &b, u1, &inc);
             daxpy_(&nph, &a, u, &inc, u1, &inc);
-            daxpy_(&nph, &tmp, forces, &inc, u1, &inc);
+            daxpy_(&nph, &c, forces, &inc, u1, &inc);
 
             fixcom(nat, u1);
 
