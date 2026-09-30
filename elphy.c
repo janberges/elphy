@@ -10,7 +10,7 @@ static double *work;
 
 int main(const int argc, char **argv) {
     const int inc = 1;
-    double **h, **h0, *e, **occ, **c, *u, *forces, *forces0, energy, energy0,
+    double **h, **h0, *e, **occ, **phi, *u, *forces, *forces0, energy, energy0,
         (*tau)[3], uc[3][3], tmp, *u1, *u0, a, b, dt, damp, s, ekin, *swap;
     struct model m = {0};
     int i, j, n, nc, nel, nph, nat, **cr, **cells, info, stride;
@@ -48,7 +48,7 @@ int main(const int argc, char **argv) {
     h = matrix(nel);
     h0 = matrix(nel);
     occ = matrix(nel);
-    c = matrix(nph);
+    phi = matrix(nph);
 
     lwork = -1;
     liwork = -1;
@@ -62,7 +62,7 @@ int main(const int argc, char **argv) {
         error("No memory for LAPACK integer work array.");
 
     populate(h0, m.nel, m.nt, m.t, nc, CI cr);
-    populate(c, m.nph, m.nk, m.k, nc, CI cr);
+    populate(phi, m.nph, m.nk, m.k, nc, CI cr);
 
     if (m.strain) {
         strain(h0, m, nc, CI cr);
@@ -76,7 +76,7 @@ int main(const int argc, char **argv) {
     switch (argc) {
     case (2):
         while (get_xyz(stdin, nat, CC typ, C3 tau, u) != EOF) {
-            energy = step(h, CD h0, e, occ, CD c, u, forces, forces0, energy0,
+            energy = step(h, CD h0, e, occ, CD phi, u, forces, forces0, energy0,
                 m, nc, CI cr);
 
             put_extxyz(stdout, nat, C3 uc, CC typ, C3 tau, u, forces,
@@ -85,7 +85,7 @@ int main(const int argc, char **argv) {
         break;
 
     case (3):
-        driver(argv[2], h, CD h0, e, occ, CD c, u, forces, forces0, energy0,
+        driver(argv[2], h, CD h0, e, occ, CD phi, u, forces, forces0, energy0,
             m, nc, CI cr, C3 tau);
         break;
 
@@ -102,7 +102,7 @@ int main(const int argc, char **argv) {
                 continue;
             }
 
-            energy = step(h, CD h0, e, occ, CD c, u, forces, forces0, energy0,
+            energy = step(h, CD h0, e, occ, CD phi, u, forces, forces0, energy0,
                 m, nc, CI cr);
 
             put_extxyz(stdout, nat, C3 uc, CC typ, C3 tau, u, forces,
@@ -164,7 +164,7 @@ int main(const int argc, char **argv) {
         tmp = dt * dt / (1.0 + damp);
 
         for (i = 0; i < n; i++) {
-            energy = step(h, CD h0, e, occ, CD c, u, forces, forces0, energy0,
+            energy = step(h, CD h0, e, occ, CD phi, u, forces, forces0, energy0,
                 m, nc, CI cr);
 
             for (j = 0; j < nph; j++) {
@@ -206,7 +206,7 @@ int main(const int argc, char **argv) {
     free(iwork);
     free(work);
 
-    free(c);
+    free(phi);
     free(occ);
     free(h0);
     free(h);
@@ -236,7 +236,7 @@ int main(const int argc, char **argv) {
 }
 
 double step(double **h, const double **h0, double *e, double **occ,
-    const double **c, const double *u, double *forces, const double *forces0,
+    const double **phi, const double *u, double *forces, const double *forces0,
     double energy, const struct model m, const int nc, const int **cr) {
 
     static double mu = 0.0;
@@ -249,7 +249,7 @@ double step(double **h, const double **h0, double *e, double **occ,
 
     memcpy(forces, forces0, nph * sizeof *forces);
 
-    dsymv_("U", &nph, &minus, *c, &nph, u, &inc, &plus, forces, &inc);
+    dsymv_("U", &nph, &minus, *phi, &nph, u, &inc, &plus, forces, &inc);
 
     energy -= 0.5 * ddot_(&nph, u, &inc, forces, &inc);
     energy -= 0.5 * ddot_(&nph, u, &inc, forces0, &inc);
