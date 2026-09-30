@@ -81,7 +81,7 @@ static void *shmmap(const char *name, const int len) {
     void *addr;
     int mfd;
 
-    if ((mfd = shm_open(name, O_RDWR, 0666)) == -1)
+    if ((mfd = shm_open(name, O_RDWR, 0)) == -1)
         error("Cannot open shared memory");
 
     if ((addr = mmap(NULL, len, PROT_READ | PROT_WRITE, MAP_SHARED, mfd, 0))
