@@ -59,6 +59,7 @@ The step count `<number>` is optionally followed by a colon and a stride (which
 defaults to 1) for writing data in ASE's extended XYZ format to standard output.
 `<dt>` is the time step and `<damp>` a damping coefficient (inverse time units).
 The target lattice temperature `<kT>` is regulated using a Langevin thermostat.
+Different initial and final values (linear profile) may be separated by a colon.
 A value of zero disables fluctuations but keeps dissipation. For follow-up runs,
 the tail of the trajectory is written in PLUMED's XYZ format to standard error.
 

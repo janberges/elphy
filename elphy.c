@@ -12,7 +12,8 @@ static double *work;
 
 int main(const int argc, char **argv) {
     double **h, **h0, *e, **occ, **phi, *u, *forces, *forces0, energy, energy0,
-        (*tau)[3], uc[3][3], tmp, *u1, *v, a, b, c, d, dt, damp, s, ekin, *swap;
+        (*tau)[3], uc[3][3], *u1, *v, a, b, c, d, dt, damp, kt1, kt2, s, ekin,
+        tmp, *swap;
     struct model m = {0};
     int i, j, n, nc, nel, nph, nat, **cr, **cells, stride;
     char **typ, *match;
@@ -136,7 +137,8 @@ int main(const int argc, char **argv) {
     case (6):
         srand(time(NULL));
 
-        n = atoi(argv[2]);
+        if ((n = atoi(argv[2])) < 2)
+            error("At least two steps needed.");
 
         if (match = strchr(argv[2], ':')) {
             if ((stride = atoi(match + 1)) < 1)
@@ -149,7 +151,14 @@ int main(const int argc, char **argv) {
 
         damp = 0.5 * atof(argv[4]) * dt;
 
-        s = 2.0 / dt * sqrt(damp * fabs(atof(argv[5])));
+        if ((kt1 = atof(argv[5])) < 0.0)
+            error("Temperature must not be negative.");
+
+        if (match = strchr(argv[5], ':')) {
+            if ((kt2 = atof(match + 1)) < 0.0)
+                error("Final temperature must not be negative.");
+        } else
+            kt2 = kt1;
 
         memset(u1, 0, nph * sizeof *u1);
         memset(u, 0, nph * sizeof *u);
@@ -168,6 +177,8 @@ int main(const int argc, char **argv) {
         for (i = 0; i < n; i++) {
             energy = step(h, CD h0, e, occ, CD phi, u, forces, forces0, energy0,
                 m, nc, CI cr);
+
+            s = 2.0 / dt * sqrt(damp * (kt1 * (n - 1 - i) + kt2 * i) / (n - 1));
 
             for (j = 0; j < nph; j++) {
                 if (s)
