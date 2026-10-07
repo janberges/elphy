@@ -20,18 +20,15 @@ input.xyz: elphy input.dat
 	./$^ -1 0.1 > $@
 
 ipi ipi.pos_0.xyz: input.xml elphy input.dat input.xyz
-	i-pi $< &
-	./elphy input.dat localhost:31415
+	i-pi $< & ./elphy input.dat localhost:31415
 
 ipi_unix: input.xml elphy input.dat input.xyz
 	sed s/inet/unix/ $< > input_unix.xml
-	i-pi input_unix.xml &
-	./elphy input.dat localhost
+	i-pi input_unix.xml & ./elphy input.dat localhost
 
 ipi_shm: input.xml elphy input.dat input.xyz
 	sed s/inet/shm/ $< > input_shm.xml
-	i-pi input_shm.xml &
-	./elphy input.dat localhost/shm
+	i-pi input_shm.xml & ./elphy input.dat localhost/shm
 
 symmetric.xyz: elphy input.dat
 	./$^ -1 0 > $@
