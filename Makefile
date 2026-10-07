@@ -21,19 +21,16 @@ input.xyz: elphy input.dat
 
 ipi ipi.pos_0.xyz: input.xml elphy input.dat input.xyz
 	i-pi $< &
-	sleep 3
 	./elphy input.dat localhost:31415
 
 ipi_unix: input.xml elphy input.dat input.xyz
 	sed s/inet/unix/ $< > input_unix.xml
 	i-pi input_unix.xml &
-	sleep 3
 	./elphy input.dat localhost
 
 ipi_shm: input.xml elphy input.dat input.xyz
 	sed s/inet/shm/ $< > input_shm.xml
 	i-pi input_shm.xml &
-	sleep 3
 	./elphy input.dat localhost/shm
 
 symmetric.xyz: elphy input.dat

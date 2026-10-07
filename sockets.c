@@ -26,7 +26,7 @@ int open_inet_socket(const char *host, const char *port) {
     if (getaddrinfo(host, port, &hints, &res))
         error("Cannot get address info.");
 
-    for (r = res; r; r = r->ai_next) {
+    for (r = res;; r = r->ai_next ? r->ai_next : (sleep(1), res)) {
         if ((sfd = socket(r->ai_family, r->ai_socktype, r->ai_protocol)) == -1)
             continue;
 
@@ -42,9 +42,6 @@ int open_inet_socket(const char *host, const char *port) {
 
     freeaddrinfo(res);
 
-    if (!r)
-        error("Cannot connect to INET socket.");
-
     return sfd;
 }
 
@@ -56,10 +53,11 @@ int open_unix_socket(const char *host, const char *prefix) {
     strncat(addr.sun_path, prefix, sizeof addr.sun_path - 1);
     strncat(addr.sun_path, host, sizeof addr.sun_path - strlen(prefix) - 1);
 
-    sfd = socket(AF_UNIX, SOCK_STREAM, 0);
+    if ((sfd = socket(AF_UNIX, SOCK_STREAM, 0)) == -1)
+        error("Cannot create UNIX socket.");
 
-    if (sfd == -1 || connect(sfd, (struct sockaddr *) &addr, sizeof addr))
-        error("Cannot connect to UNIX socket.");
+    while (connect(sfd, (struct sockaddr *) &addr, sizeof addr))
+        sleep(1);
 
     return sfd;
 }
