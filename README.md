@@ -108,7 +108,7 @@ All indices are zero-based. All matrix elements `<…>` are single real numbers.
 The primitive, position, and force vectors `a, r, F` are given in Cartesian,
 the supercell and lattice vectors `A, R` in integer crystal coordinates.
 The atomic symbols `X` are only used to label the supercell atoms in the output.
-The atomic masses `M` are only used to compute accelerations in MD simulations.
+The atomic masses `M` are only used for accelerations in dynamics simulations.
 
 No unit conversions are performed, so any consistent energy and length units can
 be used. However, i-PI expects energies and forces in Hartree atomic units.
