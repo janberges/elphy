@@ -30,12 +30,9 @@ int open_inet_socket(const char *host, const char *port) {
         if ((sfd = socket(r->ai_family, r->ai_socktype, r->ai_protocol)) == -1)
             continue;
 
-        /* see i-PI's sockets.c */
-        if (setsockopt(sfd, IPPROTO_TCP, TCP_NODELAY, &yes, sizeof yes) == -1)
-            error("Cannot set socket option.");
-
-        if (!connect(sfd, r->ai_addr, r->ai_addrlen))
-            break;
+        if (!setsockopt(sfd, IPPROTO_TCP, TCP_NODELAY, &yes, sizeof yes))
+            if (!connect(sfd, r->ai_addr, r->ai_addrlen))
+                break;
 
         close(sfd);
     }
