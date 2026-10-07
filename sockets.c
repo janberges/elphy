@@ -31,7 +31,7 @@ int open_inet_socket(const char *host, const char *port) {
             continue;
 
         /* see i-PI's sockets.c */
-        if (setsockopt(sfd, IPPROTO_TCP, TCP_NODELAY, &yes, sizeof yes))
+        if (setsockopt(sfd, IPPROTO_TCP, TCP_NODELAY, &yes, sizeof yes) == -1)
             error("Cannot set socket option.");
 
         if (!connect(sfd, r->ai_addr, r->ai_addrlen))
@@ -68,7 +68,7 @@ void sread(const int sfd, void *data, const int len) {
     int all, new;
 
     for (all = 0; all < len; all += new)
-        if ((new = read(sfd, (char *) data + all, len - all)) < 1)
+        if ((new = read(sfd, (char *) data + all, len - all)) == -1)
             error("Cannot read from socket.");
 }
 
