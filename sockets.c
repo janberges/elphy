@@ -26,16 +26,14 @@ int open_inet_socket(const char *host, const char *port) {
     if (getaddrinfo(host, port, &hints, &res))
         error("Cannot get address info.");
 
-    for (r = res;; r = r->ai_next ? r->ai_next : (sleep(1), res)) {
-        if ((sfd = socket(r->ai_family, r->ai_socktype, r->ai_protocol)) == -1)
-            continue;
+    for (r = res;; r = r->ai_next ? r->ai_next : (sleep(1), res))
+        if ((sfd = socket(r->ai_family, r->ai_socktype, r->ai_protocol)) != -1) {
+            if (!setsockopt(sfd, IPPROTO_TCP, TCP_NODELAY, &yes, sizeof yes))
+                if (!connect(sfd, r->ai_addr, r->ai_addrlen))
+                    break;
 
-        if (!setsockopt(sfd, IPPROTO_TCP, TCP_NODELAY, &yes, sizeof yes))
-            if (!connect(sfd, r->ai_addr, r->ai_addrlen))
-                break;
-
-        close(sfd);
-    }
+            close(sfd);
+        }
 
     freeaddrinfo(res);
 
