@@ -29,15 +29,12 @@ int open_inet_socket(const char *host, const char *port) {
     for (r = res;; r = r->ai_next ? r->ai_next : (sleep(1), res))
         if ((fd = socket(r->ai_family, r->ai_socktype, r->ai_protocol)) != -1) {
             if (!setsockopt(fd, IPPROTO_TCP, TCP_NODELAY, &yes, sizeof yes))
-                if (!connect(fd, r->ai_addr, r->ai_addrlen))
-                    break;
-
+                if (!connect(fd, r->ai_addr, r->ai_addrlen)) {
+                    freeaddrinfo(res);
+                    return fd;
+                }
             close(fd);
         }
-
-    freeaddrinfo(res);
-
-    return fd;
 }
 
 int open_unix_socket(const char *host, const char *prefix) {
