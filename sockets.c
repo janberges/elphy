@@ -5,10 +5,10 @@
 #include <netdb.h> /* getaddrinfo etc. */
 #undef _POSIX_C_SOURCE
 
+#include <unistd.h> /* read, write, sleep */
 #include <sys/socket.h>
 #include <sys/un.h> /* UNIX sockets */
 #include <sys/mman.h> /* memory management */
-#include <unistd.h> /* read and write */
 #include <netinet/tcp.h> /* TCP_NODELAY */
 #include <fcntl.h> /* O_RDWR */
 #include "elphy.h"
