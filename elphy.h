@@ -90,11 +90,11 @@ int open_inet_socket(const char *host, const char *port);
 
 int open_unix_socket(const char *host, const char *prefix);
 
-void sread(int sfd, void *data, int len);
+void sread(int fd, void *data, int len);
 
-void swrite(int sfd, const void *data, int len);
+void swrite(int fd, const void *data, int len);
 
-void *shm_attach(int sfd, int len);
+void *shm_attach(int fd, int len);
 
 void shm_detach(void *addr, int len);
 
