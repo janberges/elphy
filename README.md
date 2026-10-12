@@ -14,9 +14,11 @@ The following command compiles the program using GCC without optimization:
 
     make
 
-Different compilers and optimization flags can be selected:
+Different compilers and flags can be selected, for example:
 
-    make CC=icx CFLAGS=-O2
+    make CC=tcc CFLAGS=-Wall
+    make CC=clang CFLAGS='-O2 -w'
+    make CC=icx LDLIBS='-lmkl_intel_lp64 -lmkl_sequential -lmkl_core'
 
 LAPACK and BLAS with the standard LP64 interface are required. The performance
 depends on the BLAS implementation. For instance, OpenBLAS with multithreading
