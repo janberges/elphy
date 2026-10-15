@@ -1,4 +1,4 @@
-.PHONY: test ipi ipi_unix ipi_shm show_ipi md show_md clean distclean
+.PHONY: test ipi ipi_unix ipi_shm show_ipi md show_md metad show_metad clean distclean
 
 CC = gcc
 CFLAGS = -ansi -Wpedantic -Wall -Wextra -Wno-parentheses
@@ -13,7 +13,7 @@ elphy: elphy.o driver.o io.o matrix.o random.o sockets.o strain.o supercell.o te
 %.o: %.c elphy.h
 	$(CC) $(CFLAGS) -o $@ -c $<
 
-test input.dat: test.py elphy
+test input.dat plumed.dat: test.py elphy
 	python3 $< input.dat $(model) $(units)
 
 input.xyz: elphy input.dat
@@ -42,6 +42,12 @@ md md.xyz nvt.xyz nve.xyz dmp.xyz: elphy input.dat
 	./$^ 1000:10 $$(tail -n 1 input.dat | awk '$$3=0;1') < nve.xyz >> md.xyz 2> dmp.xyz
 
 show_md: symmetric.xyz md.xyz
+	python3 show.py $^
+
+metad metad.xyz plumed.log: elphy input.dat plumed.dat
+	./elphy input.dat 5000:10 $$(tail -n 1 input.dat) plumed.dat:plumed.log < /dev/null > metad.xyz
+
+show_metad: symmetric.xyz metad.xyz
 	python3 show.py $^
 
 index.html: README.md

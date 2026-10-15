@@ -141,7 +141,8 @@ The makefile provides some recipes that exemplify the usage of the program:
 - `make ipi` lets  `elphy` and i-PI perform a structural relaxation together.
 - `make ipi_unix` and `make ipi_shm` use the alternative communication modes.
 - `make md` lets `elphy` perform NVT, NVE, and damped dynamics simulations.
-- `make show_ipi` and `make show_md` animate the trajectories.
+- `make metad` lets `elphy` and PLUMED perform metadynamics together.
+- `make show_ipi`, `make show_md`, and `make show_metad` plot the trajectories.
 - `make clean` removes compiled files, `make distclean` all generated files.
 
 The Python packages `elphmod`, `ipi`, and `matplotlib` are required.

@@ -108,3 +108,38 @@ if elphmod.MPI.comm.rank == 0:
         data.write(f"""Parameters for MD example:
 {20 * tconv} {0.0004 / tconv} {0.004 * econv}
 """)
+
+    bond = np.linalg.norm(driver.elph.ph.r[1] - driver.elph.ph.r[0])
+
+    with open('plumed.dat', 'w') as data:
+        data.write(f"""# PLUMED input for METAD example:
+
+coo: COORDINATION ...
+    GROUPA=@allatoms
+    NN=100
+    R_0={bond * lconv}
+    NLIST
+    NL_CUTOFF={1.2 * bond * lconv}
+    NL_STRIDE=1000000000
+...
+
+cv: CUSTOM ...
+    ARG=coo
+    FUNC=x/{driver.elph.ph.nat}
+    PERIODIC=NO
+...
+
+METAD ...
+    ARG=cv
+    SIGMA=0.05
+    HEIGHT={econv / elphmod.misc.Ry}
+    PACE=10
+    FILE=plumed.hills
+...
+
+PRINT ...
+    ARG=cv
+    STRIDE=10
+    FILE=plumed.cv
+...
+""")
