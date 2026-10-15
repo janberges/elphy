@@ -61,7 +61,7 @@ collective variables with `plumed driver --ixyz scaled.xyz --length-units Bohr`.
 
 With five arguments, it performs a dynamics simulation using Verlet integration.
 It continues any trajectory (same step!) given in XYZ format on standard input.
-The step count `<number>` is optionally followed by a colon and a stride (which
+`<number>` is the step count optionally followed by a colon and a stride (which
 defaults to 1) for writing data in ASE's extended XYZ format to standard output.
 `<dt>` is the time step and `<damp>` a damping coefficient (inverse time units).
 The target lattice temperature `<kT>` is regulated using a Langevin thermostat.
