@@ -4,7 +4,9 @@
 free energies and forces for tight-binding models on supercells, complemented
 with linear electron-phonon coupling and a harmonic potential. It is a faster
 rewrite of the Python module `elphmod.md` and thus primarily a driver for the
-path-integral molecular-dynamics code i-PI. It is written in ANSI C (C89/C99).
+path-integral molecular-dynamics code i-PI. Basic dynamics simulations can be
+run without i-PI, optionally using the enhanced-sampling plugin PLUMED. It is
+written in ANSI C.
 
 The source-code repository is found at <https://codeberg.org/janberges/elphy>.
 
@@ -19,10 +21,12 @@ Different compilers and flags can be selected, for example:
     make CC=tcc CFLAGS=-Wall
     make CC=clang CFLAGS='-O2 -w'
     make CC=icx LDLIBS='-lmkl_intel_lp64 -lmkl_sequential -lmkl_core'
+    make CFLAGS=-D_PLUMED LDLIBS='-llapack -lblas -lm -lplumed'
 
 LAPACK and BLAS with the standard LP64 interface are required. The performance
 depends on the BLAS implementation. For instance, OpenBLAS with multithreading
 should significantly outperform the reference implementation on most machines.
+The PLUMED library is optional.
 
 ## Usage
 
@@ -64,6 +68,8 @@ The target lattice temperature `<kT>` is regulated using a Langevin thermostat.
 Different initial and final values (linear profile) may be separated by a colon.
 A value of zero disables fluctuations but keeps dissipation. For follow-up runs,
 the tail of the trajectory is written in PLUMED's XYZ format to standard error.
+If the program has been compiled with `-D_PLUMED` (see above), the PLUMED input
+file `plumed.dat` must be present.
 
 The `<data file>` is defined below:
 
@@ -112,8 +118,9 @@ the supercell and lattice vectors `A, R` in integer crystal coordinates.
 The atomic symbols `X` are only used to label the supercell atoms in the output.
 The atomic masses `M` are only used for accelerations in dynamics simulations.
 
-No unit conversions are performed, so any consistent energy and length units can
-be used. However, i-PI expects energies and forces in Hartree atomic units.
+No unit conversions are performed, so any length, energy, mass, and time units
+can be used. However, i-PI expects Hartree atomic units, while PLUMED uses nm,
+kJ/mol, u, and ps.
 
 Note that the interatomic force constants are assumed to be partially screened:
 They shall exclude the harmonic term of the electronic potential-energy surface.

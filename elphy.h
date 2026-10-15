@@ -122,3 +122,21 @@ double grand_potential(int ne, const double *e, double kt, double mu);
 
 void occupations(int ne, const double *e, double kt, double mu, int nspin,
     double **psi, double **occ);
+
+#ifdef _PLUMED
+typedef struct {
+    void *p;
+} plumed;
+
+plumed plumed_create(void);
+
+void plumed_cmd(plumed p, const char *key, const void *val);
+
+void plumed_finalize(plumed p);
+
+void plumed_init(int *nat, double *dt, double (*uc)[3], double (*tau)[3]);
+
+void plumed_bias(const double *u, double *forces, double *energy);
+
+void plumed_exit(void);
+#endif

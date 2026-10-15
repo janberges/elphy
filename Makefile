@@ -7,7 +7,7 @@ LDLIBS = -llapack -lblas -lm
 model = graphene
 units = Ha
 
-elphy: elphy.o driver.o io.o matrix.o random.o sockets.o strain.o supercell.o temperature.o
+elphy: elphy.o driver.o io.o matrix.o random.o sockets.o strain.o supercell.o temperature.o plumed.o
 	$(CC) $(CFLAGS) -o $@ $^ $(LDLIBS)
 
 %.o: %.c elphy.h

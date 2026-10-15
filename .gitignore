@@ -1,6 +1,7 @@
 *.o
 RESTART
 \#*
+bck.*
 dmp.xyz
 elphy
 index.html
@@ -13,5 +14,6 @@ logo.png
 md.xyz
 nve.xyz
 nvt.xyz
+plumed.*
 symmetric.xyz
 tags

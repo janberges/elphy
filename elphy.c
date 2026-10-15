@@ -174,9 +174,17 @@ int main(const int argc, char **argv) {
         c = dt * dt / (1.0 + damp);
         d = -1.0 / (2.0 * dt);
 
+        #ifdef _PLUMED
+        plumed_init(&nat, &dt, uc, tau);
+        #endif
+
         for (i = 0; i < n; i++) {
             energy = step(h, CD h0, e, occ, CD phi, u, forces, forces0, energy0,
                 m, nc, CI cr);
+
+            #ifdef _PLUMED
+            plumed_bias(u, forces, &energy);
+            #endif
 
             s = 2.0 / dt * sqrt(damp * (kt1 * (n - 1 - i) + kt2 * i) / (n - 1));
 
@@ -217,6 +225,10 @@ int main(const int argc, char **argv) {
 
         put_xyz(stderr, nat, C3 uc, CC typ, C3 tau, u1, 0);
         put_xyz(stderr, nat, C3 uc, CC typ, C3 tau, u, 0);
+
+        #ifdef _PLUMED
+        plumed_exit();
+        #endif
     }
 
     free(iwork);
