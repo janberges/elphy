@@ -30,13 +30,13 @@ The PLUMED library is optional.
 
 ## Usage
 
-The program accepts one to five arguments:
+The program accepts one to six arguments:
 
     elphy <data file>
     elphy <data file> <socket>
     elphy <data file> <number> <radius>
     elphy <data file> <number> <lower> <upper>
-    elphy <data file> <number> <dt> <damp> <kT>
+    elphy <data file> <number> <dt> <damp> <kT> [<plumed file>]
 
 With one argument, it alternately reads atomic positions in the XYZ format from
 standard input and writes the supercell vectors, atomic positions, free energy,
@@ -68,8 +68,10 @@ The target lattice temperature `<kT>` is regulated using a Langevin thermostat.
 Different initial and final values (linear profile) may be separated by a colon.
 A value of zero disables fluctuations but keeps dissipation. For follow-up runs,
 the tail of the trajectory is written in PLUMED's XYZ format to standard error.
-If the program has been compiled with `-D_PLUMED` (see above), the PLUMED input
-file `plumed.dat` must be present.
+
+With six arguments, it performs an enhanced-sampling simulation using PLUMED.
+`<plumed file>` is the PLUMED input file optionally followed by a colon and a
+log file. The program must have been compiled with `-D_PLUMED` (see above).
 
 The `<data file>` is defined below:
 

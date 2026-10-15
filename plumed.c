@@ -5,7 +5,9 @@ static int nph;
 static double *pos, *pos0;
 static plumed p;
 
-void plumed_init(int *nat, double *dt, double (*uc)[3], double (*tau)[3]) {
+void plumed_init(int *nat, double *dt, double (*uc)[3], double (*tau)[3],
+    char *dat, char *log) {
+
     static int prec = sizeof(double);
     static double one = 1.0;
 
@@ -22,8 +24,9 @@ void plumed_init(int *nat, double *dt, double (*uc)[3], double (*tau)[3]) {
     plumed_cmd(p, "setNoVirial", NULL);
 
     plumed_cmd(p, "setMDEngine", "elphy");
-    plumed_cmd(p, "setPlumedDat", "plumed.dat");
-    plumed_cmd(p, "setLogFile", "plumed.log");
+    plumed_cmd(p, "setPlumedDat", dat);
+    if (log)
+        plumed_cmd(p, "setLogFile", log);
 
     plumed_cmd(p, "init", NULL);
 

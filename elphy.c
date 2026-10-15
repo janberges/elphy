@@ -18,11 +18,11 @@ int main(const int argc, char **argv) {
     int i, j, n, nc, nel, nph, nat, **cr, **cells, stride;
     char **typ, *match;
 
-    if (argc > 1 && argc < 7)
+    if (argc > 1 && argc < 8)
         get_model(argv[1], &m);
     else
         error("Usage: elphy <data file> [<socket>|<number> "
-            "(<radius>|<lower> <upper>|<dt> <damp> <kT>)]");
+            "(<radius>|<lower> <upper>|<dt> <damp> <kT> [<plumed file>])]");
 
     nc = map(m, &cr, &cells);
 
@@ -135,6 +135,7 @@ int main(const int argc, char **argv) {
         break;
 
     case (6):
+    case (7):
         srand(time(NULL));
 
         if ((n = atoi(argv[2])) < 2)
@@ -174,16 +175,23 @@ int main(const int argc, char **argv) {
         c = dt * dt / (1.0 + damp);
         d = -1.0 / (2.0 * dt);
 
+        if (argc == 7) {
         #ifdef _PLUMED
-        plumed_init(&nat, &dt, uc, tau);
+            if (match = strchr(argv[6], ':'))
+                *match++ = '\0';
+            plumed_init(&nat, &dt, uc, tau, argv[6], match);
+        #else
+            error("Compile with -D_PLUMED.");
         #endif
+        }
 
         for (i = 0; i < n; i++) {
             energy = step(h, CD h0, e, occ, CD phi, u, forces, forces0, energy0,
                 m, nc, CI cr);
 
             #ifdef _PLUMED
-            plumed_bias(u, forces, &energy);
+            if (argc == 7)
+                plumed_bias(u, forces, &energy);
             #endif
 
             s = 2.0 / dt * sqrt(damp * (kt1 * (n - 1 - i) + kt2 * i) / (n - 1));
@@ -227,7 +235,8 @@ int main(const int argc, char **argv) {
         put_xyz(stderr, nat, C3 uc, CC typ, C3 tau, u, 0);
 
         #ifdef _PLUMED
-        plumed_exit();
+        if (argc == 7)
+            plumed_exit();
         #endif
     }
 
