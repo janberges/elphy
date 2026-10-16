@@ -3,13 +3,15 @@ import numpy as np
 import subprocess
 import sys
 
-indat = sys.argv[1] if len(sys.argv) > 1 else 'input.dat'
-model = sys.argv[2] if len(sys.argv) > 2 else 'graphene'
-units = sys.argv[3] if len(sys.argv) > 3 else 'Ha'
+model = sys.argv[1] if len(sys.argv) > 1 else 'graphene'
+units = sys.argv[2] if len(sys.argv) > 2 else 'Ha'
+indat = sys.argv[3] if len(sys.argv) > 3 else 'input.dat'
+pldat = sys.argv[4] if len(sys.argv) > 4 else 'plumed.dat'
 
 def error():
     elphmod.MPI.info(f'Usage: python3 {sys.argv[0]} '
-        '[<data file> [(graphene|TaS2|chain|Be) [(Ha|Ry|eV)]]]', error=True)
+        '[(graphene|TaS2|chain|Be) [(Ha|Ry|eV) [<data file> [<plumed file>]]]]',
+        error=True)
 
 if units == 'Ha':
     econv = 0.5
@@ -111,7 +113,7 @@ if elphmod.MPI.comm.rank == 0:
 
     bond = np.linalg.norm(driver.elph.ph.r[1] - driver.elph.ph.r[0])
 
-    with open('plumed.dat', 'w') as data:
+    with open(pldat, 'w') as data:
         data.write(f"""# PLUMED input for METAD example:
 
 coo: COORDINATION ...
