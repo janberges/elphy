@@ -1,4 +1,4 @@
-.PHONY: test ipi ipi_unix ipi_shm show_ipi md show_md metad show_metad clean distclean
+.PHONY: test ipi ipi_unix ipi_shm md metad show_ipi show_md show_metad clean distclean
 
 CC = gcc
 CFLAGS = -ansi -Wpedantic -Wall -Wextra -Wno-parentheses
@@ -19,6 +19,9 @@ test input.dat plumed.dat: test.py elphy
 input.xyz: elphy input.dat
 	./$^ -1 0.1 > $@
 
+symmetric.xyz: elphy input.dat
+	./$^ -1 0 > $@
+
 ipi ipi.pos_0.xyz: input.xml elphy input.dat input.xyz
 	i-pi $< & ./elphy input.dat localhost:31415
 
@@ -30,22 +33,19 @@ ipi_shm: input.xml elphy input.dat input.xyz
 	sed s/inet/shm/ $< > input_shm.xml
 	i-pi input_shm.xml & ./elphy input.dat localhost/shm
 
-symmetric.xyz: elphy input.dat
-	./$^ -1 0 > $@
-
-show_ipi: symmetric.xyz ipi.pos_0.xyz
-	python3 show.py $^
-
 md md.xyz nvt.xyz nve.xyz dmp.xyz: elphy input.dat
 	./$^ 1000:10 $$(tail -n 1 input.dat) < /dev/null > md.xyz 2> nvt.xyz
 	./$^ 1000:10 $$(tail -n 1 input.dat | awk '$$2=0;1') < nvt.xyz >> md.xyz 2> nve.xyz
 	./$^ 1000:10 $$(tail -n 1 input.dat | awk '$$3=0;1') < nve.xyz >> md.xyz 2> dmp.xyz
 
-show_md: symmetric.xyz md.xyz
-	python3 show.py $^
-
 metad metad.xyz plumed.log: elphy input.dat plumed.dat
 	./elphy input.dat 5000:10 $$(tail -n 1 input.dat) plumed.dat:plumed.log < /dev/null > metad.xyz
+
+show_ipi: symmetric.xyz ipi.pos_0.xyz
+	python3 show.py $^
+
+show_md: symmetric.xyz md.xyz
+	python3 show.py $^
 
 show_metad: symmetric.xyz metad.xyz
 	python3 show.py $^
