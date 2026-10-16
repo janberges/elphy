@@ -41,14 +41,14 @@ md md.xyz nvt.xyz nve.xyz dmp.xyz: elphy input.dat
 metad metad.xyz plumed.log: elphy input.dat plumed.dat
 	./elphy input.dat 5000:10 $$(tail -n 1 input.dat) plumed.dat:plumed.log < /dev/null > metad.xyz
 
-show_ipi: symmetric.xyz ipi.pos_0.xyz
-	python3 show.py $^
+show_ipi: show.py symmetric.xyz ipi.pos_0.xyz
+	python3 $^
 
-show_md: symmetric.xyz md.xyz
-	python3 show.py $^
+show_md: show.py symmetric.xyz md.xyz
+	python3 $^
 
-show_metad: symmetric.xyz metad.xyz
-	python3 show.py $^
+show_metad: show.py symmetric.xyz metad.xyz
+	python3 $^
 
 index.html: README.md
 	pandoc -s -M pagetitle="elphy" -o $@ $<
