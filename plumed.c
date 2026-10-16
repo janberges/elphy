@@ -39,13 +39,11 @@ void plumed_init(int *nat, double *dt, double (*uc)[3], double (*tau)[3],
         error("No memory for atomic positions.");
 }
 
-void plumed_bias(const double *u, double *forces, double *energy) {
+void plumed_bias(int *i, const double *u, double *forces, double *energy) {
     const int inc = 1;
     const double plus = 1.0;
-    static int i = 0;
 
-    plumed_cmd(p, "setStep", &i);
-    i++;
+    plumed_cmd(p, "setStep", i);
 
     memcpy(pos, pos0, nph * sizeof *pos);
     daxpy_(&nph, &plus, u, &inc, pos, &inc);

@@ -191,7 +191,7 @@ int main(const int argc, char **argv) {
 
             #ifdef _PLUMED
             if (argc == 7)
-                plumed_bias(u, forces, &energy);
+                plumed_bias(&i, u, forces, &energy);
             #endif
 
             s = 2.0 / dt * sqrt(damp * (kt1 * (n - 1 - i) + kt2 * i) / (n - 1));

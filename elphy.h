@@ -137,7 +137,7 @@ void plumed_finalize(plumed p);
 void plumed_init(int *nat, double *dt, double (*uc)[3], double (*tau)[3],
     char *dat, char *log);
 
-void plumed_bias(const double *u, double *forces, double *energy);
+void plumed_bias(int *i, const double *u, double *forces, double *energy);
 
 void plumed_exit(void);
 #endif
