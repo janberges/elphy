@@ -6,7 +6,7 @@ with linear electron-phonon coupling and a harmonic potential. It is a faster
 rewrite of the Python module `elphmod.md` and thus primarily a driver for the
 path-integral molecular-dynamics code i-PI. Basic dynamics simulations can be
 run without i-PI, optionally using the enhanced-sampling plugin PLUMED. It is
-written in ANSI C.
+written in ANSI C with some POSIX 2001 extensions.
 
 The source-code repository is found at <https://codeberg.org/janberges/elphy>.
 
