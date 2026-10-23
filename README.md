@@ -6,7 +6,7 @@ with linear electron-phonon coupling and a harmonic potential. It is a faster
 rewrite of the Python module `elphmod.md` and thus primarily a driver for the
 path-integral molecular-dynamics code i-PI. Basic dynamics simulations can be
 run without i-PI, optionally using the enhanced-sampling plugin PLUMED. It is
-written in ANSI C with some POSIX 2001 extensions.
+written in ANSI C with some POSIX 2001 or Windows extensions.
 
 The source-code repository is found at <https://codeberg.org/janberges/elphy>.
 
@@ -22,6 +22,7 @@ Different compilers and flags can be selected, for example:
     make CC=clang CFLAGS='-O2 -w'
     make CC=icx LDLIBS='-lmkl_intel_lp64 -lmkl_sequential -lmkl_core'
     make CFLAGS=-D_PLUMED LDLIBS='-llapack -lblas -lm -lplumed'
+    make CC=x86_64-w64-mingw32-gcc LDLIBS='-llapack -lblas -lm -lws2_32'
 
 LAPACK and BLAS with the standard LP64 interface are required. The performance
 depends on the BLAS implementation. For instance, OpenBLAS with multithreading

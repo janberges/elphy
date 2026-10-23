@@ -17,12 +17,16 @@ void driver(char *host, double **h, const double **h0, double *e, double **occ,
         *tmp = '\0';
         fd = open_inet_socket(host, tmp + 1);
     } else {
+    #ifdef _WIN32
+        error("UNIX sockets not supported on Windows.");
+    #else
          if (tmp = strstr(host, "/shm")) {
              *tmp = '\0';
              shm = 1;
          }
 
         fd = open_unix_socket(host, "/tmp/ipi_");
+    #endif
     }
 
     for (;;) {
@@ -56,6 +60,7 @@ void driver(char *host, double **h, const double **h0, double *e, double **occ,
             if (!shm)
                 sread(fd, u, nph * sizeof *u); /* positions */
             else if (!attached) {
+                #ifndef _WIN32
                 u = shm_attach(fd, nph * sizeof *u);
                 shm_detach(shm_attach(fd, sizeof cell), sizeof cell);
                 shm_detach(shm_attach(fd, sizeof cell), sizeof cell);
@@ -63,6 +68,7 @@ void driver(char *host, double **h, const double **h0, double *e, double **occ,
                 forces = shm_attach(fd, nph * sizeof *forces);
                 shm_detach(memset(shm_attach(fd, sizeof virial), 0,
                     sizeof virial), sizeof virial);
+                #endif
 
                 attached = 1;
             }
@@ -90,9 +96,11 @@ void driver(char *host, double **h, const double **h0, double *e, double **occ,
             havedata = 0;
         } else if (!strncmp(header, "EXIT", 4)) {
             if (attached) {
+                #ifndef _WIN32
                 shm_detach(u, nph * sizeof *u);
                 shm_detach(potential, sizeof energy);
                 shm_detach(forces, nph * sizeof *forces);
+                #endif
             }
 
             break;

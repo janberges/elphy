@@ -1,6 +1,16 @@
 /* adapted from i-PI's sockets.c (C) 2013 Joshua More and Michele Ceriotti */
 /* connection to INET socket following client example from man getaddrinfo */
 
+#ifdef _WIN32
+#include <winsock2.h>
+#include <ws2tcpip.h>
+#include <windows.h>
+
+#define sleep(seconds) Sleep(1000 * seconds)
+#define read(fd, buf, count) recv(fd, buf, count, 0)
+#define write(fd, buf, count) send(fd, buf, count, 0)
+#define close(fd) closesocket(fd)
+#else
 #define _POSIX_C_SOURCE 200112L /* beyond ANSI C, see man feature_test_macros */
 #include <netdb.h> /* getaddrinfo etc. */
 #undef _POSIX_C_SOURCE
@@ -11,6 +21,8 @@
 #include <sys/mman.h> /* memory management */
 #include <netinet/tcp.h> /* TCP_NODELAY */
 #include <fcntl.h> /* O_RDWR */
+#endif
+
 #include "elphy.h"
 
 int open_inet_socket(const char *host, const char *port) {
@@ -28,7 +40,8 @@ int open_inet_socket(const char *host, const char *port) {
 
     for (r = res;; r = r->ai_next ? r->ai_next : (sleep(1), res))
         if ((fd = socket(r->ai_family, r->ai_socktype, r->ai_protocol)) != -1) {
-            if (!setsockopt(fd, IPPROTO_TCP, TCP_NODELAY, &yes, sizeof yes))
+            if (!setsockopt(fd, IPPROTO_TCP, TCP_NODELAY, (void *) &yes,
+                    sizeof yes))
                 if (!connect(fd, r->ai_addr, r->ai_addrlen)) {
                     freeaddrinfo(res);
                     return fd;
@@ -37,6 +50,7 @@ int open_inet_socket(const char *host, const char *port) {
         }
 }
 
+#ifndef _WIN32
 int open_unix_socket(const char *host, const char *prefix) {
     struct sockaddr_un addr = {0};
     int fd;
@@ -53,6 +67,7 @@ int open_unix_socket(const char *host, const char *prefix) {
 
     return fd;
 }
+#endif
 
 void sread(const int fd, void *data, const int len) {
     int all, new;
@@ -67,6 +82,7 @@ void swrite(const int fd, const void *data, const int len) {
         error("Cannot write to socket.");
 }
 
+#ifndef _WIN32
 static void *shmmap(const char *name, const int len) {
     void *addr;
     int fd;
@@ -97,3 +113,4 @@ void *shm_attach(const int fd, const int len) {
 void shm_detach(void *addr, const int len) {
     munmap(addr, len);
 }
+#endif

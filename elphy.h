@@ -88,15 +88,19 @@ void fixcom(int nat, double *u);
 
 int open_inet_socket(const char *host, const char *port);
 
+#ifndef _WIN32
 int open_unix_socket(const char *host, const char *prefix);
+#endif
 
 void sread(int fd, void *data, int len);
 
 void swrite(int fd, const void *data, int len);
 
+#ifndef _WIN32
 void *shm_attach(int fd, int len);
 
 void shm_detach(void *addr, int len);
+#endif
 
 double strain_model(struct model *m);
 
