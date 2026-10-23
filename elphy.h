@@ -86,22 +86,6 @@ void random_displacements(int nat, double *u, double umax);
 
 void fixcom(int nat, double *u);
 
-int open_inet_socket(const char *host, const char *port);
-
-#ifndef _WIN32
-int open_unix_socket(const char *host, const char *prefix);
-#endif
-
-void sread(int fd, void *data, int len);
-
-void swrite(int fd, const void *data, int len);
-
-#ifndef _WIN32
-void *shm_attach(int fd, int len);
-
-void shm_detach(void *addr, int len);
-#endif
-
 double strain_model(struct model *m);
 
 void strain(double **h, struct model m, int nc, const int **cr);
@@ -126,6 +110,20 @@ double grand_potential(int ne, const double *e, double kt, double mu);
 
 void occupations(int ne, const double *e, double kt, double mu, int nspin,
     double **psi, double **occ);
+
+void sread(int fd, void *data, int len);
+
+void swrite(int fd, const void *data, int len);
+
+int open_inet_socket(const char *host, const char *port);
+
+#ifndef _WIN32
+int open_unix_socket(const char *host, const char *prefix);
+
+void *shm_attach(int fd, int len);
+
+void shm_detach(void *addr, int len);
+#endif
 
 #ifdef _PLUMED
 typedef struct {

@@ -25,6 +25,19 @@
 
 #include "elphy.h"
 
+void sread(const int fd, void *data, const int len) {
+    int all, new;
+
+    for (all = 0; all < len; all += new)
+        if ((new = read(fd, (char *) data + all, len - all)) == -1)
+            error("Cannot read from socket.");
+}
+
+void swrite(const int fd, const void *data, const int len) {
+    if (write(fd, data, len) == -1)
+        error("Cannot write to socket.");
+}
+
 int open_inet_socket(const char *host, const char *port) {
     const int yes = 1;
     struct addrinfo hints = {0}, *res, *r;
@@ -67,22 +80,7 @@ int open_unix_socket(const char *host, const char *prefix) {
 
     return fd;
 }
-#endif
 
-void sread(const int fd, void *data, const int len) {
-    int all, new;
-
-    for (all = 0; all < len; all += new)
-        if ((new = read(fd, (char *) data + all, len - all)) == -1)
-            error("Cannot read from socket.");
-}
-
-void swrite(const int fd, const void *data, const int len) {
-    if (write(fd, data, len) == -1)
-        error("Cannot write to socket.");
-}
-
-#ifndef _WIN32
 static void *shmmap(const char *name, const int len) {
     void *addr;
     int fd;
