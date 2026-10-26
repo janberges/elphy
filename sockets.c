@@ -7,20 +7,18 @@
 #include <windows.h>
 
 #define sleep(seconds) Sleep(1000 * seconds)
-#define read(fd, buf, count) recv(fd, buf, count, 0)
-#define write(fd, buf, count) send(fd, buf, count, 0)
 #define close(fd) closesocket(fd)
 #else
 #define _POSIX_C_SOURCE 200112L /* beyond ANSI C, see man feature_test_macros */
 #include <netdb.h> /* getaddrinfo etc. */
 #undef _POSIX_C_SOURCE
 
-#include <unistd.h> /* read, write, sleep */
 #include <sys/socket.h>
 #include <sys/un.h> /* UNIX sockets */
 #include <sys/mman.h> /* memory management */
 #include <netinet/tcp.h> /* TCP_NODELAY */
 #include <fcntl.h> /* O_RDWR */
+#include <unistd.h> /* sleep */
 #endif
 
 #include "elphy.h"
@@ -29,12 +27,12 @@ void sread(const int fd, void *data, const int len) {
     int all, new;
 
     for (all = 0; all < len; all += new)
-        if ((new = read(fd, (char *) data + all, len - all)) == -1)
+        if ((new = recv(fd, (char *) data + all, len - all, 0)) == -1)
             error("Cannot read from socket.");
 }
 
 void swrite(const int fd, const void *data, const int len) {
-    if (write(fd, data, len) == -1)
+    if (send(fd, data, len, 0) == -1)
         error("Cannot write to socket.");
 }
 
