@@ -4,7 +4,7 @@
 #ifdef _WIN32
 #include <winsock2.h>
 #include <ws2tcpip.h>
-#include <windows.h>
+#include <windows.h> /* Sleep */
 
 #define sleep(seconds) Sleep(1000 * seconds)
 #define close(fd) closesocket(fd)
