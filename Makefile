@@ -7,11 +7,13 @@ LDLIBS = -llapack -lblas -lm
 model = graphene
 units = Ha
 
+CC += $(CFLAGS)
+
 elphy: elphy.o driver.o io.o matrix.o random.o strain.o supercell.o temperature.o sockets.o plumed.o
-	$(CC) $(CFLAGS) -o $@ $^ $(LDLIBS)
+	$(CC) -o $@ $^ $(LDLIBS)
 
 %.o: %.c elphy.h
-	$(CC) $(CFLAGS) -o $@ -c $<
+	$(CC) -o $@ -c $<
 
 test input.dat plumed.dat: test.py elphy
 	python3 $< $(model) $(units) input.dat plumed.dat
