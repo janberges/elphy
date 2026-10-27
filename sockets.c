@@ -41,6 +41,16 @@ int open_inet_socket(const char *host, const char *port) {
     struct addrinfo hints = {0}, *res, *r;
     int fd;
 
+    #ifdef _WIN32
+    WORD version;
+    WSADATA wsadata;
+
+    version = MAKEWORD(1, 0);
+
+    if (WSAStartup(version, &wsadata))
+        error("Cannot initiate use of Winsock DLL");
+    #endif
+
     hints.ai_family = AF_UNSPEC; /* IPv4 or IPv6 */
     hints.ai_socktype = SOCK_STREAM;
     hints.ai_flags = AI_PASSIVE;
