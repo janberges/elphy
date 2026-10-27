@@ -21,8 +21,8 @@ Different compilers and flags can be selected, for example:
     make CC=tcc CFLAGS=
     make CC=clang CFLAGS=-O2
     make CC=icx LDLIBS='-lmkl_intel_lp64 -lmkl_sequential -lmkl_core'
-    make CFLAGS=-D_PLUMED LDLIBS='-llapack -lblas -lm -lplumed'
-    make CC=x86_64-w64-mingw32-gcc LDLIBS='-llapack -lblas -lm -lws2_32'
+    make CFLAGS=-D_PLUMED EXTRA_LDLIBS=-lplumed
+    make CC=x86_64-w64-mingw32-gcc EXTRA_LDLIBS=-lws2_32
 
 LAPACK and BLAS with the standard LP64 interface are required. The performance
 depends on the BLAS implementation. For instance, OpenBLAS with multithreading
