@@ -117,6 +117,8 @@ void swrite(int fd, const void *data, int len);
 
 int open_inet_socket(const char *host, const char *port);
 
+void close_socket(int fd);
+
 #ifndef _WIN32
 int open_unix_socket(const char *host, const char *prefix);
 

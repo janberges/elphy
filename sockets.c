@@ -71,6 +71,13 @@ int open_inet_socket(const char *host, const char *port) {
         }
 }
 
+void close_socket(int fd) {
+    close(fd);
+    #ifdef _WIN32
+    WSACleanup();
+    #endif
+}
+
 #ifndef _WIN32
 int open_unix_socket(const char *host, const char *prefix) {
     struct sockaddr_un addr = {0};

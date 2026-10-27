@@ -103,6 +103,8 @@ void driver(char *host, double **h, const double **h0, double *e, double **occ,
                 #endif
             }
 
+            close_socket(fd);
+
             break;
         }
     }
