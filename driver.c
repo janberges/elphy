@@ -101,6 +101,8 @@ void driver(char *host, double **h, const double **h0, double *e, double **occ,
                 shm_detach(potential, sizeof energy);
                 shm_detach(forces, nph * sizeof *forces);
                 #endif
+
+                attached = 0;
             }
 
             close_socket();
