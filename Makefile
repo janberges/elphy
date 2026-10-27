@@ -1,4 +1,4 @@
-.PHONY: test ipi ipi_unix ipi_shm md metad show_ipi show_md show_metad clean distclean
+.PHONY: test ipi ipi_unix ipi_shm md metad show_ipi show_md show_metad clean distclean lint
 
 CC := gcc
 CFLAGS := -ansi -Wpedantic -Wall -Wextra
@@ -65,3 +65,6 @@ clean:
 
 distclean:
 	rm -f $$(cat .gitignore)
+
+lint:
+	clang-tidy *.[ch] -- $(CFLAGS)

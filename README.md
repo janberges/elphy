@@ -145,6 +145,7 @@ The makefile provides some recipes that exemplify the usage of the program:
 - `make metad` lets `elphy` and PLUMED perform metadynamics together.
 - `make show_ipi`, `make show_md`, and `make show_metad` plot the trajectories.
 - `make clean` removes compiled files, `make distclean` all generated files.
+- `make lint` conducts a static code analysis.
 
 The Python packages `elphmod`, `ipi`, and `matplotlib` are required.
 
