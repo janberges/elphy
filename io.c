@@ -257,9 +257,11 @@ void put_extxyz(FILE *fp, const int nat, const double (*uc)[3],
     fprintf(fp, "\" pbc=\"T T T\"");
 
     va_start(ap, more);
-    for (i = 0; i < more; i++)
-        fprintf(fp, " %s=\"%s\"",
-            va_arg(ap, char *), format(va_arg(ap, double)));
+    for (i = 0; i < more; i++) {
+        char *key = va_arg(ap, char *);
+        char *value = format(va_arg(ap, double));
+        fprintf(fp, " %s=\"%s\"", key, value);
+    }
     va_end(ap);
 
     fprintf(fp, "\n");
