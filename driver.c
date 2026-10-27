@@ -7,7 +7,7 @@ void driver(char *host, double **h, const double **h0, double *e, double **occ,
 
     double energy, *potential = &energy, cell[3][3];
     const double virial[3][3] = {0}, minus = -1.0;
-    int fd, buf, needinit = 0, havedata = 0, shm = 0, attached = 0;
+    int buf, needinit = 0, havedata = 0, shm = 0, attached = 0;
     char *tmp, header[12];
     const int nph = m.nph * nc;
     const int nat = m.nat * nc;
@@ -15,7 +15,7 @@ void driver(char *host, double **h, const double **h0, double *e, double **occ,
 
     if (tmp = strchr(host, ':')) {
         *tmp = '\0';
-        fd = open_inet_socket(host, tmp + 1);
+        open_inet_socket(host, tmp + 1);
     } else {
     #ifdef _WIN32
         error("UNIX sockets not supported on Windows.");
@@ -25,49 +25,49 @@ void driver(char *host, double **h, const double **h0, double *e, double **occ,
              shm = 1;
          }
 
-        fd = open_unix_socket(host, "/tmp/ipi_");
+        open_unix_socket(host, "/tmp/ipi_");
     #endif
     }
 
     for (;;) {
-        sread(fd, header, sizeof header);
+        sread(header, sizeof header);
 
         if (!strncmp(header, "STATUS", 6)) {
             if (needinit)
-                swrite(fd, "NEEDINIT    ", sizeof header);
+                swrite("NEEDINIT    ", sizeof header);
             else if (havedata)
-                swrite(fd, "HAVEDATA    ", sizeof header);
+                swrite("HAVEDATA    ", sizeof header);
             else
-                swrite(fd, "READY       ", sizeof header);
+                swrite("READY       ", sizeof header);
         } else if (!strncmp(header, "INIT", 4)) {
-            sread(fd, &buf, sizeof buf); /* replica index */
-            sread(fd, &buf, sizeof buf); /* size of init string */
+            sread(&buf, sizeof buf); /* replica index */
+            sread(&buf, sizeof buf); /* size of init string */
 
             if (!(tmp = malloc(buf)) && buf)
                 error("No memory for init string.");
-            sread(fd, tmp, buf); /* init string */
+            sread(tmp, buf); /* init string */
             free(tmp);
 
             needinit = 0;
         } else if (!strncmp(header, "POSDATA", 7)) {
             if (!shm) {
-                sread(fd, cell, sizeof cell); /* cell */
-                sread(fd, cell, sizeof cell); /* inverse cell */
+                sread(cell, sizeof cell); /* cell */
+                sread(cell, sizeof cell); /* inverse cell */
             }
 
-            sread(fd, &buf, sizeof buf); /* number of atoms */
+            sread(&buf, sizeof buf); /* number of atoms */
 
             if (!shm)
-                sread(fd, u, nph * sizeof *u); /* positions */
+                sread(u, nph * sizeof *u); /* positions */
             else if (!attached) {
                 #ifndef _WIN32
-                u = shm_attach(fd, nph * sizeof *u);
-                shm_detach(shm_attach(fd, sizeof cell), sizeof cell);
-                shm_detach(shm_attach(fd, sizeof cell), sizeof cell);
-                potential = shm_attach(fd, sizeof energy);
-                forces = shm_attach(fd, nph * sizeof *forces);
-                shm_detach(memset(shm_attach(fd, sizeof virial), 0,
-                    sizeof virial), sizeof virial);
+                u = shm_attach(nph * sizeof *u);
+                shm_detach(shm_attach(sizeof cell), sizeof cell);
+                shm_detach(shm_attach(sizeof cell), sizeof cell);
+                potential = shm_attach(sizeof energy);
+                forces = shm_attach(nph * sizeof *forces);
+                shm_detach(memset(shm_attach(sizeof virial), 0, sizeof virial),
+                    sizeof virial);
                 #endif
 
                 attached = 1;
@@ -80,18 +80,18 @@ void driver(char *host, double **h, const double **h0, double *e, double **occ,
 
             havedata = 1;
         } else if (!strncmp(header, "GETFORCE", 8)) {
-            swrite(fd, "FORCEREADY  ", sizeof header);
+            swrite("FORCEREADY  ", sizeof header);
 
             if (!shm) {
-                swrite(fd, potential, sizeof energy);
-                swrite(fd, &nat, sizeof nat);
-                swrite(fd, forces, nph * sizeof *forces);
-                swrite(fd, virial, sizeof virial);
+                swrite(potential, sizeof energy);
+                swrite(&nat, sizeof nat);
+                swrite(forces, nph * sizeof *forces);
+                swrite(virial, sizeof virial);
             }
 
             buf = 1;
-            swrite(fd, &buf, sizeof buf); /* size of extras */
-            swrite(fd, " ", sizeof(char)); /* extras */
+            swrite(&buf, sizeof buf); /* size of extras */
+            swrite(" ", sizeof(char)); /* extras */
 
             havedata = 0;
         } else if (!strncmp(header, "EXIT", 4)) {
@@ -103,7 +103,7 @@ void driver(char *host, double **h, const double **h0, double *e, double **occ,
                 #endif
             }
 
-            close_socket(fd);
+            close_socket();
 
             break;
         }

@@ -111,18 +111,18 @@ double grand_potential(int ne, const double *e, double kt, double mu);
 void occupations(int ne, const double *e, double kt, double mu, int nspin,
     double **psi, double **occ);
 
-void sread(int fd, void *data, int len);
+void sread(void *data, int len);
 
-void swrite(int fd, const void *data, int len);
+void swrite(const void *data, int len);
 
-int open_inet_socket(const char *host, const char *port);
+void open_inet_socket(const char *host, const char *port);
 
-void close_socket(int fd);
+void close_socket(void);
 
 #ifndef _WIN32
-int open_unix_socket(const char *host, const char *prefix);
+void open_unix_socket(const char *host, const char *prefix);
 
-void *shm_attach(int fd, int len);
+void *shm_attach(int len);
 
 void shm_detach(void *addr, int len);
 #endif
