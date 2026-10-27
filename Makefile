@@ -1,11 +1,11 @@
 .PHONY: test ipi ipi_unix ipi_shm md metad show_ipi show_md show_metad clean distclean
 
-CC = gcc
-CFLAGS = -ansi -Wpedantic -Wall -Wextra
-LDLIBS = -llapack -lblas -lm
+CC := gcc
+CFLAGS := -ansi -Wpedantic -Wall -Wextra
+LDLIBS := -llapack -lblas -lm
 
-model = graphene
-units = Ha
+model := graphene
+units := Ha
 
 CC += $(CFLAGS)
 LDLIBS += $(EXTRA_LDLIBS)
