@@ -2,6 +2,7 @@
 
 CC := gcc
 CFLAGS := -ansi -Wpedantic -Wall -Wextra
+LDFLAGS := $(CFLAGS)
 LDLIBS := -llapack -lblas -lm
 
 model := graphene
@@ -11,7 +12,7 @@ elphy: elphy.o driver.o io.o matrix.o random.o strain.o supercell.o temperature.
 	$(strip $(CC) $(CFLAGS)) -o $@ $^ $(strip $(LDLIBS) $(EXTRA_LDLIBS))
 
 %.o: %.c elphy.h
-	$(strip $(CC) $(CFLAGS)) -o $@ -c $<
+	$(strip $(CC) $(LDFLAGS)) -o $@ -c $<
 
 test input.dat plumed.dat: test.py elphy
 	python3 $< $(model) $(units) input.dat plumed.dat
