@@ -7,8 +7,8 @@ LDLIBS := -llapack -lblas -lm
 model := graphene
 units := Ha
 
-CC += $(CFLAGS)
-LDLIBS += $(EXTRA_LDLIBS)
+override CC += $(CFLAGS)
+override LDLIBS += $(EXTRA_LDLIBS)
 
 elphy: elphy.o driver.o io.o matrix.o random.o strain.o supercell.o temperature.o sockets.o plumed.o
 	$(CC) -o $@ $^ $(LDLIBS)
