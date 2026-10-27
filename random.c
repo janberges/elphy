@@ -7,7 +7,7 @@ double box_muller(void) {
     static double rho, phi;
     static int havedata = 0;
 
-    if (havedata = !havedata) {
+    if ((havedata = !havedata)) {
         while (!(rho = (double) rand() / (double) RAND_MAX));
         while (!(phi = (double) rand() / (double) RAND_MAX));
 

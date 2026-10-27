@@ -13,14 +13,14 @@ void driver(char *host, double **h, const double **h0, double *e, double **occ,
     const int nat = m.nat * nc;
     const int inc = 1;
 
-    if (tmp = strchr(host, ':')) {
+    if ((tmp = strchr(host, ':'))) {
         *tmp = '\0';
         open_inet_socket(host, tmp + 1);
     } else {
     #ifdef _WIN32
         error("UNIX sockets not supported on Windows.");
     #else
-         if (tmp = strstr(host, "/shm")) {
+         if ((tmp = strstr(host, "/shm"))) {
              *tmp = '\0';
              shm = 1;
          }

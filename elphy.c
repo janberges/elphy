@@ -141,7 +141,7 @@ int main(const int argc, char **argv) {
         if ((n = atoi(argv[2])) < 2)
             error("At least two steps needed.");
 
-        if (match = strchr(argv[2], ':')) {
+        if ((match = strchr(argv[2], ':'))) {
             if ((stride = atoi(match + 1)) < 1)
                 error("Stride must be at least one.");
         } else
@@ -155,7 +155,7 @@ int main(const int argc, char **argv) {
         if ((kt1 = atof(argv[5])) < 0.0)
             error("Temperature must not be negative.");
 
-        if (match = strchr(argv[5], ':')) {
+        if ((match = strchr(argv[5], ':'))) {
             if ((kt2 = atof(match + 1)) < 0.0)
                 error("Final temperature must not be negative.");
         } else
@@ -177,7 +177,7 @@ int main(const int argc, char **argv) {
 
         if (argc == 7) {
         #ifdef _PLUMED
-            if (match = strchr(argv[6], ':'))
+            if ((match = strchr(argv[6], ':')))
                 *match++ = '\0';
             plumed_init(&nat, &dt, uc, tau, argv[6], match);
         #else

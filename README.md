@@ -19,7 +19,7 @@ The following command compiles the program using GCC without optimization:
 Different compilers and flags can be selected, for example:
 
     make CC=tcc CFLAGS=-Wall
-    make CC=clang CFLAGS='-O2 -w'
+    make CC=clang CFLAGS=-O2
     make CC=icx LDLIBS='-lmkl_intel_lp64 -lmkl_sequential -lmkl_core'
     make CFLAGS=-D_PLUMED LDLIBS='-llapack -lblas -lm -lplumed'
     make CC=x86_64-w64-mingw32-gcc LDLIBS='-llapack -lblas -lm -lws2_32'
