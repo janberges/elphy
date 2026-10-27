@@ -102,16 +102,16 @@ void open_unix_socket(const char *host, const char *prefix) {
 
 static void *shmmap(const char *name, const int len) {
     void *addr;
-    int fd;
+    int mfd;
 
-    if ((fd = shm_open(name, O_RDWR, 0)) == -1)
+    if ((mfd = shm_open(name, O_RDWR, 0)) == -1)
         error("Cannot open shared memory");
 
-    if ((addr = mmap(NULL, len, PROT_READ | PROT_WRITE, MAP_SHARED, fd, 0))
+    if ((addr = mmap(NULL, len, PROT_READ | PROT_WRITE, MAP_SHARED, mfd, 0))
             == MAP_FAILED)
         error("Cannot map shared memory");
 
-    close(fd);
+    close(mfd);
 
     return addr;
 }
