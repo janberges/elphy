@@ -100,9 +100,14 @@ void open_unix_socket(const char *host, const char *prefix) {
         sleep(1);
 }
 
-static void *shmmap(const char *name, const int len) {
+void *shm_attach(const int len) {
+    char name[256] = "/";
+    int namelen, mfd;
     void *addr;
-    int mfd;
+
+    sread(&namelen, sizeof namelen);
+    sread(name + 1, namelen);
+    name[namelen + 1] = '\0';
 
     if ((mfd = shm_open(name, O_RDWR, 0)) == -1)
         error("Cannot open shared memory");
@@ -114,17 +119,6 @@ static void *shmmap(const char *name, const int len) {
     close(mfd);
 
     return addr;
-}
-
-void *shm_attach(const int len) {
-    char name[256] = "/";
-    int namelen;
-
-    sread(&namelen, sizeof namelen);
-    sread(name + 1, namelen);
-    name[namelen + 1] = '\0';
-
-    return shmmap(name, len);
 }
 
 void shm_detach(void *addr, const int len) {
