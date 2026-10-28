@@ -60,7 +60,7 @@ index.html: README.md
 	python -c "import storylines as sl; sl.save('$@', sl.load('$@'))"
 
 clean:
-	rm -f elphy *.o
+	rm -f elphy elphy.exe *.o
 
 distclean:
 	rm -f $$(cat .gitignore)
