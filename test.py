@@ -6,12 +6,12 @@ import sys
 model = sys.argv[1] if len(sys.argv) > 1 else 'graphene'
 units = sys.argv[2] if len(sys.argv) > 2 else 'Ha'
 indat = sys.argv[3] if len(sys.argv) > 3 else 'input.dat'
-pldat = sys.argv[4] if len(sys.argv) > 4 else 'plumed.dat'
+mddat = sys.argv[4] if len(sys.argv) > 4 else 'mdargs.dat'
+pldat = sys.argv[5] if len(sys.argv) > 5 else 'plumed.dat'
 
 def error():
-    elphmod.MPI.info(f'Usage: python3 {sys.argv[0]} '
-        '[(graphene|TaS2|chain|Be) [(Ha|Ry|eV) [<data file> [<plumed file>]]]]',
-        error=True)
+    elphmod.MPI.info(f'Usage: python3 {sys.argv[0]} [(graphene|TaS2|chain|Be)'
+        ' [(Ha|Ry|eV) [<data file> [<MD file> [<plumed file>]]]]]', error=True)
 
 if units == 'Ha':
     econv = 0.5
@@ -106,10 +106,8 @@ elphmod.MPI.info(f'elphmod and elphy {"" if ok else "DO NOT "}agree!',
 tconv = np.sqrt(mconv / econv) * lconv
 
 if elphmod.MPI.comm.rank == 0:
-    with open(indat, 'a') as data:
-        data.write(f"""Parameters for MD example:
-{20 * tconv} {0.0004 / tconv} {0.004 * econv}
-""")
+    with open(mddat, 'w') as data:
+        data.write(f'{20 * tconv} {0.0004 / tconv} {0.004 * econv}\n')
 
     bond = np.linalg.norm(driver.elph.ph.r[1] - driver.elph.ph.r[0])
 
