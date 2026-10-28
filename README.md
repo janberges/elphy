@@ -12,7 +12,7 @@ The source-code repository is found at <https://codeberg.org/janberges/elphy>.
 
 ## Installation
 
-The following command compiles the program using GCC without optimization:
+By default, the program is compiled using GCC without optimization:
 
     make
 
