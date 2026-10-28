@@ -9,10 +9,10 @@ model := graphene
 units := Ha
 
 elphy: elphy.o driver.o io.o matrix.o random.o strain.o supercell.o temperature.o sockets.o plumed.o
-	$(strip $(CC) $(CFLAGS)) -o $@ $^ $(strip $(LDLIBS) $(EXTRA_LDLIBS))
+	$(strip $(CC) $(LDFLAGS)) -o $@ $^ $(strip $(LDLIBS) $(EXTRA_LDLIBS))
 
 %.o: %.c elphy.h
-	$(strip $(CC) $(LDFLAGS)) -o $@ -c $<
+	$(strip $(CC) $(CFLAGS)) -o $@ -c $<
 
 test input.dat plumed.dat: test.py elphy
 	python3 $< $(model) $(units) input.dat plumed.dat
