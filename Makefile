@@ -10,7 +10,7 @@ units := Ha
 
 elphy: elphy.o driver.o io.o matrix.o random.o strain.o supercell.o temperature.o sockets.o plumed.o
 	$(strip $(CC) $(LDFLAGS)) -o $@ $^ $(strip $(LDLIBS) $(EXTRA_LDLIBS))
-	if test -f $@.exe -a ! -f $@; then printf '#!/bin/sh\nwine $$0.exe $$@' > $@; chmod +x $@; fi
+	if test -f $@.exe -a ! -f $@; then printf '#!/bin/sh\nwine "$$0.exe" $$@' > $@; chmod +x $@; fi
 
 %.o: %.c elphy.h
 	$(strip $(CC) $(CFLAGS)) -o $@ -c $<
