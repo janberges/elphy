@@ -181,7 +181,7 @@ int main(const int argc, char **argv) {
                 *match++ = '\0';
             plumed_init(&nat, &dt, uc, tau, argv[6], match);
         #else
-            error("Compile with -D_PLUMED.");
+            error("Compile with -D_PLUMED and link with -lplumed.");
         #endif
         }
 
