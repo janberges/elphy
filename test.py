@@ -29,6 +29,8 @@ elif units == 'eV':
 else:
     error()
 
+tconv = np.sqrt(mconv / econv) * lconv
+
 create = dict(rydberg=True, divide_mass=False)
 export = dict(export=indat, econv=econv, lconv=lconv, mconv=mconv)
 
@@ -102,8 +104,6 @@ else:
 
 elphmod.MPI.info(f'elphmod and elphy {"" if ok else "DO NOT "}agree!',
     error=not ok)
-
-tconv = np.sqrt(mconv / econv) * lconv
 
 if elphmod.MPI.comm.rank == 0:
     with open(mddat, 'w') as data:
