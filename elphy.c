@@ -76,7 +76,7 @@ int main(const int argc, char **argv) {
     repeat(uc, typ, tau, (double (*)[3]) forces0, m, nc, CI cells);
 
     switch (argc) {
-    case (2):
+    case (2): /* mode 1: communication via standard input and output */
         while (get_xyz(stdin, nat, CC typ, C3 tau, u) != EOF) {
             energy = step(h, CD h0, e, occ, CD phi, u, forces, forces0, energy0,
                 m, nc, CI cr);
@@ -86,12 +86,12 @@ int main(const int argc, char **argv) {
         }
         break;
 
-    case (3):
+    case (3): /* mode 2: communication via socket */
         driver(argv[2], h, CD h0, e, occ, CD phi, u, forces, forces0, energy0,
             m, nc, CI cr, C3 tau);
         break;
 
-    case (4):
+    case (4): /* mode 3: generation of random structures */
         srand(time(NULL));
 
         n = atoi(argv[2]);
@@ -112,7 +112,7 @@ int main(const int argc, char **argv) {
         }
         break;
 
-    case (5):
+    case (5): /* mode 4: scaling of atomic displacements */
         for (i = 0; get_xyz(stdin, nat, CC typ, C3 tau, u1) != EOF; i++);
 
         if (!i)
@@ -134,8 +134,8 @@ int main(const int argc, char **argv) {
         }
         break;
 
-    case (6):
-    case (7):
+    case (6): /* mode 5a: standalone molecular dynamics */
+    case (7): /* mode 5b: metadynamics using PLUMED */
         srand(time(NULL));
 
         if ((n = atoi(argv[2])) < 2)
